@@ -1,0 +1,92 @@
+# HyunCalculator
+
+**한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+
+An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## Features / 주요 기능
+
+| Tab | Available functions / 주요 기능 |
+| --- | --- |
+| **Scientific / 공학용** | Safe expression evaluator; arithmetic, powers, `sin/cos/tan`, inverse trig, radians/degrees, `log/ln`, `sqrt/cbrt/root`, factorial/permutations/combinations, memory, history, Ans |
+| **Graphing / 그래프** | Plot up to 8 functions `y=...` or `f(x)=...`, adjustable domain/sample count, RAD/DEG, zoom via Matplotlib toolbar (when enabled), PNG export |
+| **Financial / 금융** | FV/PV, periodic & continuous compounding, PMT, NPV/IRR, amortization, CAGR, effective annual rate, ordinary annuity |
+| **Quant / 금융공학** | Black–Scholes (dividend-adjusted), Greeks, implied volatility, antithetic Monte Carlo, portfolio moments, unconstrained minimum variance and Markowitz target return, Black–Litterman posterior, historical/normal VaR and ES, Sharpe/Sortino/drawdown, fixed-coupon bond price/duration/convexity, EWMA/GARCH(1,1), GBM/OU moments, sample covariance/correlation |
+| **Programmer / 프로그래머** | Base 2/8/10/16 conversion, 8/16/32/64-bit signed/unsigned two's complement, AND/OR/XOR/NAND/NOR/NOT, logical/arithmetic shifts, rotations, popcount |
+| **ML, DL, RL / 인공지능** | Original **19 functions preserved**, including linear prediction, MSE/MAE, binary metrics/BCE, sigmoid/ReLU/softmax, dense/conv, gradient step, discounted return, TD target/error, Q-learning, Bellman and epsilon-greedy |
+
+**Not included:** Computer algebra / symbolic integration, 3D graphing, real-time market prices, broker execution, American option pricing, proprietary risk-model calibration, full backtesting or production trading infrastructure. These are concrete computational tools, not a universal mathematics engine.
+
+## Install & run / 설치 및 실행
+
+```powershell
+# Windows PowerShell, from the project root
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m hyuncalculator
+```
+
+```bash
+# Linux/macOS
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m hyuncalculator --lang en
+```
+
+**GUI note:** requires a local desktop session with Tkinter/Tk support. Linux might require `python3-tk` from the OS package manager; SSH/headless servers cannot show GUI windows.
+
+### Test / 테스트
+
+```bash
+python -m hyuncalculator --test
+# or
+python -m unittest discover -s tests -v
+# run historical regression suite
+python hyuncalculator/legacy_ml.py --test
+```
+
+GitHub Actions runs unit tests on Python 3.11 and 3.12. All computational tests run without GUI/display.
+
+### Examples / 예제
+
+Scientific: `sin(pi/6) + sqrt(16)`, `factorial(6)`, `log(100)` (base 10), `ln(e)`.
+
+Graphing: `y=sin(x); y=x^2/10` with X minimum `-10`, maximum `10`.
+
+Financial: `NPV` takes cash flows starting at t=0: `-100, 60, 60`, discount rate `0.1`.
+
+Quant: Black–Scholes `S=100, K=100, T=1, r=0.05, sigma=0.2, q=0, call` should return approximately `10.45058357`. Black–Litterman row input `0.04,0.01;0.01,0.09` is a 2×2 covariance matrix.
+
+Programmer: base=16, value=`FF`, width=8 yields signed `-1`, unsigned `255`.
+
+### Inputs, conventions and limitations / 입력 규칙
+
+- **Rates and returns are decimals**, not percentages: `0.05` means 5%; maturities are in years where specified. Enter per-period rates for time-value/loan calculations.
+- Separate vector values with commas or spaces. Separate matrix rows with **semicolons** (`;`).
+- `^` is power in Scientific/Graphing modes, not XOR. Use `XOR` in Programmer mode.
+- Graph functions use `x`. No arbitrary Python execution is permitted: the expression parser validates every AST node and function name, and does **not** use `eval`.
+- Covariance matrices must be positive definite for inverse-based optimization. Portfolio weights are fully invested and **short-selling is permitted**; there are no transaction costs or constraints.
+- Black–Scholes applies to **European** vanilla options; Greeks use changes of 1.00 in annual decimal vol/rate (divide Vega/Rho by 100 for per 1% point). At zero T or vol, undefined Greeks are NaN.
+- Historical VaR is the quantile of **signed losses**; VaR can be negative in profitable scenarios. Historical ES is the mean of losses above/equal to the empirical quantile; small samples are noisy.
+- IRR searches a finite range and rejects detected **multiple roots**; changing-sign roots can be missed in degenerate/tangent cases.
+- Monte Carlo uses a fixed seed and antithetic paths, with pair-based standard errors; **use an even number of paths**.
+- UI field values remain intact when toggling Korean/English. No data is transmitted to a server.
+
+This application is for education, research prototyping and numerical checks—not financial, investment or risk management advice. Validate model assumptions and numerical results independently for consequential decisions.
+
+## Layout
+
+```text
+hyuncalculator/
+  __main__.py       # launch GUI or tests
+  gui.py            # bilingual Tkinter front-end + Matplotlib plot
+  scientific.py     # safe scalar/array expression evaluator
+  graphing.py       # sample and validate real-valued curves
+  finance.py        # TVM / loans / cash-flow functions
+  quant.py          # derivatives, portfolios and risk
+  programmer.py     # integer representations and bit operations
+  operations.py     # bilingual operation catalog and defaults
+  legacy_ml.py      # original 19 ML/DL/RL operations & tests
+```
