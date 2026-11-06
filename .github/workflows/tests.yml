@@ -83,3 +83,48 @@ jobs:
         env:
           MPLBACKEND: Agg
         run: python tests/toolchain_rust_smoke.py
+
+  r-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install numerical reference dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Install and verify R
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends r-base-core
+          command -v Rscript
+          Rscript --version
+      - name: Execute six R numeric generator checks
+        env:
+          MPLBACKEND: Agg
+        run: python tests/toolchain_r_csharp_smoke.py --language R
+
+  csharp-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install Python numerical reference dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify .NET SDK
+        run: dotnet --version
+      - name: Compile and run six C# numeric generator checks
+        env:
+          MPLBACKEND: Agg
+          DOTNET_NOLOGO: '1'
+          DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+        run: python tests/toolchain_r_csharp_smoke.py --language 'C#'
