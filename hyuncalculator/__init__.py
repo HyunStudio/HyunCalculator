@@ -1,2 +1,2 @@
 """HyunCalculator: bilingual scientific, finance, quant and AI calculator."""
-__version__ = '1.2.0a5'
+__version__ = '1.2.0a6'

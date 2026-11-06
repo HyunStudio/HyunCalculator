@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.2.0-alpha.6 — Markowitz GMV and Target-Return Multilingual Export (2026-11-06)
+
+- Added **ALLOC-001** global minimum variance and **ALLOC-002** Markowitz minimum variance with target return in **13 additional languages**, preserving the existing standalone Python implementations. Finite symmetric SPD covariance validation and Cholesky/linear-solve implementation are used; short positions are permitted, and no leverage/long-only constraints are imposed.
+- **319 / 462 source-generation combinations** (33 Python + 22×13 other languages). **11 formulas** still support Python only, leaving **143 non-Python adapters** to implement. Standalone non-Python output layout: n weights followed by the portfolio variance or realized expected return, while Python uses named dictionaries.
+- Added **5 Python unit/regression tests** for the new model pair, all-language source emission, option validation, Python parity on two and three assets, and covariance/target edge checks. **114 total Python tests passed locally**.
+- New optional toolchain smoke tests compiled/executed both models for C, C++, JS, TS, Java, Swift, Kotlin and Go and compared numeric values against the existing Python calculator. R, C#, Rust, MATLAB and Julia are **generated only, not runtime-verified** here.
+- Fixed strict C++ `-Werror` indentation issue discovered during test compilation. Advanced class/iteration/rename/import settings remain restricted and fail closed for the new portable models.
+- Existing calculation tabs, alpha.5 emitters and pending-approval HyunStudio Sponsors state are retained. Full 462-way compile/numerical verification and premium dark UI remain pending.
+
 ## v1.2.0-alpha.5 — Implied Volatility and Gaussian VaR/ES (2026-11-06)
 
 - Added **DERIV-002** option implied volatility via bounded Black–Scholes inversion for all 13 non-Python languages, reusing the verified dividend-adjusted price helper and explicit no-arbitrage bounds.

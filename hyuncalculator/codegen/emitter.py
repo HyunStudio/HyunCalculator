@@ -371,6 +371,9 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
             return generate_portable(fn,formula,opt)
         if formula.function in LOOP_PROFILES:
             return generate_loops(fn,formula,opt)
+        from .portable_allocation import SUPPORTED as ALLOCATION_PROFILES, generate_allocation
+        if formula.function in ALLOCATION_PROFILES:
+            return generate_allocation(fn,formula,opt)
         from .portable_risk import SUPPORTED as RISK_PROFILES, generate_risk
         if formula.function in RISK_PROFILES:
             return generate_risk(fn,formula,opt)
