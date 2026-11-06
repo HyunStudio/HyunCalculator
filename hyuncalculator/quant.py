@@ -331,3 +331,276 @@ def qf_ou(v):
 
 def qf_cov(v):
     return covariance_correlation(matrix(v['returns']))
+
+
+# ----------------------- Extended quantitative tools -----------------------
+# The extensions retain the same decimal-rate and bilingual GUI conventions.
+
+
+def normal_probabilities(x, mean=0., std=1., quantile_probability=0.95):
+    """Normal PDF, CDF, survival and a chosen probability's inverse CDF."""
+    values = (x, mean, std, quantile_probability)
+    if not all(math.isfinite(float(a)) for a in values) or std <= 0:
+        raise ValueError('Finite values and standard deviation > 0 are required')
+    if not 0 < quantile_probability < 1:
+        raise ValueError('Quantile probability must lie between 0 and 1')
+    z = (x-mean)/std
+    return {'Z score': z, 'PDF at x': float(norm.pdf(z)/std),
+            'CDF P(X <= x)': float(norm.cdf(z)),
+            'Survival P(X > x)': float(norm.sf(z)),
+            'Quantile at probability': float(norm.ppf(quantile_probability, loc=mean, scale=std))}
+
+
+def yield_to_maturity(price, face, coupon_rate, maturity_years, payments_per_year=2):
+    """Nominal annual YTM of a regular fixed coupon bond, without accrued interest.
+
+    Input `price` is the full/dirty price. The bond has an integer number
+    of equal coupon periods, and the last payment includes face value.
+    Negative yields can be returned; real yields are bounded below by -m.
+    """
+    vals = (price, face, coupon_rate, maturity_years, payments_per_year)
+    if not all(math.isfinite(float(x)) for x in vals) or price <= 0 or face <= 0:
+        raise ValueError('Price and face must be positive finite values')
+    if coupon_rate < 0 or maturity_years <= 0 or int(payments_per_year) != payments_per_year or payments_per_year < 1:
+        raise ValueError('Coupon >=0, years >0 and integer frequency >=1 required')
+    freq = int(payments_per_year)
+    n_exact = maturity_years*freq
+    if n_exact < 1 or n_exact > 2400 or not math.isclose(n_exact, round(n_exact), abs_tol=1e-8):
+        raise ValueError('Number of equal coupon periods must be an integer in 1..2400')
+    n = round(n_exact)
+    if coupon_rate == 0:
+        return freq * (math.exp(math.log(face/price)/n)-1.)
+
+    def bond_price(y):
+        # Safe analytic geometric-series formula using periodic coupon cashflows.
+        periodic_y = y/freq
+        if periodic_y <= -1:
+            return math.inf
+        discount = 1 + periodic_y
+        if math.isclose(discount, 1.0, abs_tol=1e-14):
+            return face + (face*coupon_rate/freq)*n
+        # When periods are large and y is very negative, the price tends to
+        # +infinity; treat floating overflow as a valid upper bracket.
+        try:
+            pv_face = math.exp(-n*math.log(discount))
+            if periodic_y != 0:
+                annuity = -math.expm1(-n*math.log(discount))/periodic_y
+            else:
+                annuity = float(n)
+            return face*pv_face + (face*coupon_rate/freq)*annuity
+        except OverflowError:
+            return math.inf
+
+    lower = -freq * (1-1e-8)
+    upper = max(1., coupon_rate)
+    while bond_price(upper) > price and upper < 1e12:
+        upper *= 2
+    if bond_price(upper) > price:
+        raise ValueError('No numerically resolvable YTM in the supported range')
+    return float(brentq(lambda y: bond_price(y)-price, lower, upper, xtol=1e-12))
+
+
+def moving_averages(series, window):
+    """SMA for complete windows; EMA seeded by the first observation.
+
+    Returns SMA values aligned with periods window..n and EMA values with
+    the entire series. Both are in the original observation units.
+    """
+    s = np.asarray(series, dtype=float)
+    if s.ndim != 1 or s.size < 1 or not np.isfinite(s).all():
+        raise ValueError('At least one finite observation required')
+    if isinstance(window, bool) or not isinstance(window, (int, np.integer)) or not 1 <= window <= s.size:
+        raise ValueError('Window must be an integer from 1 to sample length')
+    # Use cumulative sums for fast O(n) SMA computation.
+    rolling = np.cumsum(np.r_[0.0, s])
+    sma = (rolling[window:]-rolling[:-window])/window
+    alpha = 2/(window+1)
+    ema = np.empty_like(s)
+    ema[0] = s[0]
+    for i in range(1, len(s)):
+        ema[i] = alpha*s[i]+(1-alpha)*ema[i-1]
+    return {'Last SMA': float(sma[-1]), 'Last EMA': float(ema[-1]),
+            'SMA (from first complete window)': sma, 'EMA (first value seeded)': ema}
+
+
+def _simulation_shape(years, steps, paths, seed):
+    if not all(math.isfinite(float(x)) for x in (years, steps, paths, seed)):
+        raise ValueError('Simulation inputs must be finite')
+    if years < 0 or not isinstance(steps, (int, np.integer)) or not isinstance(paths, (int, np.integer)):
+        raise ValueError('Years >= 0; steps and paths must be integers')
+    if not 1 <= steps <= 5000 or not 2 <= paths <= 100000 or steps*paths > 2_000_000:
+        raise ValueError('Use steps 1..5000, paths 2..100000, paths*steps <= 2000000')
+    if not isinstance(seed, (int, np.integer)) or seed < 0:
+        raise ValueError('Seed must be a nonnegative integer')
+    return np.random.default_rng(seed), years/steps
+
+
+def brownian_motion(years, steps=100, paths=1000, seed=42, initial=0., drift=0., diffusion=1.):
+    """Arithmetic Brownian motion X(t)=x0+mu*t+sigma*W(t)."""
+    if not all(math.isfinite(float(x)) for x in (initial, drift, diffusion)) or diffusion < 0:
+        raise ValueError('Initial/drift must be finite; diffusion >= 0')
+    rng, dt = _simulation_shape(years, steps, paths, seed)
+    increments = drift*dt + diffusion*math.sqrt(dt)*rng.standard_normal((paths, steps))
+    terminal = initial + increments.sum(axis=1)
+    sample = np.r_[initial, initial+np.cumsum(increments[0])]
+    return {'Expected terminal state': initial+drift*years,
+            'Theoretical terminal volatility': diffusion*math.sqrt(years),
+            'Simulated terminal mean': float(terminal.mean()),
+            'Simulated terminal volatility': float(terminal.std(ddof=1)),
+            'Sample path (t=0 to T)': sample}
+
+
+def gbm_simulation(spot, drift, volatility, years, steps=100, paths=1000, seed=42):
+    """Exact GBM step increments and an example simulated price trajectory."""
+    if not all(math.isfinite(float(x)) for x in (spot, drift, volatility)) or spot <= 0 or volatility < 0:
+        raise ValueError('S0 > 0, finite drift and volatility >= 0 required')
+    rng, dt = _simulation_shape(years, steps, paths, seed)
+    increments = (drift - 0.5*volatility**2)*dt + volatility*math.sqrt(dt)*rng.standard_normal((paths, steps))
+    terminal = spot*np.exp(increments.sum(axis=1))
+    sample = np.r_[spot, spot*np.exp(np.cumsum(increments[0]))]
+    theoretical = gbm_moments(spot, drift, volatility, years)
+    return {'Expected terminal price': theoretical['Expected price'],
+            'Theoretical terminal volatility': theoretical['Std. deviation'],
+            'Simulated terminal mean': float(terminal.mean()),
+            'Simulated terminal volatility': float(terminal.std(ddof=1)),
+            'Sample price path (t=0 to T)': sample}
+
+
+def ou_simulation(initial, mean_level, speed, volatility, years, steps=100, paths=1000, seed=42):
+    """Exact-discretization Ornstein-Uhlenbeck trajectories (no Euler bias)."""
+    if not all(math.isfinite(float(x)) for x in (initial, mean_level, speed, volatility)) or speed <= 0 or volatility < 0:
+        raise ValueError('Speed > 0, diffusion >= 0 and finite state inputs required')
+    rng, dt = _simulation_shape(years, steps, paths, seed)
+    a = math.exp(-speed*dt)
+    noise_sd = volatility*math.sqrt(-math.expm1(-2*speed*dt)/(2*speed))
+    innovations = rng.standard_normal((paths, steps))
+    values = np.full(paths, initial, dtype=float)
+    example = np.empty(steps+1, dtype=float)
+    example[0] = initial
+    for j in range(steps):
+        values = mean_level+(values-mean_level)*a+noise_sd*innovations[:, j]
+        example[j+1] = values[0]
+    theoretical = ou_moments(initial, mean_level, speed, volatility, years)
+    return {'Expected terminal state': theoretical['Expected state'],
+            'Theoretical terminal volatility': theoretical['Std. deviation'],
+            'Simulated terminal mean': float(values.mean()),
+            'Simulated terminal volatility': float(values.std(ddof=1)),
+            'Sample state path (t=0 to T)': example}
+
+
+def transaction_cost(trade_notional, commission_bps, slippage_bps=0., half_spread_bps=0., sides=1):
+    """Estimated friction on each side of a fixed size executed order.
+
+    For sides=2, costs are based on the *same* notional on both sides (not
+    on a changing portfolio value). Half-spread is charged per side.
+    """
+    vals = (trade_notional, commission_bps, slippage_bps, half_spread_bps, sides)
+    if not all(math.isfinite(float(x)) for x in vals) or trade_notional < 0:
+        raise ValueError('Notional must be >=0; all inputs must be finite')
+    if min(commission_bps, slippage_bps, half_spread_bps) < 0 or sides not in (1, 2):
+        raise ValueError('Cost rates must be >=0 and sides must be 1 or 2')
+    bps = commission_bps+slippage_bps+half_spread_bps
+    cost = trade_notional*sides*bps/10000
+    return {'One-way effective cost (bps)': bps, 'Total traded notional': trade_notional*sides,
+            'Total estimated trading cost': cost,
+            'Total cost / single-side notional': sides*bps/10000}
+
+
+def backtest_single_asset(returns, target_positions, commission_bps=0., slippage_bps=0.,
+                          risk_free_per_period=0., periods_per_year=252):
+    """One-asset, vectorized target-position backtest with NO lookahead.
+
+    Returns[t] is close(t-1)->close(t); target_positions[t] is the target
+    observed/selected at close(t), so the active position during return[t]
+    is target_positions[t-1]. Initial position is flat, and we do not charge
+    a terminal liquidation cost. 1 unit turnover = 100% of equity notional.
+    Assets earn simple returns; financing, margin, dividends and borrow fees
+    are omitted. Returns are portfolio fractions, no cashflow deposits.
+    """
+    r = np.asarray(returns, dtype=float)
+    sig = np.asarray(target_positions, dtype=float)
+    if r.ndim != 1 or r.size < 3 or sig.shape != r.shape or not np.isfinite(r).all() or not np.isfinite(sig).all():
+        raise ValueError('Returns and target positions must be equally sized finite 1D series (n>=3)')
+    if np.any(r <= -1.) or np.any(np.abs(sig)>1.):
+        raise ValueError('Simple returns must be > -100% and position target in [-1,1]')
+    vals = (commission_bps, slippage_bps, risk_free_per_period, periods_per_year)
+    if not all(math.isfinite(float(x)) for x in vals) or commission_bps < 0 or slippage_bps < 0:
+        raise ValueError('Cost bps must be >=0; inputs must be finite')
+    if not isinstance(periods_per_year, (int, np.integer)) or periods_per_year < 1:
+        raise ValueError('Periods per year must be a positive integer')
+
+    positions = np.r_[0., sig[:-1]]
+    changes = np.diff(np.r_[0., positions])
+    turnover = np.abs(changes)
+    friction = turnover*(commission_bps+slippage_bps)/10000
+    gross = positions*r
+    net = gross-friction
+    if (net <= -1).any():
+        raise ValueError('Transaction costs or exposures produced period return <= -100%')
+    equity = np.r_[1., np.cumprod(1+net)]
+    buyhold = np.r_[1., np.cumprod(1+r)]
+    metrics = risk_metrics(net, risk_free_per_period, periods_per_year)
+    active = np.abs(positions) > 1e-12
+    n_active = int(np.count_nonzero(active))
+    return {
+        'Net compounded return': float(equity[-1]-1),
+        'Gross compounded return': float(np.prod(1+gross)-1),
+        'Buy-and-hold compounded return': float(buyhold[-1]-1),
+        'Annualized CAGR': float(equity[-1]**(periods_per_year/r.size)-1),
+        'Annualized volatility': metrics['Annualized volatility'],
+        'Annualized Sharpe': metrics['Annualized Sharpe'],
+        'Annualized Sortino': metrics['Annualized Sortino'],
+        'Max drawdown': metrics['Max drawdown'],
+        'Active-period win rate': float(np.count_nonzero(net[active]>0)/n_active) if n_active else float('nan'),
+        'Executed position changes': int(np.count_nonzero(turnover>1e-12)),
+        'Total absolute turnover': float(turnover.sum()),
+        'Total cost drag (sum of return fractions)': float(friction.sum()),
+        'Effective positions (1-period delayed)': positions,
+        'Net returns per period': net,
+        'Cumulative equity curve (start=1)': equity,
+        'Buy-and-hold equity curve (start=1)': buyhold,
+    }
+
+
+# String-to-number adapters for the existing bilingual operation catalog.
+def qf_normal(v):
+    return normal_probabilities(number(v['x']), number(v['mean']), number(v['std']), number(v['p']))
+
+
+def qf_ytm(v):
+    return {'Annual nominal yield to maturity': yield_to_maturity(
+        number(v['price']), number(v['face']), number(v['coupon']), number(v['years']),
+        integer(v['freq'], minimum=1))}
+
+
+def qf_moving(v):
+    return moving_averages(vector(v['values']), integer(v['window'], minimum=1))
+
+
+def qf_brownian(v):
+    return brownian_motion(number(v['years']), integer(v['steps'], minimum=1),
+                           integer(v['paths'], minimum=2), integer(v['seed'], minimum=0),
+                           number(v['initial']), number(v['mu']), number(v['sigma']))
+
+
+def qf_gbm_paths(v):
+    return gbm_simulation(number(v['s']), number(v['mu']), number(v['sigma']), number(v['years']),
+                          integer(v['steps'], minimum=1), integer(v['paths'], minimum=2),
+                          integer(v['seed'], minimum=0))
+
+
+def qf_ou_paths(v):
+    return ou_simulation(number(v['x']), number(v['level']), number(v['kappa']), number(v['sigma']),
+                         number(v['years']), integer(v['steps'], minimum=1),
+                         integer(v['paths'], minimum=2), integer(v['seed'], minimum=0))
+
+
+def qf_cost(v):
+    return transaction_cost(number(v['notional']), number(v['commission']), number(v['slippage']),
+                            number(v['spread']), integer(v['sides'], minimum=1))
+
+
+def qf_backtest(v):
+    return backtest_single_asset(vector(v['returns']), vector(v['signals']),
+                                 number(v['commission']), number(v['slippage']), number(v['rf']),
+                                 integer(v['ppy'], minimum=1))
