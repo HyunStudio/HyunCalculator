@@ -278,7 +278,7 @@ public static class GeneratedCalculator {{
         if(i==j){{if(!(v>1e-12))throw new ArgumentException("Covariance not SPD");l[i,j]=Math.Sqrt(v);}}
         else l[i,j]=v/l[j,j];}}
     }}
-    double[] y=Solve(l,System.Linq.Enumerable.Repeat(1.0,n).ToArray());double a=0;foreach(double d in y)a+=d;
+    double[] rhs=new double[n];Array.Fill(rhs,1.0);double[] y=Solve(l,rhs);double a=0;foreach(double d in y)a+=d;
     if(!double.IsFinite(a)||a<=0)throw new ArgumentException("Invalid covariance");
 {calc}  }}
 }}
