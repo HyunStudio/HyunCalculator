@@ -1,8 +1,31 @@
 # HyunCalculator
 
-**v1.2.0-alpha.12** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.13** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.13 — Dark, Light, High-Contrast & Large-Text Accessibility Pass
+
+The desktop GUI now supports **dark (default), light and high-contrast** themes
+across Tk/ttk controls, editable code, lists, scientific results and Matplotlib
+graphs. Settings can be changed using the toolbar and are stored locally at
+`~/.hyuncalculator/appearance.json`, with validated values and atomic writes.
+No account, network connection or telemetry is involved.
+
+**Text size:** 100%, 125% (default), 150%, 175%. Theme and text-size
+changes apply without restarting the application. Keyboard shortcuts:
+`Ctrl++` / `Ctrl+-` increase/decrease text size, `Ctrl+0` resets to
+100%, and `Alt+Shift+H` toggles high contrast. Text/background palettes
+were checked for >=7:1 WCAG contrast for main reading surfaces; code editor
+and graph palettes update with theme switches.
+
+A separate Tk/Xvfb GUI smoke tests **10 tabs, theme switching, local setting
+persistence and non-compounding font sizes**. Pure headless tests cover
+contrast ratios, preference validation and corrupt-file fallback.
+**Accessibility is an ongoing engineering goal:** full screen-reader behavior,
+150-175% layouts on every display, platform-specific widgets and keyboard-only
+user acceptance still require review. Computational formulas and the 462/462
+source-generator scope are unchanged. Sponsors remains pending approval.
 
 ## v1.2.0-alpha.12 — Deterministic standalone ZIP project export
 

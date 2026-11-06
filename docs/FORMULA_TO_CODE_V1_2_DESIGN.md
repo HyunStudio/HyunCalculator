@@ -1,30 +1,22 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.12)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.13)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.12)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.13)
 
-- **Required native CI smoke:** GitHub Actions now compiles, runs and
-  numerically checks **11 representative models on C, C++ and JavaScript**,
-  **33 / 33 successful sample cases** in run 42170293814. The Python
-  3.11 and 3.12 jobs each passed **150 tests**. This is explicitly a
-  **limited 33-case numerical subset**, not full 462-pair runtime
-  verification. Future matrices should add more language compilers and
-  diverse mathematical edge cases.
-
-- **Source emission matrix:** still **462/462** (33 Financial/Quant formulas × 14 languages). This does not establish all combinations are compiler/runtime or numerically verified.
-- **Project ZIP implementation:** CLI `--generate FORMULA_ID --language TARGET --bundle OUTPUT.zip`, GUI **Project ZIP** action, pure in-memory deterministic `bundle_bytes`. Fixed safe archive paths; Java source basename honors public class rules; no downloaded/untrusted content is executed.
-- **Bundle contents:** generated source, SHA-256 source digest and generator options in manifest, raw input field examples (not golden expected values), README/toolchain hints, Python import-based NumPy/SciPy requirements and minimal JS/TS/Go/C# project metadata when relevant.
-- **Tests:** new ZIP tests include 14-language archive generation across representative formulas, all 33 Python formulas, byte-for-byte reproducibility, archive entry safety, Python dependency metadata, extracted offline integrity check, checksum tamper detection, and CLI validation.
-- **Verification caveat:** the bundled integrity test checks source bytes and Python AST only; it does **not** execute generated numerical algorithms or replace independent golden-value tests, full compiler/runtime matrix or financial review. R/C#/Rust/MATLAB/Julia and numerous other source combinations still lack exhaustive runtime/numeric verification.
-- **Remaining:** broad 462-pair toolchain and numeric validation (with explicit unsupported/skip reporting), advanced class/algorithm/loop/import options and full premium dark large-text accessible interface.
-- **Sponsors:** approval pending; no real donation payment link/button until verified.
-- This document remains an alpha progress report and a separate target-state design.
+- **Code generation:** 33 Financial/Quant formulas × 14 languages = **462/462 emitted source combinations**; this remains incomplete compiler/runtime certification.
+- **Visual accessibility pass:** live dark, light and high-contrast theme selection. Tk controls, code editor, listboxes, result fields and Matplotlib chart labels/grids use a coordinated readable color palette with >=7:1 foreground/background contrast in core text surfaces.
+- **Text scaling and keyboard:** 100%, 125% (default), 150%, 175% font-size presets, Ctrl +/−/0 shortcuts and Alt+Shift+H high-contrast toggle. Persistent optional local `~/.hyuncalculator/appearance.json` settings, validated JSON and atomic writes.
+- **Testing:** no-display color contrast/preference validation tests and a separate Xvfb Tk GUI smoke covering all 10 tabs, live theme/font changes, non-compounding sizes, and persistence. This is a practical UI regression test, NOT screen-reader or all-display accessibility certification.
+- **Previous CI evidence:** Python 3.11/3.12 each ran 150 tests, and 11 selected models × C/C++/JS provided 33/33 numeric smoke passes. New appearance tests add to the Python suite. R/C#/Rust/MATLAB/Julia and many other emitted codes still lack representative native runtime validation.
+- **Remaining:** broaden toolchain/numeric verification, advanced code generator options, WCAG and assistive technology acceptance testing, responsive layout refinements at 175% and full premium GUI polish.
+- **Sponsors:** GitHub Sponsors remains pending approval; no payment button/URL until verified.
+- This alpha is not a release-quality declaration.
 
 ## 1. 목적과 핵심 원칙
 
@@ -307,4 +299,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.12는 462/462 소스 생성 범위를 유지하며 CLI/GUI에서 독립 프로젝트 ZIP을 생성한다. ZIP에는 소스·예제·옵션·SHA-256 무결성 테스트 및 필요한 의존성 안내가 포함된다. 이를 14개 언어 전체 실행·수치 검증 완료로 해석해서는 안 된다. 고급 옵션과 프리미엄 다크 UI/UX는 개발 중이며 Sponsors는 승인 대기다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.13은 462/462 소스 생성, 독립 ZIP 프로젝트 내보내기와 함께 다크·라이트·고대비 테마 및 100~175% 글꼴 확대를 지원한다. 전체 언어 수치 검증과 스크린리더·반응형 접근성 검수는 진행 중이며 Sponsors 승인 전 결제 버튼은 비활성 상태다.

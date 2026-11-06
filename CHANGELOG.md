@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.2.0-alpha.13 — Accessible Desktop Themes (2026-11-06)
+
+- Added reusable native Tk appearance module with dark/light/high-contrast
+  palettes, toolbar selection, 100–175% text sizes, keyboard zoom/toggle,
+  local validated preference persistence and atomic settings writes.
+- Applied theme to Tk/ttk inputs, financial result areas, code editor,
+  lists and Matplotlib chart labels/legends.
+- Introduced 4 no-display appearance unit tests, and a dedicated Xvfb/Tk
+  GUI smoke for ten tabs, live theme/zoom changes and persistence.
+- Formula-to-Code source generator still covers 462/462 combinations;
+  compiler/numerical verification remains partial. Full accessible layout
+  review and Windows/macOS interaction testing are still pending.
+- Github Sponsors remains approval-pending and non-payable.
+
 ## v1.2.0-alpha.12 — Reproducible ZIP Exports (2026-11-06)
 
 - New required GitHub Actions `native-smoke` job compiles/executes
