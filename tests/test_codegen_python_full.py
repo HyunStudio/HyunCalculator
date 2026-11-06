@@ -75,7 +75,7 @@ class PythonFullCoverageTests(unittest.TestCase):
     def test_reject_unimplemented_language_and_invalid_options(self):
         for language in ('Java','C++','Go','R'):
             with self.subTest(language=language),self.assertRaises(GenerationError):
-                generate('DERIV-003',GenerationOptions(language=language))
+                generate('STAT-002',GenerationOptions(language=language))
         with self.assertRaises(GenerationError):
             generate('DERIV-001',GenerationOptions(language='Python',iteration='for'))
         with self.assertRaises(GenerationError):
@@ -85,8 +85,8 @@ class PythonFullCoverageTests(unittest.TestCase):
         formulas=catalog()
         self.assertEqual(len(formulas),33)
         self.assertEqual(sum('Python' in f.supported_languages for f in formulas),33)
-        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),23)
-        self.assertEqual(sum(len(f.supported_languages) for f in formulas),332)
+        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),24)
+        self.assertEqual(sum(len(f.supported_languages) for f in formulas),345)
 
 
 if __name__=='__main__': unittest.main()

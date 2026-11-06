@@ -371,6 +371,9 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
             return generate_portable(fn,formula,opt)
         if formula.function in LOOP_PROFILES:
             return generate_loops(fn,formula,opt)
+        from .portable_mc import SUPPORTED as MC_PROFILES, generate_mc
+        if formula.function in MC_PROFILES:
+            return generate_mc(fn,formula,opt)
         from .portable_bl import SUPPORTED as BL_PROFILES, generate_bl
         if formula.function in BL_PROFILES:
             return generate_bl(fn,formula,opt)

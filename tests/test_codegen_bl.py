@@ -16,9 +16,9 @@ class BlackLittermanCodegenTest(unittest.TestCase):
     def test_registry_coverage_and_names(self):
         formulas=catalog()
         self.assertEqual(len(formulas),33)
-        self.assertEqual(sum(len(x.supported_languages) for x in formulas),332)
-        self.assertEqual(sum(len(x.supported_languages)==14 for x in formulas),23)
-        self.assertEqual(sum(len(x.supported_languages)==1 for x in formulas),10)
+        self.assertEqual(sum(len(x.supported_languages) for x in formulas),345)
+        self.assertEqual(sum(len(x.supported_languages)==14 for x in formulas),24)
+        self.assertEqual(sum(len(x.supported_languages)==1 for x in formulas),9)
         self.assertEqual(get_formula('ALLOC-003').function,'qf_bl')
         self.assertEqual(set(get_formula('ALLOC-003').supported_languages),set(LANGUAGES))
 

@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.2.0-alpha.8 — Portable Antithetic Monte Carlo in 14 Languages (2026-11-06)
+
+- Implemented `DERIV-003` European Monte Carlo option-price code generation in
+  the remaining **13 non-Python languages**. Now **24/33 formulas** across all
+  14 languages: **345/462 source-generation pairs (74.7%)**; remaining
+  **9 formulas** are Python-only (**117 non-Python pairs**).
+- Standalone portable targets generate shared Park–Miller/Box–Muller seeded
+  standard-normal pairs, antithetic GBM terminal prices, discounted payoffs,
+  Welford paired sample standard error and 95% confidence bounds.
+- Non-Python seed range **1..2,147,483,646** and even path count
+  **100..1,000,000**. The original Python NumPy `default_rng` stream stays
+  unchanged: cross-language *same-seed* parity is only for the portable
+  non-Python languages, not for Python's existing implementation.
+- **125 local Python automated tests passed**; independent portable numerical
+  reference, option calls and puts, zero volatility, invalid code options, and
+  full supported source-generation matrix included. Selected generated
+  C/C++/JS/TS/Java/Swift/Kotlin/Go examples compiled or executed and matched
+  the portable reference. Missing R/C#/Rust/MATLAB/Julia toolchains mean their
+  generated programs remain runtime **unverified**.
+- Existing scientific/financial/quant/ML/DL/RL tools and Sponsors **pending**
+  placeholder retained unchanged. No active donation/payment link.
+
 ## v1.2.0-alpha.7 — Black–Litterman Cross-Language Code Generation (2026-11-06)
 
 - Added `ALLOC-003` `qf_bl` to the 13 non-Python language emitters, completing

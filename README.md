@@ -1,20 +1,58 @@
 # HyunCalculator
 
-**v1.2.0-alpha.7** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.8** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.7 — Black–Litterman Code Generation (partial implementation)
+## v1.2.0-alpha.8 — Reproducible Monte Carlo Code Generation (partial implementation)
 
 The existing HyunCalculator retains **33 Financial/Quant calculator operations** and
 all previous UI tabs. Formula to Code now emits standalone **Python for 33/33**
-formulas and source for **23/33 formulas in all 14 target languages**: Python,
+formulas and source for **24/33 formulas in all 14 target languages**: Python,
 R, C, C++, JavaScript, TypeScript, Java, C#, Swift, Kotlin, Go, Rust, MATLAB,
-and Julia. This is **332 of 462 source-generation pairs (71.9%)**; **10 formulas
-remain Python-only**, with **130 non-Python pairs still to implement**.
+and Julia. This is **345 of 462 source-generation pairs (74.7%)**; **9 formulas
+remain Python-only**, with **117 non-Python pairs still to implement**.
 Unsupported language/formula and advanced-option combinations fail explicitly.
 
-### New in alpha.7: Black–Litterman (ALLOC-003)
+### New in alpha.8: Antithetic Monte Carlo option (DERIV-003)
+
+`DERIV-003` generates standalone European call/put option Monte Carlo pricing code
+in **all 14 languages**, including GBM terminal price simulation, antithetic
+standard-normal pairs, standard error estimated across *pair means* (`ddof=1`),
+and a two-sided normal-approximation 95% confidence interval.
+
+- The **13 non-Python code generators** use the shared *Park–Miller 16807*
+  31-bit linear congruential RNG with *Box–Muller* normal transforms for
+  deterministic cross-language reproductions. Require integer `seed` in
+  **1..2,147,483,646**; `paths` must be **even, 100..1,000,000**.
+- **Python retains the original NumPy `default_rng` generator**, as in v1.1.0.
+  Consequently **the same seed does not produce the same sample path between
+  Python and the other languages**. Mathematical estimator/discounting/paired
+  confidence interval semantics agree, but numerical estimates only agree
+  statistically. The portable implementation is a reproducible educational
+  RNG, **not cryptographic or suitable for production trading**.
+- Non-Python output order: `[price, paired_se, ci_lower, ci_upper]`.
+  C returns `HyunMCResult` with named members. Python returns its original
+  named dictionary. Invalid input handling varies by language (e.g., exception
+  or NaN result); see generated signatures and comments.
+- Function structure + `iteration=auto` + standard math imports are supported
+  for the 13 portable adapters; class/loop forcing/parameter renaming remain
+  unavailable there. The generated samples use one scalar time-to-maturity
+  transition (no intermediate path trace or American exercise simulation).
+- **125 Python unit/regression/generator tests pass locally.** Real representative
+  source executions for **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin
+  and Go** matched an independent Python implementation of the common portable
+  RNG for 4,000-path sample(s); other toolchains **R, C#, Rust, MATLAB, Julia**
+  were not available for runtime verification. This is source-generation
+  coverage, **not** 345-pair full compiler/numerical certification.
+
+~~~bash
+python -m hyuncalculator --generate DERIV-003 --language C++ --output monte_carlo.cpp
+python -m hyuncalculator --generate DERIV-003 --language Java --output GeneratedCalculator.java
+python -m hyuncalculator --generate DERIV-003 --language Python --output monte_carlo.py
+~~~
+
+### Previously added in alpha.7: Black–Litterman (ALLOC-003)
 
 `ALLOC-003` now generates self-contained source for all 14 languages, with
 **market equilibrium returns**, **posterior expected returns**, and the
@@ -78,7 +116,7 @@ safe function name. Unsupported class architecture, loop-forcing, import packs,
 field renaming and irrelevant formula variants are rejected, not silently ignored.
 
 **Previous alpha.6 verification:** **114 local Python unit/regression/generator tests passed**.
-The current 332 enabled source-generation pairs are covered by generation tests. Representative
+The current 345 enabled source-generation pairs are covered by generation tests. Representative
 C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go generated programs
 were compiled and executed with matching numerical reference values for both
 new Markowitz models. **R, C#, Rust, MATLAB and Julia source files were generated
@@ -93,7 +131,7 @@ GARCH, GBM/OU moments and transaction costs. Other Financial/Quant formulas
 remain exportable to Python; ML/DL/RL, Scientific, Graphing and Programmer
 calculator functionality remains available.
 
-**Not yet complete:** remaining 130 non-Python formula-language pairs, exhaustive
+**Not yet complete:** remaining 117 non-Python formula-language pairs, exhaustive
 462-pair compile/run/numeric verification, advanced algorithm/import choices,
 reusable ZIP project bundles and premium dark UI redesign. See the
 [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md). The creator
@@ -122,7 +160,7 @@ The bilingual Code Generator tab offers formula/language selection, source
 preview, copy and save. Non-supported language/formula combinations are disabled.
 The generated code is **not executed automatically by the UI**.
 The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) describes the
-remaining 130 source-generation combinations, systematic toolchain testing,
+remaining 117 source-generation combinations, systematic toolchain testing,
 advanced model algorithms, output packaging and accessibility goals.
 Existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL calculators
 are preserved.

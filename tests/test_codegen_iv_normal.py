@@ -15,9 +15,9 @@ class PortableInversionAndNormalRiskTests(unittest.TestCase):
     def test_coverage(self):
         fs = catalog()
         self.assertEqual(len(fs),33)
-        self.assertEqual(sum(len(f.supported_languages) for f in fs),332)
-        self.assertEqual(sum(len(f.supported_languages)==14 for f in fs),23)
-        self.assertEqual(sum(len(f.supported_languages)==1 for f in fs),10)
+        self.assertEqual(sum(len(f.supported_languages) for f in fs),345)
+        self.assertEqual(sum(len(f.supported_languages)==14 for f in fs),24)
+        self.assertEqual(sum(len(f.supported_languages)==1 for f in fs),9)
         for fid in NEW_IDS:
             self.assertEqual(set(next(f for f in fs if f.id==fid).supported_languages),set(LANGUAGES))
 
