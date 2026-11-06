@@ -37,9 +37,9 @@ class MonteCarloGeneratorTest(unittest.TestCase):
     def test_registry(self):
         fs=catalog()
         self.assertEqual(len(fs),33)
-        self.assertEqual(sum(len(x.supported_languages) for x in fs),345)
-        self.assertEqual(sum(len(x.supported_languages)==14 for x in fs),24)
-        self.assertEqual(sum(len(x.supported_languages)==1 for x in fs),9)
+        self.assertEqual(sum(len(x.supported_languages) for x in fs),384)
+        self.assertEqual(sum(len(x.supported_languages)==14 for x in fs),27)
+        self.assertEqual(sum(len(x.supported_languages)==1 for x in fs),6)
         self.assertEqual(set(get_formula('DERIV-003').supported_languages),set(LANGUAGES))
 
     def test_emit_all_languages(self):

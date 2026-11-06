@@ -1,10 +1,60 @@
 # HyunCalculator
 
-**v1.2.0-alpha.8** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.9** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.8 — Reproducible Monte Carlo Code Generation (partial implementation)
+## v1.2.0-alpha.9 — Three stochastic path models in 14 languages (partial implementation)
+
+HyunCalculator Formula to Code now exports **all 33 Financial/Quant formulas in Python**,
+and **27/33 formulas in each of the 13 other languages**: **384 / 462**
+formula-language source-generation pairs (**83.1%**). The remaining six
+formulas are Python-only (**78 non-Python pairs**).
+
+New 14-language stochastic path generators (Python support already existed):
+
+- **STOCH-003** — arithmetic Brownian motion, drifted terminal mean and
+  sample standard deviation, and first simulated path.
+- **STOCH-004** — exact-step GBM with theoretical terminal moments, terminal
+  Monte Carlo mean/SD and one complete price trajectory.
+- **STOCH-005** — exact-discretization Ornstein–Uhlenbeck mean reversion,
+  theoretical moments, simulated terminal statistics and one state trajectory.
+
+For **13 non-Python targets**, these standalone implementations use the same
+*Park–Miller 16807 + Box–Muller* generator, traversing paths before time steps;
+the **original Python** implementation retains NumPy `default_rng`, and matching
+seeds **will not produce identical paths across Python and portable targets**.
+Input restrictions: `years >= 0`, integer `steps` 1..5000, integer `paths`
+2..100000, `steps * paths <= 2,000,000`, portable integer `seed` 1..2147483646,
+nonnegative diffusion/volatility, positive GBM spot and positive OU speed.
+Non-Python return contract is a **flat numeric array**:
+`[theory_mean, theory_sd, simulated_mean, simulated_sd, path_at_t0, ..., path_at_tN]`
+(length **steps+5**). C returns a fixed-capacity `HyunPathResult` struct with
+`length=0` on invalid input; other languages use their documented native error
+handling. For non-Python, only function structure, automatic iteration, canonical
+variable names and standard math libraries are currently supported.
+
+**Verification:** **131 local Python unit/regression/codegen tests passed**;
+all 42 new language-formula source outputs were generated. Representative
+standalone samples for **C, C++, JavaScript, TypeScript, Java, Swift and Kotlin**
+compiled/executed and agreed numerically with an independent common-RNG model.
+**Go, R, C#, Rust, MATLAB and Julia generated sources remain runtime-unverified
+in this run** (Go's verification attempt exceeded the environment time limit).
+These are source-generator coverage claims, **not** certification of all
+384 source combinations or all input domains.
+
+~~~bash
+python -m hyuncalculator --generate STOCH-003 --language C++ --output brownian.cpp
+python -m hyuncalculator --generate STOCH-004 --language TypeScript --output gbm.ts
+python -m hyuncalculator --generate STOCH-005 --language Swift --output ou.swift
+~~~
+
+**Still planned:** the remaining six Python-only models across 13 non-Python
+targets, full toolchain/numeric CI, advanced algorithm and import selection,
+complete project ZIP export and premium visual redesign. HyunStudio GitHub Sponsors
+remains **approval pending**; no donation or unverified payment link is active.
+
+### Previous: v1.2.0-alpha.8 — Monte Carlo option code generation
 
 The existing HyunCalculator retains **33 Financial/Quant calculator operations** and
 all previous UI tabs. Formula to Code now emits standalone **Python for 33/33**

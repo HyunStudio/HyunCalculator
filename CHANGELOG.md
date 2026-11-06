@@ -1,5 +1,31 @@
 # Changelog
 
+## v1.2.0-alpha.9 — Brownian / GBM / OU Path Simulation (2026-11-06)
+
+- Added 13 non-Python standalone language adapters for **STOCH-003** arithmetic
+  Brownian motion, **STOCH-004** exact-step GBM and **STOCH-005** exact-step OU
+  path simulation, preserving the existing NumPy-based Python implementations.
+- Both theoretical terminal moments and Monte Carlo terminal mean / sample
+  standard deviation, plus a complete first trajectory, are generated.
+  Portable output is a numeric vector of `steps + 5` items; C returns a
+  `HyunPathResult` struct containing a length and fixed-capacity buffer.
+- 14-language support grows to **27/33 formulas**, **384/462 source-generation
+  pairs (83.1%)**; **6 formulas** remain Python-only (**78 pairs**).
+- The 13 portable languages share Park–Miller 16807 / Box–Muller RNG with
+  path-major sampling order; original Python NumPy `default_rng` remains intact,
+  so matching Python/other-language seeds do not guarantee identical samples.
+  Portable path bounds: steps 1..5000; paths 2..100000; at most 2 million draws;
+  seed 1..2147483646. Function/auto/standard-math-only options for portable paths.
+- **131 local Python automated tests passed** including 42 newly enabled
+  generation combinations, zero-volatility limits, reference parity and
+  unsupported option errors. C/C++/JavaScript/TypeScript/Java/Swift/Kotlin
+  generated examples compiled/ran and matched the independent portable numeric
+  reference. **Go/R/C#/Rust/MATLAB/Julia outputs are runtime-unverified** in this
+  iteration; Go timed out during execution checks.
+- Existing financial/quant/ML/DL/RL calculation functions and pending
+  GitHub Sponsors placeholder remain unchanged. Full 462-way build verification,
+  project export bundles, advanced options and dark UI redesign remain pending.
+
 ## v1.2.0-alpha.8 — Portable Antithetic Monte Carlo in 14 Languages (2026-11-06)
 
 - Implemented `DERIV-003` European Monte Carlo option-price code generation in
