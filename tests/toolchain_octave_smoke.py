@@ -22,7 +22,8 @@ import numpy as np
 
 from hyuncalculator.codegen import GenerationOptions, generate
 from hyuncalculator.finance import irr
-from hyuncalculator.quant import black_scholes
+from hyuncalculator.quant import (black_scholes, normal_probabilities,
+                                  normal_var_es, yield_to_maturity)
 from toolchain_r_csharp_smoke import cases, verify_output
 
 
@@ -62,7 +63,8 @@ def octave_executable():
     return exe
 
 
-def check(exe: str, formula: str, function: str, expected: list[float]):
+def check(exe: str, formula: str, function: str, expected: list[float],
+          *, args: str | None = None):
     with TemporaryDirectory(prefix='hyuncalc_octave_') as tmp:
         root = Path(tmp)
         source_dir = root / 'source'
@@ -73,7 +75,7 @@ def check(exe: str, formula: str, function: str, expected: list[float]):
         # Keep all variable paths under TemporaryDirectory: input fields are
         # fixed, not from user-supplied snippets or external downloads.
         text = ("addpath('source');\n"
-                f"value = {function}({ARGUMENTS[formula]});\n"
+                f"value = {function}({args if args is not None else ARGUMENTS[formula]});\n"
                 "if ~isnumeric(value), error('Expected numeric result'); end\n"
                 "fprintf('HYUN_RESULT ');\n"
                 "fprintf('%.17g ', value(:));\n"
@@ -88,10 +90,58 @@ def check(exe: str, formula: str, function: str, expected: list[float]):
         return verify_output(run.stdout, expected, formula, 'Octave')
 
 
+
+def boundary_cases():
+    """Independent reference values for numerical edge cases, same source ID."""
+    return [
+        ('FIN-006', 'loan', '1200,0,12,12', [100.0, 0.0, 100.0, 0.0]),
+        ('BOND-002', 'ytm', '900,1000,0,3,2',
+         [float(yield_to_maturity(900, 1000, 0, 3, 2))]),
+        ('DERIV-001', 'bs', "100,105,1,0.03,0.2,0,'put'",
+         list(black_scholes(100, 105, 1, .03, .2,
+                            dividend=0, option='put').values())),
+        ('STAT-001', 'normal', '0,0,1,0.01',
+         list(normal_probabilities(0, 0, 1, 0.01).values())),
+        ('RISK-002', 'normal_var', '0.002,0,0.95',
+         list(normal_var_es(.002, 0, .95).values())),
+    ]
+
+
+def rejection_cases():
+    """Wrong inputs must fail with expected formula guard, not a parse error."""
+    return [
+        ('FIN-005', 'calculate_irr', '[-100;230;-132]', 'Multiple IRRs'),
+        ('STAT-001', 'normal', '0,0,0,0.95', 'Invalid normal inputs'),
+        ('FIN-006', 'loan', '1200,-1,12,5', 'Invalid loan inputs'),
+    ]
+
+
+def check_rejection(exe: str, formula: str, function: str, args: str,
+                    required_error: str):
+    with TemporaryDirectory(prefix='hyuncalc_octave_invalid_') as tmp:
+        root = Path(tmp)
+        source_dir = root / 'source'
+        source_dir.mkdir()
+        (source_dir / f'{function}.m').write_text(
+            generate(formula, GenerationOptions(language='MATLAB')),
+            encoding='utf-8')
+        (root / 'check.m').write_text(
+            "addpath('source');\n" + f"value = {function}({args});\n" +
+            "fprintf('UNEXPECTED_SUCCESS');\n", encoding='utf-8')
+        run = subprocess.run([exe, '--quiet', '--no-history', str(root / 'check.m')],
+                             cwd=root, text=True, capture_output=True,
+                             check=False, timeout=95)
+        if run.returncode == 0 or required_error not in run.stderr:
+            raise AssertionError(f'{formula} must reject with {required_error}: '
+                                 f'exit={run.returncode} {run.stderr[-700:]}')
+
+
 def main():
     exe = octave_executable()
     passed, failures = 0, []
     records = all_cases()
+    edge = boundary_cases()
+    rejected = rejection_cases()
     for formula, fn, expected in records:
         try:
             got = check(exe, formula, fn, expected)
@@ -100,8 +150,25 @@ def main():
         except Exception as exc:
             failures.append((formula, str(exc)))
             print(f'FAIL Octave {formula} {exc}', flush=True)
+    for formula, fn, args, expected in edge:
+        try:
+            got = check(exe, formula, fn, expected, args=args)
+            passed += 1
+            print(f'PASS Octave {formula} boundary {got[:3]}', flush=True)
+        except Exception as exc:
+            failures.append((formula, str(exc)))
+            print(f'FAIL Octave {formula} boundary {exc}', flush=True)
+    for formula, fn, args, message in rejected:
+        try:
+            check_rejection(exe, formula, fn, args, message)
+            passed += 1
+            print(f'PASS Octave {formula} invalid-input guard', flush=True)
+        except Exception as exc:
+            failures.append((formula, str(exc)))
+            print(f'FAIL Octave {formula} invalid-input guard {exc}', flush=True)
+    planned = len(records) + len(edge) + len(rejected)
     print(f'OCTAVE NATIVE NUMERIC SUMMARY: {passed} PASS; {len(failures)} FAIL; '
-          f'{len(records)} planned cases', flush=True)
+          f'{planned} planned cases', flush=True)
     if failures:
         raise SystemExit(1)
 
