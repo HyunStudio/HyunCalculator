@@ -149,3 +149,25 @@ jobs:
         env:
           MPLBACKEND: Agg
         run: python tests/toolchain_julia_smoke.py
+
+  octave-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install Python numerical reference dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Install GNU Octave (required, not a MATLAB license)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends octave
+          command -v octave-cli
+          octave-cli --version
+      - name: Execute nine generated MATLAB-compatible numeric models in Octave
+        env:
+          MPLBACKEND: Agg
+        run: python tests/toolchain_octave_smoke.py
