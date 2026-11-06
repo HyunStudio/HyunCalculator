@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.2.0-alpha.7 — Black–Litterman Cross-Language Code Generation (2026-11-06)
+
+- Added `ALLOC-003` `qf_bl` to the 13 non-Python language emitters, completing
+  23/33 formulas in all 14 languages: **332/462 source-generation pairs**;
+  10 formulas / 130 non-Python pairs remain. Python remains 33/33.
+- New dependency-free generated implementations use Cholesky solves to
+  compute equilibrium returns, posterior expected returns, and **predictive
+  covariance**. R, MATLAB and Julia use validated native linear solves.
+- Non-Python return contract is a flat vector of length `2*n+n*n`, with
+  posterior covariance in row-major order. C requires explicitly sized
+  buffers; n/m input dimensions are capped at 128 in standalone adapters.
+- Added tests for 14 emitters, invalid configuration, Python 2-/3-asset
+  numerical parity, and malformed matrix/weight/view inputs. **119 local
+  automated tests passed**.
+- Optional smoke checks compiled/ran real generated source on C, C++,
+  JavaScript, TypeScript, Java, Swift, Kotlin and Go for the representative
+  2-asset/1-view case with Python-reference numeric parity. R, C#, Rust,
+  MATLAB and Julia are **not runtime-verified** by this run.
+- Preserved existing Financial/Quant/Scientific/Graphing/Programmer/ML/DL/RL
+  functionality. Sponsor profile is still **pending approval**; no payment
+  button or unverified sponsor URL is active.
+
 ## v1.2.0-alpha.6 — Markowitz GMV and Target-Return Multilingual Export (2026-11-06)
 
 - Added **ALLOC-001** global minimum variance and **ALLOC-002** Markowitz minimum variance with target return in **13 additional languages**, preserving the existing standalone Python implementations. Finite symmetric SPD covariance validation and Cholesky/linear-solve implementation are used; short positions are permitted, and no leverage/long-only constraints are imposed.

@@ -15,9 +15,9 @@ class ExpandedPortableCodegenTests(unittest.TestCase):
     def test_full_coverage_matrix(self):
         formulas=catalog()
         self.assertEqual(len(formulas),33)
-        self.assertEqual(sum(len(f.supported_languages) for f in formulas),319)
+        self.assertEqual(sum(len(f.supported_languages) for f in formulas),332)
         self.assertEqual(sum('Python' in f.supported_languages for f in formulas),33)
-        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),22)
+        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),23)
         for fid in NEW_IDS:
             f=next(f for f in formulas if f.id==fid)
             self.assertEqual(set(f.supported_languages),set(LANGUAGES))

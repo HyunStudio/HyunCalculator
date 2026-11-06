@@ -1,20 +1,54 @@
 # HyunCalculator
 
-**v1.2.0-alpha.6** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.7** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.6 — Markowitz Allocation Code Generation (partial implementation)
+## v1.2.0-alpha.7 — Black–Litterman Code Generation (partial implementation)
 
 The existing HyunCalculator retains **33 Financial/Quant calculator operations** and
 all previous UI tabs. Formula to Code now emits standalone **Python for 33/33**
-formulas and source for **22/33 formulas in all 14 target languages**: Python,
+formulas and source for **23/33 formulas in all 14 target languages**: Python,
 R, C, C++, JavaScript, TypeScript, Java, C#, Swift, Kotlin, Go, Rust, MATLAB,
-and Julia. This is **319 of 462 source-generation pairs (69.0%)**; **11 formulas
-remain Python-only**, with **143 non-Python pairs still to implement**.
+and Julia. This is **332 of 462 source-generation pairs (71.9%)**; **10 formulas
+remain Python-only**, with **130 non-Python pairs still to implement**.
 Unsupported language/formula and advanced-option combinations fail explicitly.
 
-### Newly available in 14 languages
+### New in alpha.7: Black–Litterman (ALLOC-003)
+
+`ALLOC-003` now generates self-contained source for all 14 languages, with
+**market equilibrium returns**, **posterior expected returns**, and the
+**posterior predictive covariance matrix**, preserving the existing
+`hyuncalculator.quant.black_litterman` model.
+
+- Required inputs: symmetric positive-definite `cov` (n × n), market weights
+  summing to approximately 1, positive risk aversion `delta` and prior scale
+  `tau`, view matrix `p` (m × n), view returns `q` (m), and strictly positive
+  diagonal view variances `omega` (m). Standalone non-Python versions limit
+  2 ≤ n ≤ 128 assets and 1 ≤ m ≤ 128 views.
+- Non-Python output is a **flat numeric vector of length `2*n + n*n`**:
+  `[prior(n), posterior(n), posterior predictive covariance (n*n, row-major)]`.
+  Python retains the calculator's **named dictionary** output. C uses flat
+  row-major input arrays and a **caller-owned output buffer** of sufficient
+  length, returning `0` on success and `-1` on failure; Go returns `nil`,
+  Rust returns `Result`, and Swift throws on invalid inputs.
+- No matrix inversion is used in generated C/C++/JS/TS/Java/C#/Swift/Kotlin/Go/Rust;
+  triangular Cholesky solves compute the posterior. R/MATLAB/Julia use
+  built-in SPD-validated linear solves. Only the function/automatic iteration
+  and standard import profile is supported for non-Python export.
+- The **119 automated local tests pass**. Representative C, C++, JavaScript,
+  TypeScript, Java, Swift, Kotlin and Go generated programs compiled or ran
+  successfully and matched the Python reference for the 2-asset/1-view
+  example. R, C#, Rust, MATLAB and Julia are **generated but NOT
+  runtime-verified** here. Larger inputs, alternative view matrices, platform
+  differences and non-Python edge cases require more testing.
+
+~~~bash
+python -m hyuncalculator --generate ALLOC-003 --language Java --output GeneratedCalculator.java
+python -m hyuncalculator --generate ALLOC-003 --language C++ --output bl.cpp
+~~~
+
+### Previously available in 14 languages — Markowitz allocation
 
 | Formula ID | Model | Computation and restrictions |
 | --- | --- | --- |
@@ -43,8 +77,8 @@ returns `nil` for invalid inputs. Check the generated signature before use.
 safe function name. Unsupported class architecture, loop-forcing, import packs,
 field renaming and irrelevant formula variants are rejected, not silently ignored.
 
-**Verification:** **114 local Python unit/regression/generator tests passed**.
-All 319 source-generation pairs are covered by generation tests. Representative
+**Previous alpha.6 verification:** **114 local Python unit/regression/generator tests passed**.
+The current 332 enabled source-generation pairs are covered by generation tests. Representative
 C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go generated programs
 were compiled and executed with matching numerical reference values for both
 new Markowitz models. **R, C#, Rust, MATLAB and Julia source files were generated
@@ -59,7 +93,7 @@ GARCH, GBM/OU moments and transaction costs. Other Financial/Quant formulas
 remain exportable to Python; ML/DL/RL, Scientific, Graphing and Programmer
 calculator functionality remains available.
 
-**Not yet complete:** remaining 143 non-Python formula adapters, exhaustive
+**Not yet complete:** remaining 130 non-Python formula-language pairs, exhaustive
 462-pair compile/run/numeric verification, advanced algorithm/import choices,
 reusable ZIP project bundles and premium dark UI redesign. See the
 [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md). The creator
@@ -88,7 +122,7 @@ The bilingual Code Generator tab offers formula/language selection, source
 preview, copy and save. Non-supported language/formula combinations are disabled.
 The generated code is **not executed automatically by the UI**.
 The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) describes the
-remaining 143 source-generation combinations, systematic toolchain testing,
+remaining 130 source-generation combinations, systematic toolchain testing,
 advanced model algorithms, output packaging and accessibility goals.
 Existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL calculators
 are preserved.
