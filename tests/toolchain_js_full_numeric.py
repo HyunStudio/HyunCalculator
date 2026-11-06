@@ -18,6 +18,8 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from hyuncalculator.codegen import GenerationOptions, generate
+from hyuncalculator.codegen.registry import catalog
+from toolchain_ci_smoke import selected_cases
 from hyuncalculator.quant import (
     normal_probabilities, covariance_correlation, bond_metrics, risk_metrics,
     ewma_volatility, backtest_single_asset,
@@ -111,6 +113,15 @@ def check_invalid(formula_id, call):
 def main():
     if not shutil.which('node'):
         raise RuntimeError('Required Node.js runtime missing; no silent skip')
+    # Ensure combined native/JS numerical test IDs cover the entire catalog.
+    common = [name for name, _ in selected_cases()]
+    remaining = [entry[0] for entry in CASES]
+    all_ids = common + remaining
+    registered = {formula.id for formula in catalog()}
+    if (len(common) != 27 or len(remaining) != 6 or
+            len(all_ids) != 33 or len(set(all_ids)) != 33 or
+            set(all_ids) != registered):
+        raise AssertionError('Numerical smoke catalog is incomplete, duplicated or stale')
     numeric = 0
     rejects = 0
     fail = []

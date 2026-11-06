@@ -30,11 +30,8 @@ from toolchain_mc_smoke import run_one as mc_check
 TOOLS = {'C': 'gcc', 'C++': 'g++', 'JavaScript': 'node'}
 
 
-def run_all() -> int:
-    for language, executable in TOOLS.items():
-        if not shutil.which(executable):
-            raise RuntimeError(f'Required CI toolchain not installed: {language} ({executable})')
-    cases = (
+def selected_cases():
+    return (
         ('FIN-001', lambda lang: scalar_check(lang, 'FIN-001', 'fv', 1628.894626777442)),
         ('FIN-002', lambda lang: scalar_check(lang, 'FIN-002', 'pv', SCALAR_CASES[1][3])),
         ('FIN-003', lambda lang: scalar_check(lang, 'FIN-003', 'pmt', SCALAR_CASES[2][3])),
@@ -64,6 +61,13 @@ def run_all() -> int:
         ('STOCH-004', lambda lang: stochastic_check(lang, 'STOCH-004')),
         ('STOCH-005', lambda lang: stochastic_check(lang, 'STOCH-005')),
     )
+
+
+def run_all() -> int:
+    for language, executable in TOOLS.items():
+        if not shutil.which(executable):
+            raise RuntimeError(f'Required CI toolchain not installed: {language} ({executable})')
+    cases = selected_cases()
     if len(cases) != 27 or len({name for name, _ in cases}) != len(cases):
         raise AssertionError('Expected 27 distinct numerical formula cases')
     checks = 0
