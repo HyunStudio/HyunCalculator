@@ -6,6 +6,17 @@ An integrated scientific, graphing, financial, quantitative finance, programmer 
 
 ## v1.2.0-alpha.12 — Deterministic standalone ZIP project export
 
+**Native compiler CI:** The automated GitHub Actions workflow now runs
+**11 representative formulas × 3 available toolchains (C, C++, JavaScript) =
+33 independent compile/execute/numeric comparison cases**. All 33 cases
+passed in the initial run, alongside 150 Python tests on each of Python
+3.11 and 3.12. The 11 formulas covered by this particular CI job are
+FIN-001, FIN-005, FIN-006, PORT-001, DERIV-001, ALLOC-001,
+ALLOC-003, RISK-001, TS-003, STOCH-003 and BOND-002. These are
+**33 verified sample combinations out of 462**, not every formula/input
+edge case or full 14-language runtime certification. Other existing
+optional smoke scripts remain available for more languages.
+
 The Formula to Code GUI now includes **Project ZIP / 프로젝트 ZIP**, and the
 CLI supports `--generate FORMULA_ID --language LANGUAGE --bundle OUTPUT.zip`.
 

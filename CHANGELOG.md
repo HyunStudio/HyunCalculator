@@ -2,6 +2,12 @@
 
 ## v1.2.0-alpha.12 — Reproducible ZIP Exports (2026-11-06)
 
+- New required GitHub Actions `native-smoke` job compiles/executes
+  **11 representative models × C/C++/JavaScript = 33 cases**, comparing
+  numeric outputs with reference values. First run **33 PASS / 0 FAIL**.
+  The Python 3.11 and 3.12 CI jobs each passed 150 tests. This is limited
+  runtime coverage, not a blanket claim for 462 combinations.
+
 - Added deterministic `bundle_bytes()` ZIP export for all 462 generated source
   profiles, including source, raw example fields, option manifest with SHA-256,
   offline integrity test, README and language dependency/compilation hints.

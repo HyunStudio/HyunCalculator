@@ -9,6 +9,14 @@
 
 ### Implementation status — 2026-11-06 (v1.2.0-alpha.12)
 
+- **Required native CI smoke:** GitHub Actions now compiles, runs and
+  numerically checks **11 representative models on C, C++ and JavaScript**,
+  **33 / 33 successful sample cases** in run 42170293814. The Python
+  3.11 and 3.12 jobs each passed **150 tests**. This is explicitly a
+  **limited 33-case numerical subset**, not full 462-pair runtime
+  verification. Future matrices should add more language compilers and
+  diverse mathematical edge cases.
+
 - **Source emission matrix:** still **462/462** (33 Financial/Quant formulas × 14 languages). This does not establish all combinations are compiler/runtime or numerically verified.
 - **Project ZIP implementation:** CLI `--generate FORMULA_ID --language TARGET --bundle OUTPUT.zip`, GUI **Project ZIP** action, pure in-memory deterministic `bundle_bytes`. Fixed safe archive paths; Java source basename honors public class rules; no downloaded/untrusted content is executed.
 - **Bundle contents:** generated source, SHA-256 source digest and generator options in manifest, raw input field examples (not golden expected values), README/toolchain hints, Python import-based NumPy/SciPy requirements and minimal JS/TS/Go/C# project metadata when relevant.
