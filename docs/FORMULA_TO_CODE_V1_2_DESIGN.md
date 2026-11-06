@@ -1,23 +1,23 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.7)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.8)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.7)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.8)
 
-- **Source-generation coverage:** **332 / 462 (71.9%)** formula-language pairs. Python remains **33/33**. Each of the other 13 languages supports **23/33**, leaving **10 Python-only formulas and 130 non-Python pairs**.
-- **New ALLOC-003:** Black–Litterman posterior portfolio views in all 14 languages, preserving the existing prior equilibrium return, posterior expected return, and posterior predictive covariance from `hyuncalculator.quant.black_litterman`. The non-Python return layout is flat **[prior(n), posterior(n), predictive_cov(n*n row-major)]**, unlike the Python reference's named dictionary.
-- **Numerical approach:** all newly generated native-language versions use SPD checks and linear-system solves (Cholesky/triangular solves for C/C++/JS/TS/Java/C#/Swift/Kotlin/Go/Rust; SPD-validated native solves for R/MATLAB/Julia), and validate market-weight sum, risk aversion, tau, view dimensions and positive uncertainty variances. Non-Python generators cap n,m at 128 to limit standalone memory/compute requirements.
-- **Verified:** **119 local automated Python/regression/codegen tests** pass; standalone generated C/C++/JavaScript/TypeScript/Java/Swift/Kotlin/Go examples compile/execute and match the reference posterior and predictive covariance in a representative 2-asset/1-view case. Python output also tested for 2-/3-asset cases with malformed-input rejection.
-- **Unverified:** emitted R, C#, Rust, MATLAB and Julia sources are **not runtime-verified** in the available environment; other parameter ranges and edge cases in generated non-Python outputs also require further testing. Generated source does **not** imply cross-language runtime/numeric certification.
-- **Options:** in non-Python adapters Black–Litterman is function-only, auto loop selection, automatic/standard imports and canonical variable names; unsupported combinations fail explicitly.
-- **Pending:** 130 remaining non-Python source-generation pairs, systematic 462-way build/numerical CI, advanced library/algorithm options, complete source+tests ZIP exports, dark UI and accessibility finishing.
-- **Sponsors:** HyunStudio GitHub Sponsors remains **approval pending**; no donation button or unverified payment link activated.
-- This document remains an implementation roadmap, not a declaration of completed v1.2.0. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Source-generation coverage:** **345 / 462 (74.7%)** formula-language pairs. Python: **33/33**; each of 13 other languages: **24/33**. The remaining **9 Python-only formulas / 117 non-Python combinations** are still to implement.
+- **New DERIV-003:** European vanilla call/put Monte Carlo option pricing across all 14 target languages. It generates antithetic GBM terminal-price samples, discounted option payoffs, pair-mean standard errors (sample ddof=1), and normal-approximation 95% CIs.
+- **RNG contract:** Python export still extracts the existing NumPy `default_rng` implementation, preserving the original calculator. All **13 non-Python** emitters use one shared reproducible Park–Miller 16807 31-bit PRNG plus Box–Muller normal draws. **The same seed across Python and other languages does not give identical paths or prices.** Non-Python versions require integer seed `1..2147483646`, even paths `100..1000000`; standard math operations only. This PRNG is educational, not cryptographic.
+- **Output contract:** non-Python array-like outputs are `[estimated_price, paired_standard_error, lower_95, upper_95]`; C uses a named `HyunMCResult` struct. Python retains named dictionary results. Different runtimes use different invalid-input signaling (errors, NaNs); no common cross-language exception type is promised.
+- **Validation:** **125 local automated Python tests** pass, and all **345 currently enabled source-generation pairs** emit nonempty code. Independent portable RNG reference plus representative Monte Carlo generated source samples compiled/ran on **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin, Go** with numerical parity for tested seeds/path counts. **R, C#, Rust, MATLAB, Julia** were generated but could not be runtime-tested here. A full 345-pair compiler/numerical matrix has **not** been completed.
+- **Current restrictions:** the new non-Python MC profiles allow function architecture, automatic iteration, canonical variables, and standard math imports only. Advanced structure/library options and intermediate multi-step paths remain future work.
+- **Remaining:** 117 non-Python code-generation pairs (9 formulas), systematic 462-pair runtime verification, advanced algorithms/import selection, ZIP source/testing bundles, premium dark UI/UX.
+- **Sponsors:** HyunStudio GitHub Sponsors profile remains approval-pending; no donation/payment controls or unverified PayPal URLs are activated.
+- This document continues to define the full v1.2.0 target state, not a claim of feature completion. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -300,4 +300,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.7은 Python 33개 및 나머지 13개 언어 각각 23개 모델에서 **332/462개 코드 생성 조합(71.9%)**을 제공한다. 남은 **130개 비Python 조합**, 완전한 언어별 수치 검증, 고급 라이브러리·알고리즘 옵션, UI/UX 전면 적용은 후속 개발 대상이다. HyunStudio Sponsors는 승인 대기 상태를 유지한다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.8은 Python 전체 33개 수식과 나머지 13개 언어 각각 24개 수식, 총 **345/462 코드 생성 조합(74.7%)**을 제공한다. **117개 비Python 조합**과 전 언어별 완전한 컴파일·수치 검증, 고급 옵션, 프로젝트 내보내기 및 프리미엄 UI는 아직 개발 중이다. GitHub Sponsors는 승인 대기를 유지한다.
