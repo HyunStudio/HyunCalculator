@@ -1,31 +1,21 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.13)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.14)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.13)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.14)
 
-- **Latest required CI evidence (run 42171893846):** Python 3.11/3.12
-  **154/154 unit tests each**, Xvfb/Tk ten-tab accessibility smoke **passed**,
-  C/C++/JavaScript **33/33 numerical cases** and generated Rust **6/6
-  compiled/executed numeric cases**. Rust cases: FIN-001, FIN-005, FIN-006,
-  RISK-002, STOCH-001 and BOND-002. The total **39 native cases** are selected
-  representative inputs, not exhaustive per-language code certification.
-  R, C#, MATLAB/Octave, Julia and many other pairs still require runtime
-  checks and edge-case parity testing.
-
-- **Code generation:** 33 Financial/Quant formulas × 14 languages = **462/462 emitted source combinations**; this remains incomplete compiler/runtime certification.
-- **Visual accessibility pass:** live dark, light and high-contrast theme selection. Tk controls, code editor, listboxes, result fields and Matplotlib chart labels/grids use a coordinated readable color palette with >=7:1 foreground/background contrast in core text surfaces.
-- **Text scaling and keyboard:** 100%, 125% (default), 150%, 175% font-size presets, Ctrl +/−/0 shortcuts and Alt+Shift+H high-contrast toggle. Persistent optional local `~/.hyuncalculator/appearance.json` settings, validated JSON and atomic writes.
-- **Testing:** no-display color contrast/preference validation tests and a separate Xvfb Tk GUI smoke covering all 10 tabs, live theme/font changes, non-compounding sizes, and persistence. This is a practical UI regression test, NOT screen-reader or all-display accessibility certification.
-- **Previous CI evidence:** Python 3.11/3.12 each ran 150 tests, and 11 selected models × C/C++/JS provided 33/33 numeric smoke passes. New appearance tests add to the Python suite. R/C#/Rust/MATLAB/Julia and many other emitted codes still lack representative native runtime validation.
-- **Remaining:** broaden toolchain/numeric verification, advanced code generator options, WCAG and assistive technology acceptance testing, responsive layout refinements at 175% and full premium GUI polish.
-- **Sponsors:** GitHub Sponsors remains pending approval; no payment button/URL until verified.
-- This alpha is not a release-quality declaration.
+- **Source-generation coverage:** 462/462 formula-language combinations (33 registered formulas × 14 targets). Coverage is **generation**, not runtime/numerical certification.
+- **Additional runtime CI:** selected native-generated code now compiles/runs and is numerically checked in seven languages: **C, C++, JavaScript (33 cases across 11 formulas), Rust (6), R (6), C#/.NET 8 (6), and Julia (6)**. Total **57/57 representative native samples passed**, with no silent skipping when a required interpreter is missing. The six new R/C#/Julia cases cover FIN-001, FIN-006, RISK-002, STAT-001, RISK-003, BOND-002.
+- **GUI accessibility improvement:** code generator option selections arranged in a 3+2 grid, action buttons on a separate line, and class/rename inputs in two rows. At **175% text zoom** in a **1200px** window, GUI smoke verifies that all four codegen actions fit within the viewport. `Ctrl+PageUp/PageDown` cycles tabs.
+- **CI regression evidence:** latest workflow run 42173573976 completed successfully for Python 3.11, Python 3.12, native C/C++/JavaScript, Rust, R, C#, Julia, and Xvfb GUI jobs. All tests use the original calculation engine's numerical references.
+- **Limitations:** MATLAB/Octave not yet run; 57 selected native smoke cases are a small fraction of 462 generated source combinations, do not cover all input edge conditions and do not imply complete portability. Screen readers, reduced 1100px windows, user acceptance and advanced codegen controls require further work.
+- **Sponsors:** approval still pending; no active donation/payment link until destination is verified.
+- Release remains in the alpha series. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -308,4 +298,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.13은 462/462 소스 생성, 독립 ZIP 프로젝트 내보내기와 함께 다크·라이트·고대비 테마 및 100~175% 글꼴 확대를 지원한다. 전체 언어 수치 검증과 스크린리더·반응형 접근성 검수는 진행 중이며 Sponsors 승인 전 결제 버튼은 비활성 상태다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.14는 462개 소스 생성 조합과 ZIP 내보내기를 유지하며, C·C++·JavaScript·Rust·R·C#·Julia의 **대표 수치 검증 57/57개**가 성공했다. 코드 생성기 화면의 175% 확대 시 버튼 배치를 개선했고 키보드 탭 이동을 추가했다. 전체 조합 실행 검증, MATLAB/Octave 및 플랫폼별 접근성 테스트는 미완료이며 GitHub Sponsors는 승인 대기 상태다.

@@ -1,8 +1,40 @@
 # HyunCalculator
 
-**v1.2.0-alpha.13** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.14** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.14 — R/C#/Julia Numerical CI and Responsive Codegen Controls
+
+The source generator continues to cover **462/462 Financial/Quant
+formula-language combinations**. The mandatory GitHub Actions workflow now
+runs **57 representative native numerical cases across seven languages**:
+33 C/C++/JavaScript sample cases (11 formula IDs each), six Rust cases,
+plus **six R, six C# (.NET 8) and six Julia** cases. Generated source is
+actually compiled/interpreted and its numerical output is compared against
+the existing Python reference functions. On initial verification, all
+**57/57 native cases** passed. Python 3.11 and 3.12 unit tests and the
+Xvfb GUI accessibility smoke also passed.
+
+The R, C# and Julia checks cover the same six representative functions:
+FIN-001 future value, FIN-006 loan amortization, RISK-002 normal VaR/ES,
+STAT-001 normal probabilities, RISK-003 risk-performance metrics, and
+BOND-002 yield to maturity. Each runtime is required in its own CI job;
+a missing interpreter/compiler causes failure, never a false PASS.
+The CI scripts are in `tests/toolchain_r_csharp_smoke.py` and
+`tests/toolchain_julia_smoke.py`.
+
+**Accessibility layout:** the code-generator options now use a reflowed
+3+2 grid; source actions and class/rename fields occupy separate rows.
+A GUI smoke asserts Generate/Copy/Save/ZIP buttons remain visible at
+**175% text size in a 1200px-wide desktop window**. Use
+`Ctrl+PageDown`/`Ctrl+PageUp` to navigate the ten calculator tabs.
+These tests do not certify all screen readers or display settings.
+
+**Not yet verified:** MATLAB/Octave execution; the entire 462-pair
+compiler/numeric matrix, diverse edge cases, all platform-specific
+accessibility behavior, and advanced class/algorithm/import controls.
+No real GitHub Sponsors payment link is enabled pending account approval.
 
 ## v1.2.0-alpha.13 — Dark, Light, High-Contrast & Large-Text Accessibility Pass
 

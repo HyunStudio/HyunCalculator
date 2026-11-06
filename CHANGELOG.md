@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.0-alpha.14 — R/C#/Julia CI and 175% GUI Reflow (2026-11-06)
+
+- Added required GitHub Actions jobs running generated **R, C# (.NET 8)
+  and Julia** source code against Python numerical references, six model
+  samples in each language. Missing runtimes cause CI failure.
+- Source-generation coverage remains **462/462**. Mandatory native smoke
+  totals **57/57 verified representative cases** across C, C++, JavaScript,
+  Rust, R, C# and Julia. Latest Python 3.11 and 3.12 regressions, and
+  the 10-tab Tk/Xvfb accessibility test, also passed.
+- Restructured the code-generation controls to avoid horizontal overflow:
+  a 3+2 options grid, separate action-button row and vertically stacked
+  class/rename fields. 175% zoom with a 1200px window is tested.
+- Added `Ctrl+PageUp` and `Ctrl+PageDown` tab cycling.
+- MATLAB/Octave, full 462-pair numerical compiler matrix, complete screen
+  reader testing and advanced generator options are still outstanding.
+- Sponsors remains pending approval; donation links are not activated.
+
 ## v1.2.0-alpha.13 — Accessible Desktop Themes (2026-11-06)
 
 - Added mandatory CI for 6 generated **Rust** numerical code samples,
