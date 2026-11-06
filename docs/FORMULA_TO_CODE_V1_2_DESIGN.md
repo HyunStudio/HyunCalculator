@@ -1,23 +1,22 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.8)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.9)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.8)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.9)
 
-- **Source-generation coverage:** **345 / 462 (74.7%)** formula-language pairs. Python: **33/33**; each of 13 other languages: **24/33**. The remaining **9 Python-only formulas / 117 non-Python combinations** are still to implement.
-- **New DERIV-003:** European vanilla call/put Monte Carlo option pricing across all 14 target languages. It generates antithetic GBM terminal-price samples, discounted option payoffs, pair-mean standard errors (sample ddof=1), and normal-approximation 95% CIs.
-- **RNG contract:** Python export still extracts the existing NumPy `default_rng` implementation, preserving the original calculator. All **13 non-Python** emitters use one shared reproducible Park–Miller 16807 31-bit PRNG plus Box–Muller normal draws. **The same seed across Python and other languages does not give identical paths or prices.** Non-Python versions require integer seed `1..2147483646`, even paths `100..1000000`; standard math operations only. This PRNG is educational, not cryptographic.
-- **Output contract:** non-Python array-like outputs are `[estimated_price, paired_standard_error, lower_95, upper_95]`; C uses a named `HyunMCResult` struct. Python retains named dictionary results. Different runtimes use different invalid-input signaling (errors, NaNs); no common cross-language exception type is promised.
-- **Validation:** **125 local automated Python tests** pass, and all **345 currently enabled source-generation pairs** emit nonempty code. Independent portable RNG reference plus representative Monte Carlo generated source samples compiled/ran on **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin, Go** with numerical parity for tested seeds/path counts. **R, C#, Rust, MATLAB, Julia** were generated but could not be runtime-tested here. A full 345-pair compiler/numerical matrix has **not** been completed.
-- **Current restrictions:** the new non-Python MC profiles allow function architecture, automatic iteration, canonical variables, and standard math imports only. Advanced structure/library options and intermediate multi-step paths remain future work.
-- **Remaining:** 117 non-Python code-generation pairs (9 formulas), systematic 462-pair runtime verification, advanced algorithms/import selection, ZIP source/testing bundles, premium dark UI/UX.
-- **Sponsors:** HyunStudio GitHub Sponsors profile remains approval-pending; no donation/payment controls or unverified PayPal URLs are activated.
-- This document continues to define the full v1.2.0 target state, not a claim of feature completion. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Generation coverage:** **384 / 462 (83.1%) source combinations**. Python **33/33**; each other language **27/33**. **6 Python-only formulas / 78 non-Python pairs** remain.
+- **New STOCH-003/004/005:** Arithmetic Brownian motion, exact-step GBM and exact-transition OU mean-reverting simulations now emit source for all **14 target languages**. Each returns theoretical terminal mean/standard deviation, simulated terminal sample mean/standard deviation and first example path.
+- **Portable contract:** The **13 non-Python languages** use Park–Miller 16807 / Box–Muller PRNG with path-major traversal. Source is standalone and includes fixed parameter validation. Return layout is numeric vector **[theory_mean, theory_sd, sim_mean, sim_sd, path(t0)..path(tN)]** of length `steps+5`. C uses a `HyunPathResult` struct with a fixed-size buffer and `length=0` to indicate invalid inputs. Portable bounds: years>=0, steps 1..5000, paths 2..100000, steps*paths<=2,000,000, seed 1..2147483646. Python original code retains NumPy default_rng and uses a different RNG stream.
+- **Verification:** **131 local Python automated tests passed**, 42 new language/formula emissions covered by tests. Generated example programs for **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin** compiled/ran and agreed with independently implemented portable RNG path statistics and complete first paths. **Go** execution test timed out; **Go, R, C#, Rust, MATLAB, Julia** outputs are not reported runtime-verified in this iteration. Full 384-pair build/numerical coverage is still outstanding.
+- **Options:** new non-Python path generators support function only, automatic iteration, fixed canonical parameters and standard imports. Class / forced-loop / arbitrary variable renaming / numerical library choices are refused until audited.
+- **Remaining:** 78 non-Python source-generation pairs (FIN-005/006, STAT-001/002, RISK-003, STRAT-002), full 462-pair runtime validation, advanced generator controls, complete project ZIP export, premium dark/accessible UI overhaul.
+- **Sponsorship:** HyunStudio GitHub Sponsors stays **pending approval**; payment/donation controls remain inactive and no unverified PayPal link is published.
+- This document continues to specify a full planned release and partial alpha progress; do not describe v1.2.0 as complete. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -300,4 +299,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.8은 Python 전체 33개 수식과 나머지 13개 언어 각각 24개 수식, 총 **345/462 코드 생성 조합(74.7%)**을 제공한다. **117개 비Python 조합**과 전 언어별 완전한 컴파일·수치 검증, 고급 옵션, 프로젝트 내보내기 및 프리미엄 UI는 아직 개발 중이다. GitHub Sponsors는 승인 대기를 유지한다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.9은 Python 33개와 다른 13개 언어 각각 27개, 총 **384/462개 코드 생성 조합(83.1%)**을 제공한다. 나머지 6개 수식에 해당하는 **78개 비Python 생성 조합**과 전 언어 컴파일·수치 검증, 고급 옵션 및 UI/UX 전면 적용은 개발 중이다. GitHub Sponsors는 승인 대기 상태를 유지한다.
