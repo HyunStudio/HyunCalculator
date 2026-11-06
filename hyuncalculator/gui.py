@@ -332,6 +332,15 @@ def run_gui(initial_language: str='ko', *, start_mainloop: bool=True,
     root.bind_all('<Control-0>',lambda _e: (size_choice.set('100%'),apply_preferences(),'break')[-1])
     root.bind_all('<Alt-Shift-h>',toggle_contrast)
 
+    def cycle_tab(direction):
+        current=notebook.index('current')
+        notebook.select((current+direction)%notebook.index('end'))
+        return 'break'
+
+    root.bind_all('<Control-Next>',lambda _event:cycle_tab(1))
+    root.bind_all('<Control-Prior>',lambda _event:cycle_tab(-1))
+    root.hyuncalculator_cycle_tab=cycle_tab
+
     # Public GUI inspection handles for display smoke tests, not a network API.
     root.hyuncalculator_theme_choice=theme_choice
     root.hyuncalculator_size_choice=size_choice
@@ -368,42 +377,61 @@ class CodeGeneratorTab:
                               width=65,state='readonly',font=('Malgun Gothic',11))
         selector.pack(side='left',fill='x',expand=True)
         selector.bind('<<ComboboxSelected>>',lambda _e:self._selection_changed())
-        options=ttk.Frame(self.frame);options.grid(row=3,column=0,sticky='ew',pady=(0,9))
+        options=ttk.Frame(self.frame)
+        options.grid(row=3,column=0,sticky='ew',pady=(0,9))
         self.target=tk.StringVar(value='Python')
         self.structure=tk.StringVar(value='function')
         self.loop=tk.StringVar(value='auto')
         self.imports=tk.StringVar(value='auto')
         self.variant=tk.StringVar(value='periodic')
-        for label,var,values,width in [
+        # Compact 3+2 grid prevents overflow at 175% text scale.
+        option_items=[
             ('Language / 언어',self.target,LANGUAGES,13),
             ('Structure / 구조',self.structure,('function','class'),10),
             ('Iteration / 반복',self.loop,('auto','for','while'),9),
             ('Imports',self.imports,('auto','standard'),10),
             ('FV variant',self.variant,('periodic','continuous'),13),
-        ]:
-            box=ttk.Frame(options);box.pack(side='left',padx=(0,13))
+        ]
+        for i,(label,var,values,width) in enumerate(option_items):
+            box=ttk.Frame(options)
+            box.grid(row=i//3,column=i%3,sticky='w',padx=(0,18),pady=(0,8))
             ttk.Label(box,text=label).pack(anchor='w')
-            combo=ttk.Combobox(box,textvariable=var,values=values,state='readonly',width=width)
-            combo.pack(anchor='w',pady=(4,0))
-        fn_row=ttk.Frame(self.frame);fn_row.grid(row=4,column=0,sticky='ew',pady=(0,9))
-        ttk.Label(fn_row,text='Function name / 함수명').pack(side='left',padx=(0,8))
+            ttk.Combobox(box,textvariable=var,values=values,state='readonly',
+                         width=width).pack(anchor='w',pady=(4,0))
+        fn_row=ttk.Frame(self.frame)
+        fn_row.grid(row=4,column=0,sticky='ew',pady=(0,9))
+        name_row=ttk.Frame(fn_row)
+        name_row.pack(fill='x',pady=(0,6))
+        ttk.Label(name_row,text='Function name / 함수명').pack(side='left',padx=(0,8))
         self.fn=tk.StringVar(value='fv')
         self.class_name=tk.StringVar(value='GeneratedCalculator')
         self.renames=tk.StringVar(value='')
-        ttk.Entry(fn_row,textvariable=self.fn,width=32,font=('Consolas',12)).pack(side='left',padx=(0,10))
-        self.generate_btn=ttk.Button(fn_row,command=self.preview)
-        self.generate_btn.pack(side='left',padx=4)
-        self.copy_btn=ttk.Button(fn_row,command=self.copy)
-        self.copy_btn.pack(side='left',padx=4)
-        self.save_btn=ttk.Button(fn_row,command=self.save)
-        self.save_btn.pack(side='left',padx=4)
-        self.bundle_btn=ttk.Button(fn_row,command=self.save_bundle)
-        self.bundle_btn.pack(side='left',padx=4)
-        row=ttk.Frame(self.frame);row.grid(row=5,column=0,sticky='ew',pady=(0,8))
-        ttk.Label(row,text='Class / 클래스명').pack(side='left',padx=(0,8))
-        ttk.Entry(row,textvariable=self.class_name,width=25).pack(side='left',padx=(0,20))
-        ttk.Label(row,text='Rename variables / 변수명 (e.g. pv=principal,rate=r)').pack(side='left',padx=(0,8))
-        ttk.Entry(row,textvariable=self.renames,width=35).pack(side='left',fill='x',expand=True)
+        ttk.Entry(name_row,textvariable=self.fn,width=30,
+                  font=('Consolas',12)).pack(side='left',padx=(0,10))
+        action_row=ttk.Frame(fn_row)
+        action_row.pack(fill='x')
+        self.generate_btn=ttk.Button(action_row,command=self.preview)
+        self.generate_btn.pack(side='left',padx=(0,8))
+        self.copy_btn=ttk.Button(action_row,command=self.copy)
+        self.copy_btn.pack(side='left',padx=(0,8))
+        self.save_btn=ttk.Button(action_row,command=self.save)
+        self.save_btn.pack(side='left',padx=(0,8))
+        self.bundle_btn=ttk.Button(action_row,command=self.save_bundle)
+        self.bundle_btn.pack(side='left',padx=(0,8))
+        row=ttk.Frame(self.frame)
+        row.grid(row=5,column=0,sticky='ew',pady=(0,8))
+        class_row=ttk.Frame(row)
+        class_row.pack(fill='x',pady=(0,6))
+        ttk.Label(class_row,text='Class / 클래스명').pack(side='left',padx=(0,8))
+        ttk.Entry(class_row,textvariable=self.class_name,width=25).pack(side='left')
+        rename_row=ttk.Frame(row)
+        rename_row.pack(fill='x')
+        ttk.Label(rename_row,
+                  text='Rename variables / 변수명 (e.g. pv=principal,rate=r)'
+                  ).pack(side='left',padx=(0,8))
+        ttk.Entry(rename_row,textvariable=self.renames,width=32
+                  ).pack(side='left',fill='x',expand=True)
+
         self.formula_label=ttk.Label(self.frame,font=('Consolas',11))
         self.formula_label.grid(row=6,column=0,sticky='w',pady=(0,5))
         self.status=tk.StringVar(value='')
