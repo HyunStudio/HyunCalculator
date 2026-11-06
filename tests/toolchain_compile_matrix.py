@@ -36,6 +36,10 @@ COMMANDS = {
     'Rust': ('rustc', 'generated.rs', ('rustc', '--edition=2021', '--crate-type=lib',
                                       '--emit=metadata', '-o', 'generated.rmeta')),
     'Swift': ('swiftc', 'generated.swift', ('swiftc', '-typecheck')),
+    'Python': ('python', 'generated.py', ('python', '-m', 'py_compile')),
+    'R': ('Rscript', 'generated.R', ('Rscript', '--vanilla', '-e', "parse(file='generated.R')")),
+    'C#': ('dotnet', 'GeneratedCalculator.cs', ('dotnet', 'build', 'HyunGenerated.csproj',
+                     '--configuration', 'Release', '--verbosity', 'quiet', '--nologo')),
 }
 
 
@@ -50,9 +54,22 @@ def check(formula_id: str, language: str) -> None:
         root = Path(temp)
         source_file = root / filename
         source_file.write_text(source, encoding='utf-8')
+        if language == 'C#':
+            (root / 'HyunGenerated.csproj').write_text(
+                '<Project Sdk="Microsoft.NET.Sdk">\n'
+                '  <PropertyGroup>\n'
+                '    <TargetFramework>net8.0</TargetFramework>\n'
+                '    <OutputType>Library</OutputType>\n'
+                '    <RestoreIgnoreFailedSources>true</RestoreIgnoreFailedSources>\n'
+                '  </PropertyGroup>\n'
+                '</Project>\n', encoding='utf-8',
+            )
+        # Rscript evaluates parse() only (no user-generated functions are called).
+        # dotnet builds a distinct library to avoid public class name collisions.
+        cmd = list(command) if language in ('R', 'C#') else [*command, filename]
         result = subprocess.run(
-            [*command, filename], cwd=root, capture_output=True,
-            text=True, timeout=60, check=False,
+            cmd, cwd=root, capture_output=True,
+            text=True, timeout=120 if language == 'C#' else 60, check=False,
         )
         if result.returncode:
             raise AssertionError(

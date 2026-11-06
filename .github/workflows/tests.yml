@@ -178,7 +178,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['C', 'C++', 'JavaScript', 'TypeScript', 'Java', 'Go', 'Rust', 'Swift']
+        language: ['C', 'C++', 'JavaScript', 'TypeScript', 'Java', 'Go', 'Rust', 'Swift', 'Python', 'R', 'C#']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -189,6 +189,15 @@ jobs:
         if: matrix.language == 'JavaScript' || matrix.language == 'TypeScript'
         with:
           node-version: '22'
+      - uses: actions/setup-dotnet@v4
+        if: matrix.language == 'C#'
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install R runtime
+        if: matrix.language == 'R'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends r-base-core
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
       - name: Install TypeScript compiler
@@ -205,6 +214,9 @@ jobs:
             Go) command -v go ;;
             Rust) command -v rustc ;;
             Swift) command -v swiftc ;;
+            Python) command -v python ;;
+            R) command -v Rscript ;;
+            C#) command -v dotnet ;;
           esac
       - name: Build/syntax check all 33 generated formula sources
         env:
