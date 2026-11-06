@@ -1,46 +1,62 @@
 # HyunCalculator
 
-**v1.2.0-alpha.1** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.2** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.1 — Formula to Code (initial implementation)
+## v1.2.0-alpha.2 — Expanded Formula to Code (in progress)
 
-The first **working** Formula to Code tab and CLI are available. The goal remains
-**33 Financial/Quant formulas × 14 languages (462 combinations)**, but **this
-alpha currently exports only 7 complete formulas across 14 language emitters
-(98 source-generation combinations)**. The other 26 formulas are listed as
-**PLANNED**, and attempting to generate their code raises a clear error instead
-of emitting misleading placeholders. All seven have codegen unit tests; only
-installed compiler toolchains have been runtime-tested.
+The Code Generator now catalogs all **33 Financial/Quant functions** and exports
+**all 33 as standalone Python source**, matching the original calculator's numeric
+outputs (including arrays, simulations and performance records). For the other
+**13 languages**, 11 formulas currently have code emitters: 7 established finance
+formulas plus GARCH(1,1) one-step metrics, GBM/OU analytic moments, and trade
+cost metrics. **176 of the targeted 462 formula × language combinations can
+produce source**, compared with 98 in alpha.1.
 
-**Currently exportable:** FIN-001 Future Value (periodic/continuous), FIN-002 Present
-Value, FIN-003 Loan Payment, FIN-004 Net Present Value, FIN-007 CAGR, FIN-008
-Effective Annual Rate, FIN-009 Annuity Present Value. NPV supports `for` and
-`while` loop choices; analytic formulas reject irrelevant loop selections.
+**Important: source generation != validation.** Python source for all 33 functions
+is compiled and checked against the v1.1 calculator's 33 example inputs.
+Other-language emitters underwent limited real compiler/runtime smoke tests;
+**no claim is made that all 176 combinations are independently compiled and
+numerically verified**. Go, Rust, R, MATLAB, Julia and unavailable toolchains
+must be verified in appropriate runtime environments before relying on output.
 
-**Languages:** Python, R, C, C++, JavaScript, TypeScript, Java, C#, Swift, Kotlin,
-Go, Rust, MATLAB, Julia. **Class architecture:** supported only for Python,
-C++, JavaScript, TypeScript, Java, C#, Swift and Kotlin in scalar-formula mode.
-Custom function/class names and variable renames are validated to block
-invalid identifiers. Imports are currently automatic or standard-library-only;
-external scientific-library choice is not yet implemented.
+- **Python 33/33:** 7 existing standalone algorithm emitters and 26 exported
+  from reviewed, trusted source definitions in the repository. Depending on
+  formula, Python code may require `numpy`/`scipy` (printed in the generated
+  dependency header); `imports=standard` rejects formulas requiring these.
+- **11/33 across 14 languages:** FIN-001, FIN-002, FIN-003, FIN-004, FIN-007,
+  FIN-008, FIN-009, TS-002, STOCH-001, STOCH-002, STRAT-001.
+- **Remaining 22:** Python only for now; selecting another language explicitly
+  reports the adapter as not implemented. They are **not** emitted as placeholders.
+- **Output semantics:** Python returns the reference numeric values, dictionaries,
+  and arrays. Portable quant emitters return named records where supported
+  (e.g. JS object, R list, MATLAB struct, Julia named tuple), or ordered
+  numeric arrays with explicit output-index labels elsewhere.
+- **Options:** Auto or Advanced class/function where supported; naming and
+  variable mapping; `for` or `while` for NPV; automatic or standard imports.
+  Full numerical library/provider selection and iteration variants for the
+  remaining quant functions are not implemented yet.
 
-### Example: generate source files
+### CLI examples / 코드 생성 예제
 
 ~~~bash
 python -m hyuncalculator --list-formulas
-python -m hyuncalculator --generate FIN-001 --language Python --output future_value.py
-python -m hyuncalculator --generate FIN-002 --language Java --structure class --class-name FinanceMath --function-name discount --rename fv=face_value --output FinanceMath.java
+python -m hyuncalculator --generate DERIV-001 --language Python --output black_scholes.py
+python -m hyuncalculator --generate STRAT-002 --language Python --output backtest.py
+python -m hyuncalculator --generate TS-002 --language JavaScript --output garch.js
+python -m hyuncalculator --generate STOCH-001 --language C++ --output gbm.cpp
 python -m hyuncalculator --generate FIN-004 --language C++ --loop while --output npv.cpp
 ~~~
 
-Use the new **Code Generator** tab to preview, copy, and save source code. A generated
-file is not automatically compiled or executed in the UI; verify correctness and
-required toolchains for your target language. The [v1.2 design specification](docs/FORMULA_TO_CODE_V1_2_DESIGN.md)
-describes the remaining 26 formula adapters, validation matrix, deployment and advanced
-controls. The project's existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL
-calculations are retained.
+The bilingual Code Generator tab offers formula/language selection, source
+preview, copy and save. Non-supported language/formula combinations are disabled.
+The generated code is **not executed automatically by the UI**.
+The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) describes the
+remaining 286 source-generation combinations, systematic toolchain testing,
+advanced model algorithms, output packaging and accessibility goals.
+Existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL calculators
+are preserved.
 
 ### About, creator, and sponsorship
 
@@ -96,7 +112,7 @@ python -m unittest discover -s tests -v
 python hyuncalculator/legacy_ml.py --test
 ```
 
-GitHub Actions runs unit tests on Python 3.11 and 3.12. The **80 automated tests** include regression and extended quantitative verification; all computational tests run without GUI/display. See [CHANGELOG.md](CHANGELOG.md) for the 10-domain implementation checklist.
+GitHub Actions runs unit tests on Python 3.11 and 3.12. The **95 automated tests** include existing regression, financial/quant, and code generation verification; all computational tests run without GUI/display. See [CHANGELOG.md](CHANGELOG.md) for the 10-domain implementation checklist.
 
 ### Examples / 예제
 

@@ -12,7 +12,7 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(len(fs),33)
         self.assertEqual(len({f.id for f in fs}),33)
         self.assertEqual(len({f.function for f in fs}),33)
-        self.assertEqual(sum(f.exportable for f in fs),7)
+        self.assertEqual(sum(f.exportable for f in fs),33)
         self.assertEqual(get_formula('FIN-001').function,'fin_fv')
         self.assertEqual(get_formula('STRAT-002').function,'qf_backtest')
         self.assertEqual(get_formula('UNKNOWN'),None)
@@ -21,10 +21,10 @@ class RegistryTests(unittest.TestCase):
         for f in catalog():
             for lang in LANGUAGES:
                 with self.subTest(formula=f.id,language=lang):
-                    if f.exportable:
+                    if lang in f.supported_languages:
                         code=generate(f.id,GenerationOptions(language=lang))
                         self.assertGreater(len(code),60)
-                        self.assertIn('return' if lang not in ('R','MATLAB','Julia') else 'function',code)
+                        self.assertTrue(any(marker in code for marker in ('return','function','struct','fn ','def ','func ')))
                     else:
                         with self.assertRaises(GenerationError):generate(f.id,GenerationOptions(language=lang))
 

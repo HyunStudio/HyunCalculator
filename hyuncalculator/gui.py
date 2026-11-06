@@ -261,7 +261,7 @@ class CodeGeneratorTab:
         self.description=ttk.Label(self.frame,font=('Malgun Gothic',11))
         self.description.grid(row=1,column=0,sticky='w',pady=(0,12))
         top=ttk.Frame(self.frame);top.grid(row=2,column=0,sticky='ew',pady=(0,9))
-        self.formula_items=[f'{f.id}  {f.title_en}'+('' if f.exportable else '  [Planned]') for f in self._catalog]
+        self.formula_items=[f'{f.id}  {f.title_en}' + ('  [Python only]' if len(f.supported_languages)==1 else '') for f in self._catalog]
         self.selected=tk.StringVar(value=self.formula_items[0])
         ttk.Label(top,text='Formula / 수식',font=('Malgun Gothic',11,'bold')).pack(side='left',padx=(0,8))
         selector=ttk.Combobox(top,textvariable=self.selected,values=self.formula_items,
@@ -319,29 +319,42 @@ class CodeGeneratorTab:
         hscroll=ttk.Scrollbar(preview_frame,orient='horizontal',command=self.code.xview)
         hscroll.grid(row=1,column=0,sticky='ew');self.code.configure(xscrollcommand=hscroll.set)
         self.last_code=None
+        self.target.trace_add('write', lambda *_: self._availability_changed())
         self._selection_changed()
         self.refresh_language()
 
     def _selection_changed(self):
         f=self._get_formula(self.selected.get().split()[0])
-        self.fn.set(f.function.removeprefix('fin_'))
+        self.fn.set({'fin_irr':'calculate_irr', 'qf_target':'target_portfolio'}.get(f.function, f.function.removeprefix('fin_').removeprefix('qf_')))
         self.renames.set('')
         self.loop.set('auto')
         self.variant.set('periodic')
         self.formula_label.configure(text=f'{f.id}: {f.formula}')
         self.last_code=None
         self.code.delete('1.0','end')
-        self.generate_btn.configure(state='normal' if f.exportable else 'disabled')
         self.copy_btn.configure(state='disabled')
         self.save_btn.configure(state='disabled')
-        self.status.set(('Ready to generate (initial 7 formulas).' if f.exportable else
-                        'PLANNED: This formula is in the 33-item registry; a verified generator is not available yet.'))
+        self._availability_changed()
+
+    def _availability_changed(self):
+        f=self._get_formula(self.selected.get().split()[0])
+        language=self.target.get()
+        available=language in f.supported_languages
+        self.generate_btn.configure(state='normal' if available else 'disabled')
+        self.copy_btn.configure(state='disabled')
+        self.save_btn.configure(state='disabled')
+        self.last_code=None
+        self.code.delete('1.0','end')
+        if available:
+            self.status.set(f'{f.id}: {language} code generation available (not verified in-app).')
+        else:
+            self.status.set(f'{f.id}: {language} adapter is planned, not yet implemented. Available: {", ".join(f.supported_languages)}')
 
     def refresh_language(self):
         korean=self.language_getter()=='ko'
         self.title.configure(text='수학식 → 코드 생성 | Formula to Code' if korean else 'Formula to Code Generator')
-        self.description.configure(text=('14개 언어 · 함수/Class · 반복문 · Import · 미지원 조합은 명시적으로 차단' if korean else
-                                          '14 languages · function/class · loops · imports · unsupported combinations blocked'))
+        self.description.configure(text=('33개 수식 · Python 전체 지원 · 기타 13개 언어는 11개 수식 지원 · 미지원 조합 차단' if korean else
+                                          '33 Python formulas · 11 multi-language formulas · unsupported combinations blocked'))
         self.generate_btn.configure(text='코드 생성' if korean else 'Generate')
         self.copy_btn.configure(text='복사' if korean else 'Copy')
         self.save_btn.configure(text='파일 저장' if korean else 'Save file')

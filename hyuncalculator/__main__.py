@@ -28,7 +28,7 @@ def main():
         from .codegen import catalog, generate, GenerationOptions, GenerationError
         if args.list_formulas:
             for item in catalog():
-                print(f'{item.id}  {"SUPPORTED" if item.exportable else "PLANNED"}  {item.title_en}')
+                print(f'{item.id}  {", ".join(item.supported_languages)}  {item.title_en}')
             return
         try:
             renames=[]

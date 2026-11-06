@@ -37,11 +37,16 @@ class Formula:
     formula: str
     fields: tuple[tuple[str,str],...]
     exportable: bool
+    supported_languages: tuple[str,...]
 
 # Supported profiles only for complete scalar/NPV function semantics. Others
 # remain discoverable but cannot silently generate incomplete code.
-EXPORTABLE = frozenset(('fin_fv','fin_pv','fin_pmt','fin_npv',
-                        'fin_cagr','fin_effective','fin_annuity'))
+MULTILANG = frozenset(('fin_fv','fin_pv','fin_pmt','fin_npv',
+                        'fin_cagr','fin_effective','fin_annuity',
+                        'qf_garch','qf_gbm','qf_ou','qf_cost'))
+# The full catalog is exportable as standalone Python. Only a subset has
+# audited emitters for the other 13 languages; never conflate the two.
+EXPORTABLE = frozenset(name for _label, (_domain, names) in DOMAINS.items() for name in names)
 
 
 def catalog() -> tuple[Formula,...]:
@@ -55,7 +60,10 @@ def catalog() -> tuple[Formula,...]:
             result.append(Formula(f'{PREFIX[domain]}-{i:03d}',domain,name,
                                   operation.title,en[0],operation.formula,
                                   tuple((f.key, f.example) for f in operation.fields),
-                                  name in EXPORTABLE))
+                                  name in EXPORTABLE,
+                                  (('Python',) if name not in MULTILANG else
+                                   ('Python','R','C','C++','JavaScript','TypeScript','Java',
+                                    'C#','Swift','Kotlin','Go','Rust','MATLAB','Julia'))))
     assert len(result)==33 and set(by_name)=={r.function for r in result}, 'Registry drift: review v1.1.0 operation changes'
     return tuple(result)
 

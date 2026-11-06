@@ -63,6 +63,8 @@ def _check_options(formula, opt):
     if not formula.exportable:
         raise GenerationError(f'{formula.id} ({formula.title_en}) is registered but its code adapter is not yet implemented')
     if opt.language not in LANGUAGES: raise GenerationError('Unsupported language')
+    if opt.language not in formula.supported_languages:
+        raise GenerationError(f'{formula.id}: {opt.language} adapter not implemented (Python available)')
     if opt.structure not in ('function','class'): raise GenerationError('Structure must be function or class')
     if opt.structure=='class': _identifier(opt.class_name)
     if opt.structure=='class' and opt.language not in CLASS_LANGUAGES:
@@ -107,6 +109,12 @@ class ExpressionEmitter:
                     'Swift':f'exp({arg})','Kotlin':f'exp({arg})','Go':f'math.Exp({arg})',
                     'Rust':f'({arg}).exp()','MATLAB':f'exp({arg})',
                     'Julia':f'exp({arg})','R':f'exp({arg})','C':f'exp({arg})'}[self.lang]
+        if func=='sqrt':
+            return {'Python':f'math.sqrt({arg})','C':f'sqrt({arg})','C++':f'std::sqrt({arg})',
+                    'JavaScript':f'Math.sqrt({arg})','TypeScript':f'Math.sqrt({arg})',
+                    'Java':f'Math.sqrt({arg})','C#':f'Math.Sqrt({arg})','Swift':f'sqrt({arg})',
+                    'Kotlin':f'sqrt({arg})','Go':f'math.Sqrt({arg})','Rust':f'({arg}).sqrt()',
+                    'R':f'sqrt({arg})','MATLAB':f'sqrt({arg})','Julia':f'sqrt({arg})'}[self.lang]
         if func=='abs':
             return {'Python':f'abs({arg})','C':f'fabs({arg})','C++':f'std::abs({arg})',
                     'JavaScript':f'Math.abs({arg})','TypeScript':f'Math.abs({arg})',
@@ -140,7 +148,7 @@ class ExpressionEmitter:
             syms={ast.Add:'+',ast.Sub:'-',ast.Mult:'*',ast.Div:'/'}
             if type(node.op) not in syms:raise GenerationError('Unsupported expression operator')
             return f'({a} {syms[type(node.op)]} {b})'
-        if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id in ('exp','abs') and len(node.args)==1 and not node.keywords:
+        if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id in ('exp','abs','sqrt') and len(node.args)==1 and not node.keywords:
             return self.call(node.func.id,self.emit(node.args[0]))
         if isinstance(node,ast.Compare) and len(node.ops)==1 and len(node.comparators)==1:
             op={ast.Lt:'<',ast.LtE:'<=',ast.Gt:'>',ast.GtE:'>=',ast.Eq:'==',ast.NotEq:'!='}
@@ -351,7 +359,16 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
     opt=options or GenerationOptions()
     formula=get_formula(formula_id)
     _check_options(formula,opt)
-    fn=_identifier(opt.function_name or formula.function.removeprefix('fin_'))
+    default_name = {'qf_target': 'target_portfolio', 'fin_irr': 'calculate_irr'}.get(formula.function, formula.function.removeprefix('fin_').removeprefix('qf_'))
+    fn=_identifier(opt.function_name or default_name)
+    if formula.function not in SCALARS and formula.function != 'fin_npv':
+        if opt.language == 'Python':
+            from .python_full import generate_python
+            return generate_python(formula,opt,fn)
+        from .portable_quant import PORTABLE, generate_portable
+        if formula.function in PORTABLE:
+            return generate_portable(fn,formula,opt)
+        raise GenerationError(f'{formula.id}: {opt.language} adapter not implemented')
     valid_names= {'rate','flows'} if formula.function=='fin_npv' else set(SCALARS[formula.function][1])
     renames={}
     for src,dst in opt.variable_names:

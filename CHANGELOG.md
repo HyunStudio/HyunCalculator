@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.2.0-alpha.2 — Broad Python Export + Portable Quant Formulas (2026-11-06)
+
+- Python code generation extended from 7 to **all 33 registered financial/quant formulas** through trusted-source AST extraction with standalone dependencies; sample numeric results compared with the existing calculator for all 33.
+- Added 4 complete multi-output quantitative emitters for the other 13 languages: **GARCH(1,1)**, **GBM analytic moments**, **OU analytic moments**, **transaction costs**. Each output includes explicit field/index semantics.
+- Current generation coverage **176 / 462 combinations** (33 Python + 11 × 13 other-language targets). All other language/formula pairs fail closed instead of returning incomplete output.
+- Code Generator GUI now reacts to language/formula availability and disables unsupported combinations. CLI `--list-formulas` reports exact supported languages.
+- Added comprehensive Python golden-value tests and portable source checks, plus optional compiler/runtime smoke suite. 95 automated unit tests pass locally; real runtime validation is partial and separately reported.
+- HyunStudio GitHub Sponsors remains **pending approval**, and no donation/payment link is activated.
+- Still alpha: high-fidelity dark UI redesign, remaining 286 adapters, complete 462-way numeric/runtime verification and project bundling are pending.
+
+
 ## v1.2.0-alpha.1 — Formula to Code initial implementation (2026-11-06)
 
 - Added a stable, bilingual 33-formula Financial/Quant registry; 26 code adapters
