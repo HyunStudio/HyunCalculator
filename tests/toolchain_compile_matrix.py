@@ -40,6 +40,13 @@ COMMANDS = {
     'R': ('Rscript', 'generated.R', ('Rscript', '--vanilla', '-e', "parse(file='generated.R')")),
     'C#': ('dotnet', 'GeneratedCalculator.cs', ('dotnet', 'build', 'HyunGenerated.csproj',
                      '--configuration', 'Release', '--verbosity', 'quiet', '--nologo')),
+    'Kotlin': ('kotlinc', 'generated.kt', ('kotlinc', '-d', 'generated.jar')),
+    'Julia': ('julia', 'generated.jl', ('julia', '--startup-file=no', '--color=no',
+                     '--compile=min', '-e', 'Meta.parseall(read("generated.jl", String))')),
+    # MATLAB output parsed in GNU Octave; this is NOT a MathWorks MATLAB compiler.
+    'MATLAB': ('octave-cli', 'generated.m',
+               ('octave-cli', '--quiet', '--no-gui', '--eval',
+                "source('generated.m');")),
 }
 
 
@@ -64,12 +71,25 @@ def check(formula_id: str, language: str) -> None:
                 '  </PropertyGroup>\n'
                 '</Project>\n', encoding='utf-8',
             )
+        # MATLAB function naming is strict: use its generated public name as
+        # the source filename, to avoid a false mismatch warning.
+        if language == 'MATLAB':
+            from hyuncalculator.codegen.bundle import _file_name
+            formula = next(f for f in catalog() if f.id == formula_id)
+            matlab_filename = _file_name(formula, GenerationOptions(language='MATLAB'))
+            source_file = root / matlab_filename
+            source_file.write_text(source, encoding='utf-8')
         # Rscript evaluates parse() only (no user-generated functions are called).
         # dotnet builds a distinct library to avoid public class name collisions.
-        cmd = list(command) if language in ('R', 'C#') else [*command, filename]
+        if language == 'MATLAB':
+            cmd = [*command[:-1], f"source('{matlab_filename}');"]
+        elif language in ('R', 'C#', 'Julia'):
+            cmd = list(command)
+        else:
+            cmd = [*command, filename]
         result = subprocess.run(
             cmd, cwd=root, capture_output=True,
-            text=True, timeout=120 if language == 'C#' else 60, check=False,
+            text=True, timeout=120 if language in ('C#', 'Kotlin') else 60, check=False,
         )
         if result.returncode:
             raise AssertionError(

@@ -174,11 +174,11 @@ jobs:
 
   compile-matrix:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
-        language: ['C', 'C++', 'JavaScript', 'TypeScript', 'Java', 'Go', 'Rust', 'Swift', 'Python', 'R', 'C#']
+        language: ['C', 'C++', 'JavaScript', 'TypeScript', 'Java', 'Go', 'Rust', 'Swift', 'Python', 'R', 'C#', 'Kotlin', 'Julia', 'MATLAB']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -193,11 +193,25 @@ jobs:
         if: matrix.language == 'C#'
         with:
           dotnet-version: '8.0.x'
+      - uses: actions/setup-java@v4
+        if: matrix.language == 'Kotlin'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: julia-actions/setup-julia@v2
+        if: matrix.language == 'Julia'
+        with:
+          version: '1.11'
       - name: Install R runtime
         if: matrix.language == 'R'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends r-base-core
+      - name: Install GNU Octave
+        if: matrix.language == 'MATLAB'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends octave
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
       - name: Install TypeScript compiler
@@ -217,6 +231,9 @@ jobs:
             Python) command -v python ;;
             R) command -v Rscript ;;
             C#) command -v dotnet ;;
+            Kotlin) command -v kotlinc ;;
+            Julia) command -v julia ;;
+            MATLAB) command -v octave-cli ;;
           esac
       - name: Build/syntax check all 33 generated formula sources
         env:
