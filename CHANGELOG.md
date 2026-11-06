@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.2.0-alpha.15 — MATLAB-Compatible Octave Numerical CI (2026-11-06)
+
+- Added required GNU Octave CI job for generated **MATLAB-language source**:
+  nine different formula IDs (FIN-001/005/006, DERIV-001, BOND-002,
+  RISK-002/003, STAT-001/002) matched Python numerical references.
+- Added **five boundary/variant numerical cases** and **three explicit
+  invalid-input rejection tests**, bringing Octave coverage to **17/17**.
+  Octave tests fail if the interpreter is absent, code execution fails,
+  numeric values differ, or expected validation guards are not triggered.
+- All **74 representative native execution checks passed** (previous
+  57 cases + Octave 14 numeric and 3 guard cases). Source code generation
+  remains 462/462, but 462-way runtime/numerical certification is pending.
+- GNU Octave results do not imply execution in licensed MathWorks MATLAB.
+- Python 3.11/3.12 154-tests-each and virtual-display accessibility CI
+  remain required. Sponsors approval is still pending.
+
 ## v1.2.0-alpha.14 — R/C#/Julia CI and 175% GUI Reflow (2026-11-06)
 
 - Added required GitHub Actions jobs running generated **R, C# (.NET 8)

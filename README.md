@@ -1,8 +1,42 @@
 # HyunCalculator
 
-**v1.2.0-alpha.14** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.15** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.15 — MATLAB-Compatible Octave Runtime & Edge Cases
+
+The Formula to Code engine still exports **33 Financial/Quant formulas × 14
+languages (462/462 generated source combinations)**. The mandatory CI
+now checks selected source on **eight executable target/runtime families**:
+C, C++, JavaScript, Rust, R, C# (.NET 8), Julia, and **GNU Octave**,
+which runs source generated under the **MATLAB** target.
+
+The Octave job installs `octave` on Ubuntu, requires `octave-cli`, and
+runs **17 tests**: 9 distinct MATLAB-formula source examples with
+independently compared Python reference outputs, 5 additional numerical
+boundary/variant inputs, and 3 negative-input checks that assert expected
+guard errors (not just any compiler/parser failure). Covered formulas:
+FIN-001, FIN-005, FIN-006, DERIV-001, BOND-002, RISK-002, RISK-003,
+STAT-001, STAT-002. Extra checks cover zero-rate loans, zero-coupon
+bonds, put Greeks, lower normal quantiles, zero volatility and invalid
+IRR/normal/loan arguments.
+
+**CI verification summary:** prior **57 representative native numerical
+cases** + **14 valid Octave numeric inputs** + **3 Octave rejection cases**
+= **74 native execution checks, 74/74 passing** in
+[GitHub Actions run 42174610695](https://github.com/HyunStudio/HyunCalculator/actions/runs/42174610695).
+Both Python 3.11 and Python 3.12 regressions (154 tests each) and the
+Xvfb/Tk accessibility smoke passed. This covers **66 distinct
+formula-language/runtime sample pairs** including nine Octave cases,
+plus variant and rejection checks; it does **not** certify the full
+462-pair source-generation matrix or every input boundary case.
+
+**Important distinction:** GNU Octave is a MATLAB-compatible open-source
+interpreter; **commercial MathWorks MATLAB itself has not been run**.
+Compatibility differences, platform accessibility acceptance and further
+numeric/regression edge coverage remain outstanding. GitHub Sponsors
+approval is pending; unverified donation/payment buttons remain disabled.
 
 ## v1.2.0-alpha.14 — R/C#/Julia Numerical CI and Responsive Codegen Controls
 
