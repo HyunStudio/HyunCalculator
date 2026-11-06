@@ -1,23 +1,22 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.16)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.17)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.16)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.17)
 
-- **Generation:** all **462/462** formula-language pairs emit standalone source (33 registered Financial/Quant functions × 14 target languages). This metric measures emitter reachability only.
-- **Mandatory per-formula source build/typecheck matrix:** **363/363 passes** across 11 languages: Python (`py_compile`), R (`parse`), C/C++ (`-fsyntax-only`), JavaScript (`node --check`), TypeScript (`tsc --noEmit`), Java (`javac`), C# (`dotnet build`), Swift (`swiftc -typecheck`), Go (`go test`), Rust (`rustc --emit=metadata`). Each language processes all 33 formulas in isolated generated source files with no missing compiler silently treated as success.
-- **Bug found by matrix:** emitted C# Markowitz ALLOC-001 and ALLOC-002 source used `Enumerable.Repeat(...).ToArray()` without LINQ extension import; replaced the dependency with `Array.Fill`. The final C# **33/33** isolated .NET library builds passed.
-- **Existing independent numerical CI:** previous **74/74 selected native executions** across C/C++/JavaScript, Rust, R, C#, Julia, GNU Octave remain successful (including 3 expected-validation failures that correctly reject malformed inputs). Python 3.11/3.12 **154 unit tests each** and Xvfb GUI smoke also pass.
-- **Verified final run:** [GitHub Actions 42176479044](https://github.com/HyunStudio/HyunCalculator/actions/runs/42176479044) successfully completed all CI jobs after the adapter correction.
-- **Remaining static matrix:** **99 pairs** (Kotlin, Julia, MATLAB-target/Octave × 33 formulas). Some of these already have representative runtime checks, but not a 33-formula build/parse sweep. Real proprietary MathWorks MATLAB was not run.
-- **Remaining release work:** comprehensive numerical input/edge matrices, GUI accessibility/assistive-technology acceptance, advanced class/iteration/library options, packaging/release hardening.
-- **Sponsors:** HyunStudio GitHub Sponsors still pending approval; payment actions and unverified PayPal links remain disabled.
-- Alpha source-generation completeness and partial runtime/static validation are not financial production certification. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Source generation:** all **462/462** formula-language pairs are supported (33 formulas × 14 targets).
+- **Mandatory 14-language source-validation matrix:** all **462/462 source-level parse/build/type checks passed**. Previously checked 11 languages (363 pairs) plus newly added **Kotlin / Julia / MATLAB target under GNU Octave (99 pairs)**. Kotlin is fully compiled with `kotlinc` for each formula; Julia is parsed via `Meta.parseall`; Octave parses all MATLAB functions without executing financial calculations. R remains syntax-parse only. Other languages use the documented compilers, syntax or typecheck commands.
+- **Defect discovered:** FIN-007 MATLAB CAGR generated a parameter literally called `end`, a reserved MATLAB keyword. Scalar source emitter now consistently renames this parameter to `ending_value` for MATLAB, leaving other language contracts unchanged.
+- **Checker correction:** plain Octave `source()` ran function bodies without parameters. The checker now creates and invokes an otherwise-empty wrapper containing the generated definitions, forcing parse without invoking them. Octave remains only a MATLAB-compatible alternative, not proof of licensed MathWorks MATLAB compatibility.
+- **Verified code-run evidence:** [GitHub Actions run 42178554024](https://github.com/HyunStudio/HyunCalculator/actions/runs/42178554024) succeeded for all 14 language matrix jobs and established Python, GUI, native smoke jobs. Prior **74 selected native numerical/negative-input execution checks** remain passing and separate from static-source checks.
+- **Not complete:** full numerical execution for all 462 pairs, input-edge-value matrices, all platform/screen-reader accessibility acceptance, unrestricted class/loop/import options and production-grade financial certification.
+- **Sponsors:** approval pending; no active/unverified donation links or payment actions.
+- This is an alpha implementation progress record, not a declaration of finished v1.2.0. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -300,4 +299,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.16은 **462/462 코드 생성**을 유지하며 **11개 언어 × 33개 수식 = 363/363개 독립 컴파일·문법·타입 검사**를 모두 통과했다. 검사 중 발견된 C# Markowitz 2개 생성 코드의 LINQ 의존성 문제도 수정했다. 기존 74개 네이티브 수치·입력검증 사례는 통과했다. 전체 462개 컴파일 및 모든 수치 조합 검증은 아직 남아 있고, 후원은 승인 대기 상태다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.17에서는 **33개 수식 × 14개 언어 = 462/462개 생성 조합**과 **462/462개 컴파일·타입·구문 검사**를 달성했다. Kotlin은 실제 컴파일, Julia 및 MATLAB 대상 Octave는 구문 검사다. MATLAB CAGR의 예약어 충돌을 수정했으며 기존 74개 대표 네이티브 실행 검증도 유지된다. 전체 조합의 수치 정확성 검증 및 정식 MATLAB·스크린리더·고급 코드옵션 검증은 미완성이고 Sponsors 승인은 대기 상태다.

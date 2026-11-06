@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.2.0-alpha.17 — 462/462 Source Validation (2026-11-06)
+
+- Extended the mandatory all-formula build/syntax matrix to **Kotlin,
+  Julia and GNU Octave/MATLAB-target source**: 33/33 each, **99 new
+  checks**. Combined source-level validation is now **462/462
+  formula-language pairs** across all 14 targets.
+- Kotlin uses `kotlinc` compilation; Julia uses `Meta.parseall`;
+  MATLAB output uses non-executing GNU Octave function parsing.
+- Found a genuine MATLAB CAGR (FIN-007) generator problem: `end`
+  was emitted as a reserved parameter name. Changed to `ending_value`
+  in both the signature and the emitted expression.
+- Corrected the MATLAB parser check to avoid executing generated
+  financial functions without inputs. New regression tests cover the
+  reserved identifier and keep the other language naming unchanged.
+- CI code commit **42178554024** completed successfully with
+  all 14 language matrix jobs plus existing 74 native/edge checks.
+  Source-check completion is **not** 462-way numerical certification.
+- Sponsors remains approval-pending; no donation URLs activated.
+
 ## v1.2.0-alpha.16 — 363-Pair Compiler/Typecheck Matrix (2026-11-06)
 
 - Added mandatory per-language GitHub Actions source checks for all

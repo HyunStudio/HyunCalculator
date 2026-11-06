@@ -1,8 +1,45 @@
 # HyunCalculator
 
-**v1.2.0-alpha.16** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.17** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.17 — Full 462-Pair Source Validation Matrix
+
+**All 33 Financial/Quant formulas × 14 languages (462/462) now pass
+the mandatory source-level compilation, typechecking or parsing gate.**
+
+The original 363-pair compiler CI matrix now also covers:
+
+- **Kotlin:** every generated Kotlin source compiles independently with
+  `kotlinc` (**33/33**).
+- **Julia:** every source passes `Meta.parseall` with Julia 1.11 (**33/33**);
+  this is a parser check, not numerical execution or full type validation.
+- **MATLAB target:** all 33 source files pass GNU Octave function-body
+  parsing (**33/33**), performed using a non-executing wrapper. GNU Octave
+  is **not** the proprietary MathWorks MATLAB runtime.
+
+**Detected and fixed:** MATLAB output for FIN-007 CAGR used `end` as a
+parameter name, which is a language keyword. It now uses
+`ending_value` consistently in the generated signature and expression.
+An initial Octave test mistakenly invoked input-dependent functions while
+trying to parse them; the checker now calls an otherwise-empty wrapper
+containing the generated functions, so calculation bodies are parsed but
+not invoked.
+
+**Evidence:** [GitHub Actions 42178554024](https://github.com/HyunStudio/HyunCalculator/actions/runs/42178554024)
+passed all **14 × 33** source checks plus the existing regression, GUI,
+and representative native numerical jobs. Follow-up regression tests guard
+the MATLAB reserved-identifier fix. The previous **74/74 selected native
+execution and invalid-input checks** remain separate and passing.
+
+**Important limitations:** the source gate measures parse/build/type
+correctness, not per-formula numerical parity. R and Julia receive parser
+checks; MATLAB uses GNU Octave parsing, not commercial MATLAB. Full
+462-pair execution with expected-value/boundary matrices, advanced class,
+iteration and library choices, cross-platform screen-reader acceptance
+and release certification remain unfinished. GitHub Sponsors approval
+is still pending and no live payment control is enabled.
 
 ## v1.2.0-alpha.16 — 363-Pair Source Build/Typecheck CI Matrix
 
