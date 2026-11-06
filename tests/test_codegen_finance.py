@@ -14,9 +14,9 @@ class PortableFinanceGenerationTests(unittest.TestCase):
     def test_coverage_and_full_source_emission(self):
         formulas = catalog()
         self.assertEqual(len(formulas), 33)
-        self.assertEqual(sum(len(f.supported_languages) for f in formulas), 410)
-        self.assertEqual(sum(len(f.supported_languages) == 14 for f in formulas), 29)
-        self.assertEqual(sum(len(f.supported_languages) == 1 for f in formulas), 4)
+        self.assertEqual(sum(len(f.supported_languages) for f in formulas), 462)
+        self.assertEqual(sum(len(f.supported_languages) == 14 for f in formulas), 33)
+        self.assertEqual(sum(len(f.supported_languages) == 1 for f in formulas), 0)
         for fid, required in [('FIN-005', ('irr', 'flows')),
                               ('FIN-006', ('loan', 'principal'))]:
             self.assertEqual(get_formula(fid).supported_languages, LANGUAGES)

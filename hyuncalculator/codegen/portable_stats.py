@@ -250,6 +250,7 @@ function z=hyun_ppf(p)
 end
 '''
     if lang=='Julia':
+        mid_julia = re.sub(r'\bz\b', 'zi', mid)
         return f'''# {note}
 function {fn}(x,mean,sd,p)
   if !all(isfinite,(x,mean,sd,p)) || sd<=0 || p<=0 || p>=1
@@ -264,7 +265,7 @@ function {fn}(x,mean,sd,p)
   elseif p>0.97575
     q=sqrt(-2*log(1-p));zi=-({tail})
   else
-    zi=p-0.5;z2=zi*zi;zi={re.sub(r'\bz\b','zi',mid)}
+    zi=p-0.5;z2=zi*zi;zi={mid_julia}
   end
   return (Z=z,PDF=density,CDF=cdf,Survival=1-cdf,Quantile=mean+sd*zi)
 end
