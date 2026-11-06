@@ -1,21 +1,20 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.2)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.3)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.2)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.3)
 
-- **Exportable today:** all **33 finance/quant formulas to standalone Python**, using trusted, reviewed local numerical implementations; **11 formulas to each of 13 additional languages** (the original seven FIN-001/002/003/004/007/008/009 plus TS-002, STOCH-001, STOCH-002, STRAT-001). Total: **176/462 source generation combinations**.
-- **Python verification:** all 33 generated modules compile and their sample numerical results match the v1.1.0 calculator, including nested records/arrays. Source may require NumPy/SciPy. Generation is not a production security sandbox.
-- **Non-Python verification:** code generation succeeds for 143 non-Python targets, but actual compiler/runtime/numerical verification is only partial. Selected C, C++, JavaScript, TypeScript, Java, Swift and Kotlin examples pass; other language/toolchain paths require verification. Do not equate generated with build verified.
-- **Next work:** **286 combinations** for the 22 remaining Python-only formulas, expanded algorithm profiles/import management, 462-way verification matrix, bundled project exports, polished dark UI, more accessibility work.
-- **Current options:** eligible class/function choices, trusted formula-specific structures, parameter/function/class name edits, NPV for/while loops; new multi-output portable adapters use function structure. Unsupported choices are rejected.
-- **Sponsor safety:** HyunStudio GitHub Sponsors account is **pending approval**, not live; no active donation/PayPal button. Enable only after independent approval and URL verification.
-- This document describes the **v1.2.0 target state**, not completed implementation. See [README](../README.md), [CHANGELOG](../CHANGELOG.md) and current test results for supported scope.
+- **Code generation available:** all **33 formulas in Python**, plus **14 formulas in each of the other 13 languages**. Total **215 / 462** source-generation pairs; remaining **19 formulas are Python-only**, leaving **247 non-Python pairs**.
+- **Added this iteration:** BOND-001 fixed-coupon dirty price/Macaulay and modified duration/convexity; BOND-002 coupon bond YTM via bounded bisection and zero-coupon analytic branch; TS-001 EWMA variance/volatility. These profiles are function-only and reject unsupported class, loop, variable-rename options.
+- **Verification:** 98 automated Python regression/source-generation tests pass locally. Selected C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go examples compile and match numeric reference values for new models; R, C#, Rust, MATLAB and Julia are **not runtime-verified** in this environment. Generated code is not equivalent to fully verified production code.
+- **Pending:** 247 source-generation pairs, complete 462-way compiler/numeric verification, advanced algorithm/import policies, project bundle exports and premium dark UI implementation.
+- **HyunStudio Sponsors:** GitHub Sponsors profile **pending approval**; never advertise a functional sponsorship/payment button until independently approved and verified.
+- This remains a **target-state design document**; alpha.3 is not the completed v1.2.0 feature set. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -298,4 +297,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.1.0의 33개 금융 계산 기능은 기존대로 유지된다. **v1.2.0-alpha.2는 Python 33개 및 그 외 13개 언어 각각 11개 기능, 총 176개 소스코드 생성 조합을 부분 구현**했다. 나머지 286개 생성 조합과 전체 언어별 컴파일·수치 검증은 후속 개발 대상으로 남아 있다.
+**현황 요약 (2026-11-06):** v1.1.0 계산 기능 33개는 그대로 유지된다. v1.2.0-alpha.3은 **Python 33개 및 다른 13개 언어 각각 14개, 총 215개 소스코드 생성 조합을 부분 구현**했다. 남은 **247개 언어별 생성 조합**, 전체 컴파일/수치 검증, 추가 UI/UX는 후속 개발 대상이다.
