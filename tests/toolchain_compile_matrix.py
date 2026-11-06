@@ -71,18 +71,20 @@ def check(formula_id: str, language: str) -> None:
                 '  </PropertyGroup>\n'
                 '</Project>\n', encoding='utf-8',
             )
-        # MATLAB function naming is strict: use its generated public name as
-        # the source filename, to avoid a false mismatch warning.
+        # Octave's source() executes the function file, and therefore would
+        # incorrectly call generated functions without input arguments.
+        # Instead wrap generated definitions in an otherwise-empty function:
+        # invoking only this wrapper forces the Octave parser to check all
+        # nested function bodies without executing the financial functions.
         if language == 'MATLAB':
-            from hyuncalculator.codegen.bundle import _file_name
-            formula = next(f for f in catalog() if f.id == formula_id)
-            matlab_filename = _file_name(formula, GenerationOptions(language='MATLAB'))
-            source_file = root / matlab_filename
-            source_file.write_text(source, encoding='utf-8')
+            (root / 'hyun_syntax_probe.m').write_text(
+                'function hyun_syntax_probe()\n' + source + '\nend\n',
+                encoding='utf-8',
+            )
         # Rscript evaluates parse() only (no user-generated functions are called).
         # dotnet builds a distinct library to avoid public class name collisions.
         if language == 'MATLAB':
-            cmd = [*command[:-1], f"source('{matlab_filename}');"]
+            cmd = [*command[:-1], 'hyun_syntax_probe();']
         elif language in ('R', 'C#', 'Julia'):
             cmd = list(command)
         else:

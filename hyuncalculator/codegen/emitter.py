@@ -221,7 +221,13 @@ def _render_scalar(formula,options,fn,renames):
     if formula.function=='fin_fv' and options.variant=='continuous':
         expr='pv * exp(rate*n)'
         guards=('n < 0',)
-    lang=options.language; emitter=ExpressionEmitter(lang,ints,renames)
+    lang=options.language
+    # MATLAB reserves 'end' for block/array indexing.  The canonical CAGR
+    # field is named end, so emit a safe equivalent parameter consistently
+    # in its signature, guards, and calculation expression.
+    if lang=='MATLAB' and 'end' in args and renames.get('end','end')=='end':
+        renames={**renames,'end':'ending_value'}
+    emitter=ExpressionEmitter(lang,ints,renames)
     params=', '.join(_param(lang,renames.get(a,a),a in ints) for a in args)
     node=ast.parse(expr,mode='eval').body
     branches=[]
