@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.2.0-alpha.11 — All 462 Source-Generation Pairs (2026-11-06)
+
+- Added **STAT-001 normal PDF/CDF/PPF, STAT-002 covariance/correlation,
+  RISK-003 return performance, STRAT-002 single-asset backtest** to all
+  thirteen non-Python language adapters, preserving the Python reference.
+- Code-generation coverage: **33 formulas x 14 languages = 462/462**. New
+  adapters restrict unverified class/loop/import/renaming options explicitly.
+- Normal CDF/PPF use documented numerical approximations; covariance uses
+  sample ddof=1, correlation marks zero variance with NaN. Risk performance
+  uses sample volatility and downside semideviation. Backtest uses delayed
+  signals, turnover costs, no terminal liquidation, and outputs 4*n+14 values.
+- Native smoke samples were compiled/executed for C, C++, JavaScript,
+  TypeScript, Java, Swift, Kotlin and Go with reference-value parity.
+  R, C#, Rust, MATLAB and Julia emitted sources remain **runtime-unverified**.
+  Full 462-way build/numerical certification is **not done**.
+- Added regression/coverage tests and updated the design specification.
+  Premium UI redesign, advanced library/structure options, ZIP bundles and
+  verified Sponsors profile activation remain outstanding.
+
 ## v1.2.0-alpha.10 — Portable IRR & Loan Amortization (2026-11-06)
 
 - Added **FIN-005** IRR and **FIN-006** selected-period loan amortization

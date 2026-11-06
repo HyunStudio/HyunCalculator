@@ -1,8 +1,49 @@
 # HyunCalculator
 
-**v1.2.0-alpha.10** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.11** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.11 — 462/462 formula-language source combinations (alpha)
+
+**All 33 registered Financial/Quant formulas** now have source-generation
+profiles in **all 14 programming languages**, totaling **462/462** combinations.
+**This is SOURCE GENERATION coverage, not full runtime/compiler certification.**
+The calculator still uses the original standalone Python reference implementations.
+
+Newly added cross-language profiles (13 non-Python targets each):
+
+- **STAT-001 — normal distribution:** z-score, PDF, CDF, survival and arbitrary
+  probability quantile. Uses a standard five-term CDF approximation
+  (typical absolute error below 8e-8) and Acklam inverse-normal approximation
+  (typical z error approximately 1e-9). For extreme tails precision should be
+  checked against SciPy; Python export retains the SciPy reference.
+- **STAT-002 — sample covariance and correlation:** >=3 observations and >=2
+  assets; sample covariance with ddof=1. Non-Python output is a flattened
+  row-major array of 2*n_assets*n_assets numbers: covariance then correlation.
+  A zero-variance column gives NaN correlations. C accepts row-major flat
+  input and a caller-provided output buffer; no data are read from the web.
+- **RISK-003 — return performance:** annualized arithmetic return, sample
+  volatility, annualized Sharpe and Sortino, maximum drawdown and compounded
+  total return, with period-specific decimal risk-free rate.
+- **STRAT-002 — educational cost-aware single-asset backtest:** signals
+  shifted by one return period to avoid lookahead; commissions/slippage in bps
+  charged on absolute executed turnover; no final liquidation or financing.
+  Non-Python flat result has **12 summary metrics + n delayed positions +
+  n net returns + (n+1) equity + (n+1) buy-and-hold equity**, total **4*n+14**.
+
+New portable profiles currently support **function/auto/standard imports**
+with fixed parameter names. Unsupported combinations are rejected rather than
+silently translated. R/C#/Rust/MATLAB/Julia sources are **not runtime-tested** in
+this environment; selected representative **C/C++/JavaScript/TypeScript/Java/
+Swift/Kotlin/Go** examples compiled/ran and agreed numerically with NumPy/SciPy
+references. These tests do not cover all 462 combinations or all edge cases.
+
+**Remaining before a stable v1.2.0:** full compiler/runtime and numerical matrix,
+advanced class/loop/library options on all formulas, source/test ZIP project
+exports, premium dark UI/UX and broader accessibility acceptance tests.
+**HyunStudio GitHub Sponsors is still approval-pending**; payment and donation
+controls stay inactive until approval and destination verification.
 
 ## v1.2.0-alpha.10 — IRR and Amortization in 14 Languages (partial implementation)
 

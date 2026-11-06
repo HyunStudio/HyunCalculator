@@ -1,22 +1,24 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.10)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.11)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.10)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.11)
 
-- **Source-generation coverage:** **410/462 (88.7%)**, comprising Python **33/33** and the other 13 target languages **29/33** each. **4 formulas / 52 non-Python combinations** remain.
-- **New FIN-005:** IRR (annual/per-period decimal rate) with 680 sampled rates over [-0.9999,1e5], sign-change detection, up to 120 steps of bisection and multiple-root rejection for detected roots (1e-7 deduplication). The finite scan may miss tangent/off-grid IRRs, as in the original Python calculator; not a mathematically complete solver. Cash flows must be finite and include positive and negative values, 2–10000 entries.
-- **New FIN-006:** Loan amortization for one specified installment. Result order for non-Python targets: [payment,interest,principal_paid,remaining_balance]; Python preserves named dictionary output. Rate is decimal per payment period, with a dedicated near-zero-rate path; check principal>=0, rate>-1, n>=1, period in [1,n].
-- **Implementation options:** function-only, automatic iteration, standard mathematical dependencies, canonical parameter names. Unsupported class, explicit loop or rename combinations fail closed.
-- **Verification:** selected generated C/C++/JavaScript/TypeScript/Java/Swift/Kotlin/Go examples compiled and numerically matched a hand-calculated expected result for both models; **R/C#/Rust/MATLAB/Julia runtime verification is pending**. Python generated source still uses verified v1.1 algorithms. New Python unit and optional toolchain smoke tests included; full 410/462 numerical verification is not complete.
-- **Remaining four Python-only formulas:** STAT-001 normal PDF/CDF/quantile, STAT-002 sample covariance/correlation, RISK-003 Sharpe/Sortino/drawdown performance, STRAT-002 single-asset cost-aware backtest. Non-Python generation count remaining **52**.
-- **Sponsors:** HyunStudio GitHub Sponsors is still **pending approval**; payment/donation links remain disabled and no unverified PayPal destination is published.
-- Work remains alpha-level until the complete emitter matrix and broad runtime/numeric verification, advanced user implementation options, project bundles and accessible premium UI are delivered.
+- **Source generator now covers all 462/462 formula-language pairs:** all 33 existing Financial/Quant functions in Python and each of the thirteen other languages. This is **not** a claim of full compiler, runtime or numerical verification in every language.
+- **New STAT-001:** native normal z-score/PDF/CDF/survival/PPF; five-term CDF approximation with roughly <8e-8 absolute error in normal ranges, Acklam inverse-normal approximation. Python remains SciPy-backed. Extreme-tail numerical error requires further validation.
+- **New STAT-002:** sample covariance (ddof=1) and correlation of observations-by-assets matrices, at least 3 rows/2 assets, zero-variance correlation NaN. Non-Python return is row-major flattened covariance followed by correlation (2*m*m entries); C requires a caller-allocated output buffer.
+- **New RISK-003:** annual mean, sample volatility, Sharpe/Sortino, maximum drawdown and total compounded return, six-value fixed result layout. Inputs are simple per-period decimal returns, finite per-period risk-free rate, and positive periods/year.
+- **New STRAT-002:** cost-aware one-asset backtest with one-period-delayed targets, bps commission/slippage on absolute turnover, no initial exposure or end liquidation fee, 12 summary metrics plus delayed positions, net returns and starting-at-one equity and buy-and-hold curves. Non-Python output length is 4*n+14.
+- **Verification:** source emission across all 462 pairs is exercised in Python CI tests. Representative generated code from the four new models compiled/ran and matched expected numerical values on **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go**. **R, C#, Rust, MATLAB and Julia are not runtime-verified here**. Remaining risk: full language toolchain CI, output/edge-contract parity, extreme tails, memory/overflow limits.
+- **Options:** advanced choices (class, for/while, numeric library imports, custom variable mappings) remain selectively implemented. New non-Python adapters allow function/automatic iteration/standard libraries/canonical names; unsupported choices fail closed.
+- **Outstanding:** comprehensive 462-pair compile/run and numerical verification, packaged source/test/README ZIP export, full premium dark/large-text accessibility UI, advanced language-specific algorithm options.
+- **Sponsors:** HyunStudio Sponsors profile pending approval. No live payment button or unverified PayPal URL until approval.
+- This is alpha source-generation **feature coverage only**, not a finished release or financial production certification. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -299,4 +301,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.10은 Python 전체 33개와 다른 13개 언어 각각 29개 수식, 총 **410/462개 생성 조합(88.7%)**을 제공한다. 아직 **4개 수식 × 13개 언어 = 52개 조합** 및 전체 컴파일·수치 검증, 고급 옵션과 UI/UX 적용이 남아 있다. Sponsors 승인 전 후원 결제 기능은 비활성이다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.11은 **33개 수식 × 14개 언어 = 462/462개 조합의 소스코드 생성**을 지원한다. 이는 코드 생성 범위 달성이지 모든 언어의 컴파일·수치 검증 완료를 뜻하지 않는다. 특히 R·C#·Rust·MATLAB·Julia는 런타임 검증이 필요하며, 고급 옵션·ZIP 내보내기·다크 UI/UX는 미완성이다. GitHub Sponsors 승인 전 결제 버튼은 비활성 상태다.

@@ -20,9 +20,9 @@ class StochasticCodegenTests(unittest.TestCase):
     def test_coverage(self):
         items=catalog()
         self.assertEqual(len(items),33)
-        self.assertEqual(sum(len(x.supported_languages) for x in items),410)
-        self.assertEqual(sum(len(x.supported_languages)==14 for x in items),29)
-        self.assertEqual(sum(len(x.supported_languages)==1 for x in items),4)
+        self.assertEqual(sum(len(x.supported_languages) for x in items),462)
+        self.assertEqual(sum(len(x.supported_languages)==14 for x in items),33)
+        self.assertEqual(sum(len(x.supported_languages)==1 for x in items),0)
         for fid in IDS:
             self.assertEqual(get_formula(fid).supported_languages, LANGUAGES)
 

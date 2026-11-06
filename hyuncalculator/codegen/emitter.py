@@ -404,6 +404,15 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
         from .portable_finance import SUPPORTED as FINANCE_PROFILES, generate_finance
         if formula.function in FINANCE_PROFILES:
             return generate_finance(fn,formula,opt)
+        from .portable_stats import SUPPORTED as STAT_PROFILES, generate_stats
+        if formula.function in STAT_PROFILES:
+            return generate_stats(fn,formula,opt)
+        from .portable_performance import SUPPORTED as PERFORMANCE_PROFILES, generate_performance
+        if formula.function in PERFORMANCE_PROFILES:
+            return generate_performance(fn,formula,opt)
+        from .portable_backtest import SUPPORTED as BACKTEST_PROFILES, generate_backtest
+        if formula.function in BACKTEST_PROFILES:
+            return generate_backtest(fn,formula,opt)
         if formula.function == 'qf_ytm':
             from .portable_ytm import generate_ytm
             return generate_ytm(fn,formula,opt)

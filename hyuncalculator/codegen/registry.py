@@ -43,6 +43,7 @@ class Formula:
 # remain discoverable but cannot silently generate incomplete code.
 MULTILANG = frozenset(('fin_fv','fin_pv','fin_pmt','fin_npv',
                         'fin_cagr','fin_effective','fin_annuity','fin_irr','fin_loan',
+                        'qf_normal','qf_cov','qf_performance','qf_backtest',
                         'qf_garch','qf_gbm','qf_ou','qf_cost',
                         'qf_gmv','qf_target','qf_bl','qf_mc','qf_brownian','qf_gbm_paths','qf_ou_paths','qf_bond','qf_ewma','qf_ytm','qf_hist_var','qf_moving','qf_portfolio','qf_bs','qf_iv','qf_normal_var'))
 # The full catalog is exportable as standalone Python. Only a subset has
