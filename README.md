@@ -1,65 +1,63 @@
 # HyunCalculator
 
-**v1.2.0-alpha.4** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.5** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.4 — Four more quantitative models (partial implementation)
+## v1.2.0-alpha.5 — Implied Volatility and Normal VaR/ES (partial implementation)
 
-**Code generation:** the existing 33 Financial/Quant calculations remain available in the
-calculator, and all 33 generate standalone Python. **18 of the 33** now generate
-source in **all 14 target languages**: Python, R, C, C++, JavaScript, TypeScript,
-Java, C#, Swift, Kotlin, Go, Rust, MATLAB and Julia. That is **267 / 462**
-source-generation pairs (33 Python + 18×13 non-Python), or 57.8%. The remaining
-**15 formulas** support Python only, leaving **195 unfinished pairs**. Unsupported
-combinations fail explicitly rather than generating placeholder code.
+The v1.1.0 calculator still supports **33 Financial/Quant formulas**. The Formula
+Generator now exports standalone **Python for all 33** and source in **all 14
+languages for 20 formulas**: Python, R, C, C++, JavaScript, TypeScript, Java,
+C#, Swift, Kotlin, Go, Rust, MATLAB, and Julia. **293 of 462 requested source
+pairs (63.4%)** are implemented; **13 formulas remain Python-only**, leaving
+**169 non-Python pairs**. The generator rejects unsupported pairs explicitly.
 
-**Four new full-language formulas:**
+### Newly available in 14 languages
 
-| Formula ID | Source function | Generated computation | Output interface |
-|---|---|---|---|
-| `DERIV-001` | `qf_bs` | Dividend-adjusted European Black–Scholes, call/put, Delta/Gamma/Vega/Theta/Rho | 6 ordered numbers (or named R/Julia/MATLAB results) |
-| `PORT-001` | `qf_portfolio` | Expected return, volatility, Sharpe with fully-invested weights and symmetric positive-definite covariance | 3 numbers; native 2D matrix except C row-major flat covariance |
-| `RISK-001` | `qf_hist_var` | Signed-loss historical VaR with linear empirical quantile and inclusive tail ES | 2 numbers |
-| `TS-003` | `qf_moving` | Complete-window SMA and first-observation-seeded EMA | Last values **and entire series**; C caller supplies output buffers |
+| Formula ID | Implementation | Key numerical conventions |
+| --- | --- | --- |
+| `DERIV-002` — `qf_iv` | Invert European call/put Black–Scholes price using bounded bisection and the shared dividend-adjusted Black–Scholes helper | Spot/strike/price in matching currency units, T in years, rates/vol decimals; no-arbitrage bounds; maximum volatility bracket 10.0; returns NaN or error on invalid/no bracket according to target language |
+| `RISK-002` — `qf_normal_var` | Gaussian signed-loss VaR and expected shortfall using the Acklam rational inverse-standard-normal approximation | Outputs `[VaR, ES]` (R/Julia use named outputs), `confidence` in (0,1), mean/vol in the same **per-period** units; approximation ~1e-9 in z under normal conditions |
 
-**Compatibility and validation:** The four new profiles use a fixed
-**function-style** interface and `auto` iteration mode. Parameter renaming,
-class wrappers and alternative algorithms for these profiles are not yet supported;
-unsupported settings raise an explicit error. Mathematical conventions mirror
-`hyuncalculator/quant.py`, including the one-sided historical loss definition,
-`Vega` and `Rho` units per 1.00 of annual volatility/rate, and Black–Scholes
-`T=0`/`sigma=0` undefined Greeks as NaN. The Black–Scholes normal CDF uses a
-convergent-series approximation with approximately 1e-15 absolute accuracy on
--8 <= x <= 8; extreme tails are saturated and outputs must be verified for
-sensitive applications. The portable portfolio adapter uses Cholesky SPD checks;
-near-singular boundary behavior can differ from the Python eigenvalue criterion.
+For non-Python `DERIV-002`, an internal Black–Scholes helper is bundled to keep
+an exported file standalone without scientific dependencies. `RISK-002` uses
+standard mathematical functions only. Python retains the existing SciPy numerical
+reference. These two new profiles support function structure, automatic iteration,
+and fixed input names only; unsupported Class/Loop/rename requests fail clearly.
 
-**Tests:** 104 local Python unittest/regression tests pass. Selected C, C++,
-JavaScript, TypeScript, Java, Swift, Kotlin and Go generated programs compiled
-or executed and matched the calculator's reference outputs on representative
-Black–Scholes, historical VaR, moving-average and portfolio cases. Additional
-R, C#, Rust, MATLAB and Julia output was generated but **not runtime-verified**
-in this environment. Source generation does not certify production quality or
-financial suitability; existing GitHub CI runs Python 3.11 and 3.12 unit tests.
-Optional toolchain checks are available under `tests/toolchain_bs_smoke.py`,
-`tests/toolchain_series_smoke.py` and `tests/toolchain_portfolio_smoke.py`.
+**Verification:** **109 local automated regression/generation tests** pass.
+Representative C/C++/JavaScript/TypeScript/Java/Swift/Kotlin/Go generated code
+was compiled/executed and compared with the existing Python calculator on
+multiple cases. **R, C#, Rust, MATLAB and Julia have not been executed in
+this environment**; generation is NOT proof of language-wide numerical validity.
+The optional executable sample check is `python tests/toolchain_iv_normal_smoke.py`
+(requires the target-language toolchains). Previous model-specific smoke tests
+remain under `tests/toolchain_*_smoke.py`.
 
-**Earlier portable profiles remain supported:** 7 original financial calculations,
-GARCH(1,1), GBM/OU moments, transaction costs, coupon-bond price/duration,
-YTM, and EWMA. The original Scientific, Graphing, Financial, Quant, Programmer,
-and ML/DL/RL calculator screens are preserved.
+**Constraints:** Large or near-singular inputs, extreme normal-tail probabilities,
+and near-arbitrage IV boundaries require independent numerical verification.
+Code generation is an educational/research feature, not a trading engine or
+investment recommendation. A given language's compiled/run status must be
+tracked separately from its generation status.
 
-The full 462-pair runtime validation matrix, advanced dependency choice,
-project ZIP bundles, universal custom variable/structure controls and premium
-dark UI redesign are **not complete**. The [v1.2 specification](docs/FORMULA_TO_CODE_V1_2_DESIGN.md)
-tracks progress and open items. The sponsor status remains **pending approval**;
-no donation or PayPal payment link is activated.
+**Previous alpha.4 support preserved:** dividend-adjusted Black–Scholes/Greeks,
+portfolio statistics, empirical VaR/ES, SMA/EMA, bond pricing/duration/YTM,
+EWMA, GARCH(1,1), GBM/OU analytical moments, transaction costs and original
+financial calculations. The original ML/DL/RL and other calculator screens remain.
+
+The complete 462-pair compiler/numerical verification matrix, advanced algorithm
+and import selection, project ZIP bundles, and premium dark UI redesign are **not
+complete**. See [v1.2 design specification](docs/FORMULA_TO_CODE_V1_2_DESIGN.md).
+HyunStudio Sponsors remains **pending approval**; no live donation or PayPal
+payment button is enabled.
 
 ### CLI examples / 코드 생성 예제
 
 ~~~bash
 python -m hyuncalculator --list-formulas
+python -m hyuncalculator --generate DERIV-002 --language C++ --output iv.cpp
+python -m hyuncalculator --generate RISK-002 --language TypeScript --output normal_var.ts
 python -m hyuncalculator --generate DERIV-001 --language Python --output black_scholes.py
 python -m hyuncalculator --generate STRAT-002 --language Python --output backtest.py
 python -m hyuncalculator --generate TS-002 --language JavaScript --output garch.js
@@ -74,7 +72,7 @@ The bilingual Code Generator tab offers formula/language selection, source
 preview, copy and save. Non-supported language/formula combinations are disabled.
 The generated code is **not executed automatically by the UI**.
 The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) describes the
-remaining 195 source-generation combinations, systematic toolchain testing,
+remaining 169 source-generation combinations, systematic toolchain testing,
 advanced model algorithms, output packaging and accessibility goals.
 Existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL calculators
 are preserved.

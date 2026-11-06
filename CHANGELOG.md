@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.0-alpha.5 — Implied Volatility and Gaussian VaR/ES (2026-11-06)
+
+- Added **DERIV-002** option implied volatility via bounded Black–Scholes inversion for all 13 non-Python languages, reusing the verified dividend-adjusted price helper and explicit no-arbitrage bounds.
+- Added **RISK-002** normal signed-loss VaR/ES via shared Acklam inverse-normal polynomial approximation for all 13 non-Python languages. Python retains SciPy inverse-normal reference.
+- Source-generation coverage rises to **293 / 462 combinations (33 Python + 20×13 others)**; 13 formulas remain Python-only and 169 non-Python pairs outstanding.
+- **109 Python regression/generator tests** pass locally, including the coverage matrix, custom names, forbidden settings, reference results and invalid inputs. Selected C/C++/JS/TS/Java/Swift/Kotlin/Go examples compiled/executed and matched reference values. Uninstalled R/C#/Rust/MATLAB/Julia runtimes are explicitly not verified.
+- New models remain function-only with fixed inputs and standard math; unsupported advanced settings are rejected. No incomplete placeholders are exported.
+- Maintained HyunStudio Sponsors pending-approval state and disabled payment links; all existing calculator functionality remains.
+- Full 462-way runtime verification, advanced library choice, project ZIP export and premium UI rollout remain planned.
+
 ## v1.2.0-alpha.4 — Black–Scholes, Historical VaR/ES, Moving Averages and Portfolio (2026-11-06)
 
 - Added **DERIV-001** Black–Scholes with call/put, dividend yield and all five Greeks using a high-accuracy series standard-normal CDF in each of 13 non-Python languages.

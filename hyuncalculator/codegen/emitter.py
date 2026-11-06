@@ -383,6 +383,12 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
         from .portable_bs import SUPPORTED as BS_PROFILES, generate_bs
         if formula.function in BS_PROFILES:
             return generate_bs(fn,formula,opt)
+        from .portable_iv import SUPPORTED as IV_PROFILES, generate_iv
+        if formula.function in IV_PROFILES:
+            return generate_iv(fn,formula,opt)
+        from .portable_normal_risk import SUPPORTED as NORMAL_RISK_PROFILES, generate_normal_risk
+        if formula.function in NORMAL_RISK_PROFILES:
+            return generate_normal_risk(fn,formula,opt)
         if formula.function == 'qf_ytm':
             from .portable_ytm import generate_ytm
             return generate_ytm(fn,formula,opt)
