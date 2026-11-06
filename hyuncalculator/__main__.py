@@ -17,7 +17,12 @@ def main():
     parser.add_argument('--class-name', default='GeneratedCalculator', help='Name for class structure')
     parser.add_argument('--rename', metavar='OLD=NEW', action='append', default=[], help='Rename a canonical input parameter')
     parser.add_argument('--output', metavar='PATH', help='Write generated UTF-8 source file; otherwise print to stdout')
+    parser.add_argument('--bundle', metavar='ZIP_PATH', help='Export source, manifest and offline integrity tests as a ZIP project')
     args = parser.parse_args()
+    if args.bundle and args.output:
+        parser.error('--bundle and --output cannot be used together')
+    if args.bundle and not args.generate:
+        parser.error('--bundle requires --generate FORMULA_ID')
     if args.test:
         import unittest
         import pathlib
@@ -36,13 +41,22 @@ def main():
                 if '=' not in pair: raise GenerationError('--rename requires OLD=NEW')
                 original,new=(s.strip() for s in pair.split('=',1))
                 renames.append((original,new))
-            code = generate(args.generate, GenerationOptions(language=args.language,
+            options = GenerationOptions(language=args.language,
                 structure=args.structure, iteration=args.loop, imports=args.imports,
                 variant=args.variant, function_name=args.function_name,
-                class_name=args.class_name,variable_names=tuple(renames)))
+                class_name=args.class_name,variable_names=tuple(renames))
+            code = generate(args.generate, options)
         except GenerationError as exc:
             parser.error(str(exc))
-        if args.output:
+        if args.bundle:
+            from pathlib import Path
+            from .codegen.bundle import bundle_bytes
+            try:
+                Path(args.bundle).write_bytes(bundle_bytes(args.generate, options))
+            except (OSError, GenerationError) as exc:
+                parser.error(str(exc))
+            print(f'Project ZIP: {args.bundle}')
+        elif args.output:
             from pathlib import Path
             Path(args.output).write_text(code, encoding='utf-8')
             print(f'Generated: {args.output}')

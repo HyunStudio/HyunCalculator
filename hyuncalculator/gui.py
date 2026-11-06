@@ -297,6 +297,8 @@ class CodeGeneratorTab:
         self.copy_btn.pack(side='left',padx=4)
         self.save_btn=ttk.Button(fn_row,command=self.save)
         self.save_btn.pack(side='left',padx=4)
+        self.bundle_btn=ttk.Button(fn_row,command=self.save_bundle)
+        self.bundle_btn.pack(side='left',padx=4)
         row=ttk.Frame(self.frame);row.grid(row=5,column=0,sticky='ew',pady=(0,8))
         ttk.Label(row,text='Class / 클래스명').pack(side='left',padx=(0,8))
         ttk.Entry(row,textvariable=self.class_name,width=25).pack(side='left',padx=(0,20))
@@ -318,7 +320,7 @@ class CodeGeneratorTab:
         scrollbar.grid(row=0,column=1,sticky='ns');self.code.configure(yscrollcommand=scrollbar.set)
         hscroll=ttk.Scrollbar(preview_frame,orient='horizontal',command=self.code.xview)
         hscroll.grid(row=1,column=0,sticky='ew');self.code.configure(xscrollcommand=hscroll.set)
-        self.last_code=None
+        self.last_code=None;self.last_options=None
         self.target.trace_add('write', lambda *_: self._availability_changed())
         self._selection_changed()
         self.refresh_language()
@@ -330,10 +332,10 @@ class CodeGeneratorTab:
         self.loop.set('auto')
         self.variant.set('periodic')
         self.formula_label.configure(text=f'{f.id}: {f.formula}')
-        self.last_code=None
+        self.last_code=None;self.last_options=None
         self.code.delete('1.0','end')
         self.copy_btn.configure(state='disabled')
-        self.save_btn.configure(state='disabled')
+        self.save_btn.configure(state='disabled');self.bundle_btn.configure(state='disabled')
         self._availability_changed()
 
     def _availability_changed(self):
@@ -342,8 +344,8 @@ class CodeGeneratorTab:
         available=language in f.supported_languages
         self.generate_btn.configure(state='normal' if available else 'disabled')
         self.copy_btn.configure(state='disabled')
-        self.save_btn.configure(state='disabled')
-        self.last_code=None
+        self.save_btn.configure(state='disabled');self.bundle_btn.configure(state='disabled')
+        self.last_code=None;self.last_options=None
         self.code.delete('1.0','end')
         if available:
             self.status.set(f'{f.id}: {language} code generation available (not verified in-app).')
@@ -353,11 +355,12 @@ class CodeGeneratorTab:
     def refresh_language(self):
         korean=self.language_getter()=='ko'
         self.title.configure(text='수학식 → 코드 생성 | Formula to Code' if korean else 'Formula to Code Generator')
-        self.description.configure(text=('33개 수식 · Python 전체 지원 · 기타 13개 언어는 11개 수식 지원 · 미지원 조합 차단' if korean else
-                                          '33 Python formulas · 11 multi-language formulas · unsupported combinations blocked'))
+        self.description.configure(text=('33개 수식 × 14개 언어 코드 생성 · 모든 코드의 실행 검증 완료를 의미하지 않음' if korean else
+                                          '33 formulas × 14 languages · source generated, runtime verification pending'))
         self.generate_btn.configure(text='코드 생성' if korean else 'Generate')
         self.copy_btn.configure(text='복사' if korean else 'Copy')
         self.save_btn.configure(text='파일 저장' if korean else 'Save file')
+        self.bundle_btn.configure(text='프로젝트 ZIP' if korean else 'Project ZIP')
 
     def preview(self):
         from .codegen.emitter import EXTENSIONS
@@ -376,17 +379,37 @@ class CodeGeneratorTab:
             code=self._generate(f.id,opts)
         except self._generation_error as exc:
             self.status.set(f'Unavailable / 미지원: {exc}')
-            self.last_code=None
-            self.copy_btn.configure(state='disabled');self.save_btn.configure(state='disabled')
+            self.last_code=None;self.last_options=None
+            self.copy_btn.configure(state='disabled');self.save_btn.configure(state='disabled');self.bundle_btn.configure(state='disabled')
             return
-        self.last_code=code
+        self.last_code=code;self.last_options=opts
         self.code.delete('1.0','end');self.code.insert('1.0',code)
         self.status.set(f'Generated {len(code)} chars · {f.id} · {opts.language} · Compilation and numeric verification not performed in-app.')
-        self.copy_btn.configure(state='normal');self.save_btn.configure(state='normal')
+        self.copy_btn.configure(state='normal');self.save_btn.configure(state='normal');self.bundle_btn.configure(state='normal')
 
     def copy(self):
         if self.last_code is not None:
             self.frame.clipboard_clear();self.frame.clipboard_append(self.last_code)
+
+    def save_bundle(self):
+        # Regenerate from current controls so stale previews can never be bundled.
+        self.preview()
+        if self.last_code is None or self.last_options is None:
+            return
+        from .codegen.bundle import bundle_bytes
+        formula_id=self.selected.get().split()[0]
+        target=filedialog.asksaveasfilename(title='Export standalone project ZIP',
+                                             initialfile=f'{formula_id}_{self.target.get()}.zip',
+                                             defaultextension='.zip',
+                                             filetypes=[('ZIP archives','*.zip'),('All files','*.*')])
+        if not target:
+            return
+        try:
+            from pathlib import Path
+            Path(target).write_bytes(bundle_bytes(formula_id,self.last_options))
+            self.status.set('Project ZIP saved · source + examples + integrity tests. Numerical certification is not included.')
+        except (OSError,self._generation_error) as exc:
+            messagebox.showerror('ZIP export failed',str(exc))
 
     def save(self):
         if self.last_code is None:return

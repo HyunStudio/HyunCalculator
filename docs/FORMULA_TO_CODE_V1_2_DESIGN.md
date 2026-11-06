@@ -1,24 +1,22 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.11)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.12)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.11)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.12)
 
-- **Source generator now covers all 462/462 formula-language pairs:** all 33 existing Financial/Quant functions in Python and each of the thirteen other languages. This is **not** a claim of full compiler, runtime or numerical verification in every language.
-- **New STAT-001:** native normal z-score/PDF/CDF/survival/PPF; five-term CDF approximation with roughly <8e-8 absolute error in normal ranges, Acklam inverse-normal approximation. Python remains SciPy-backed. Extreme-tail numerical error requires further validation.
-- **New STAT-002:** sample covariance (ddof=1) and correlation of observations-by-assets matrices, at least 3 rows/2 assets, zero-variance correlation NaN. Non-Python return is row-major flattened covariance followed by correlation (2*m*m entries); C requires a caller-allocated output buffer.
-- **New RISK-003:** annual mean, sample volatility, Sharpe/Sortino, maximum drawdown and total compounded return, six-value fixed result layout. Inputs are simple per-period decimal returns, finite per-period risk-free rate, and positive periods/year.
-- **New STRAT-002:** cost-aware one-asset backtest with one-period-delayed targets, bps commission/slippage on absolute turnover, no initial exposure or end liquidation fee, 12 summary metrics plus delayed positions, net returns and starting-at-one equity and buy-and-hold curves. Non-Python output length is 4*n+14.
-- **Verification:** source emission across all 462 pairs is exercised in Python CI tests. Representative generated code from the four new models compiled/ran and matched expected numerical values on **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go**. **R, C#, Rust, MATLAB and Julia are not runtime-verified here**. Remaining risk: full language toolchain CI, output/edge-contract parity, extreme tails, memory/overflow limits.
-- **Options:** advanced choices (class, for/while, numeric library imports, custom variable mappings) remain selectively implemented. New non-Python adapters allow function/automatic iteration/standard libraries/canonical names; unsupported choices fail closed.
-- **Outstanding:** comprehensive 462-pair compile/run and numerical verification, packaged source/test/README ZIP export, full premium dark/large-text accessibility UI, advanced language-specific algorithm options.
-- **Sponsors:** HyunStudio Sponsors profile pending approval. No live payment button or unverified PayPal URL until approval.
-- This is alpha source-generation **feature coverage only**, not a finished release or financial production certification. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Source emission matrix:** still **462/462** (33 Financial/Quant formulas × 14 languages). This does not establish all combinations are compiler/runtime or numerically verified.
+- **Project ZIP implementation:** CLI `--generate FORMULA_ID --language TARGET --bundle OUTPUT.zip`, GUI **Project ZIP** action, pure in-memory deterministic `bundle_bytes`. Fixed safe archive paths; Java source basename honors public class rules; no downloaded/untrusted content is executed.
+- **Bundle contents:** generated source, SHA-256 source digest and generator options in manifest, raw input field examples (not golden expected values), README/toolchain hints, Python import-based NumPy/SciPy requirements and minimal JS/TS/Go/C# project metadata when relevant.
+- **Tests:** new ZIP tests include 14-language archive generation across representative formulas, all 33 Python formulas, byte-for-byte reproducibility, archive entry safety, Python dependency metadata, extracted offline integrity check, checksum tamper detection, and CLI validation.
+- **Verification caveat:** the bundled integrity test checks source bytes and Python AST only; it does **not** execute generated numerical algorithms or replace independent golden-value tests, full compiler/runtime matrix or financial review. R/C#/Rust/MATLAB/Julia and numerous other source combinations still lack exhaustive runtime/numeric verification.
+- **Remaining:** broad 462-pair toolchain and numeric validation (with explicit unsupported/skip reporting), advanced class/algorithm/loop/import options and full premium dark large-text accessible interface.
+- **Sponsors:** approval pending; no real donation payment link/button until verified.
+- This document remains an alpha progress report and a separate target-state design.
 
 ## 1. 목적과 핵심 원칙
 
@@ -301,4 +299,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.11은 **33개 수식 × 14개 언어 = 462/462개 조합의 소스코드 생성**을 지원한다. 이는 코드 생성 범위 달성이지 모든 언어의 컴파일·수치 검증 완료를 뜻하지 않는다. 특히 R·C#·Rust·MATLAB·Julia는 런타임 검증이 필요하며, 고급 옵션·ZIP 내보내기·다크 UI/UX는 미완성이다. GitHub Sponsors 승인 전 결제 버튼은 비활성 상태다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.12는 462/462 소스 생성 범위를 유지하며 CLI/GUI에서 독립 프로젝트 ZIP을 생성한다. ZIP에는 소스·예제·옵션·SHA-256 무결성 테스트 및 필요한 의존성 안내가 포함된다. 이를 14개 언어 전체 실행·수치 검증 완료로 해석해서는 안 된다. 고급 옵션과 프리미엄 다크 UI/UX는 개발 중이며 Sponsors는 승인 대기다.

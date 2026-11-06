@@ -1,8 +1,40 @@
 # HyunCalculator
 
-**v1.2.0-alpha.11** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.12** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.12 — Deterministic standalone ZIP project export
+
+The Formula to Code GUI now includes **Project ZIP / 프로젝트 ZIP**, and the
+CLI supports `--generate FORMULA_ID --language LANGUAGE --bundle OUTPUT.zip`.
+
+A ZIP contains:
+- `source/<file>`: code from the existing audited language-specific emitter;
+- `manifest.json`: selected formula, source digest, options, generator version,
+  and an explicit `runtime_verified: false` flag;
+- `examples/sample_inputs.json`: raw field examples (not fabricated executable test vectors);
+- `tests/test_integrity.py`: **offline SHA-256 source integrity test** and
+  Python syntax parsing when applicable;
+- `README.md`: toolchain guidance and numerical-verification warnings;
+- `requirements.txt` for Python (inferred from actual NumPy/SciPy source imports),
+  plus relevant small language project files for JS, TS, Go or C#.
+
+```bash
+python -m hyuncalculator --generate FIN-005 --language Python --bundle irr_project.zip
+python -m hyuncalculator --generate ALLOC-003 --language C++ --bundle bl_project.zip
+python -m hyuncalculator --generate STAT-001 --language Java --bundle normal_project.zip
+```
+
+ZIP entry names are fixed and validated, and archive timestamps, ordering and
+metadata are deterministic. Tests verify archive reproducibility, source digests,
+language-specific scaffolding, unsafe identifier rejection and CLI conflict
+handling. The bundled integrity test intentionally **does not execute generated
+financial code or claim numerical/algorithm certification**; use a verified
+reference and the appropriate external compiler/toolchain before production.
+All **462/462 source combinations** remain supported, but **full compiler and
+numeric validation across 14 languages is still incomplete**. Premium dark
+GUI redesign and advanced structure/algorithm/import selection also remain pending.
 
 ## v1.2.0-alpha.11 — 462/462 formula-language source combinations (alpha)
 

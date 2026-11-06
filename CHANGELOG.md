@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.0-alpha.12 — Reproducible ZIP Exports (2026-11-06)
+
+- Added deterministic `bundle_bytes()` ZIP export for all 462 generated source
+  profiles, including source, raw example fields, option manifest with SHA-256,
+  offline integrity test, README and language dependency/compilation hints.
+- New `--bundle OUTPUT.zip` CLI switch with validation that it is not combined
+  with `--output`, and a bilingual **Project ZIP** button in the generator GUI.
+- Added bundle safety, reproducibility, integrity, Python syntax and CLI tests.
+  Archive contents do not execute generated code or assert numerical correctness.
+- Source-emission matrix remains 462/462; cross-language compiler/numerical
+  certification and premium UI/advanced options remain follow-up tasks.
+- HyunStudio Sponsors remains pending; no payment controls enabled.
+
 ## v1.2.0-alpha.11 — All 462 Source-Generation Pairs (2026-11-06)
 
 - Added **STAT-001 normal PDF/CDF/PPF, STAT-002 covariance/correlation,
