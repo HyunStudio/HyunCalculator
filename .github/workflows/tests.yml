@@ -171,3 +171,38 @@ jobs:
         env:
           MPLBACKEND: Agg
         run: python tests/toolchain_octave_smoke.py
+
+  compile-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['C', 'C++', 'JavaScript', 'TypeScript']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - uses: actions/setup-node@v4
+        if: matrix.language == 'JavaScript' || matrix.language == 'TypeScript'
+        with:
+          node-version: '22'
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Install TypeScript compiler
+        if: matrix.language == 'TypeScript'
+        run: npm install --global typescript@5.9.3
+      - name: Check required compiler
+        run: |
+          case "${{ matrix.language }}" in
+            C) command -v gcc ;;
+            C++) command -v g++ ;;
+            JavaScript) command -v node ;;
+            TypeScript) command -v tsc ;;
+          esac
+      - name: Build/syntax check all 33 generated formula sources
+        env:
+          MPLBACKEND: Agg
+        run: python tests/toolchain_compile_matrix.py --language "${{ matrix.language }}"
