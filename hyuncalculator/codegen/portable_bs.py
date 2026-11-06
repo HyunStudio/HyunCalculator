@@ -33,7 +33,7 @@ hyun_cdf <- function(x) {{
     return(c(Price=if(sign==1)call else put,Delta=NaN,Gamma=NaN,Vega=0,Theta=NaN,Rho=NaN))}}
   root<-sigma*sqrt(t);d1<-(log(s/k)+(r-q+0.5*sigma*sigma)*t)/root;d2<-d1-root
   dq<-exp(-q*t);dr<-exp(-r*t);pdf<-exp(-0.5*d1*d1)*0.39894228040143267794
-  price<-sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2))
+  price<-max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)))
   delta<-sign*dq*hyun_cdf(sign*d1);gamma<-dq*pdf/(s*root);vega<-s*dq*pdf*sqrt(t)
   theta<--s*dq*pdf*sigma/(2*sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2)
   rho<-sign*k*t*dr*hyun_cdf(sign*d2)
@@ -57,7 +57,7 @@ function result = {fn}(s,k,t,r,sigma,q,option)
   end
   root=sigma*sqrt(t);d1=(log(s/k)+(r-q+0.5*sigma^2)*t)/root;d2=d1-root;
   dq=exp(-q*t);dr=exp(-r*t);pdf=exp(-0.5*d1^2)*0.39894228040143267794;
-  price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+  price=max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)));
   delta=sign*dq*hyun_cdf(sign*d1);gamma=dq*pdf/(s*root);vega=s*dq*pdf*sqrt(t);
   theta=-s*dq*pdf*sigma/(2*sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
   rho=sign*k*t*dr*hyun_cdf(sign*d2);
@@ -99,7 +99,7 @@ function {fn}(s,k,t,r,sigma,q=0.0,option="call")
   end
   root=sigma*sqrt(t);d1=(log(s/k)+(r-q+0.5*sigma^2)*t)/root;d2=d1-root
   dq=exp(-q*t);dr=exp(-r*t);pdf=exp(-0.5*d1*d1)*0.39894228040143267794
-  price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2))
+  price=max(0.0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)))
   delta=sign*dq*hyun_cdf(sign*d1);gamma=dq*pdf/(s*root);vega=s*dq*pdf*sqrt(t)
   theta=-s*dq*pdf*sigma/(2*sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2)
   rho=sign*k*t*dr*hyun_cdf(sign*d2)
@@ -127,7 +127,7 @@ HyunResult {fn}(double s,double k,double t,double r,double sigma,double q,const 
     HyunResult o={{{{sign==1?call:put,NAN,NAN,0,NAN,NAN}}}};return o;}}
   double root=sigma*sqrt(t),d1=(log(s/k)+(r-q+.5*sigma*sigma)*t)/root,d2=d1-root;
   double dq=exp(-q*t),dr=exp(-r*t),pdf=exp(-.5*d1*d1)*0.39894228040143267794;
-  double price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+  double price=fmax(0.0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)));
   double delta=sign*dq*hyun_cdf(sign*d1),gamma=dq*pdf/(s*root),vega=s*dq*pdf*sqrt(t);
   double theta=-s*dq*pdf*sigma/(2*sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
   double rho=sign*k*t*dr*hyun_cdf(sign*d2);
@@ -156,7 +156,7 @@ std::array<double,6> {fn}(double s,double k,double t,double r,double sigma,doubl
     return {{sign==1?call:put,NAN,NAN,0,NAN,NAN}};}}
   double root=sigma*std::sqrt(t),d1=(std::log(s/k)+(r-q+.5*sigma*sigma)*t)/root,d2=d1-root;
   double dq=std::exp(-q*t),dr=std::exp(-r*t),pdf=std::exp(-.5*d1*d1)*0.39894228040143267794;
-  double price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+  double price=std::max(0.0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)));
   double delta=sign*dq*hyun_cdf(sign*d1),gamma=dq*pdf/(s*root),vega=s*dq*pdf*std::sqrt(t);
   double theta=-s*dq*pdf*sigma/(2*std::sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
   double rho=sign*k*t*dr*hyun_cdf(sign*d2);
@@ -183,7 +183,7 @@ export function {fn}({params}){ret}{{
     return [sign===1?call:put,NaN,NaN,0,NaN,NaN];}}
   const root=sigma*Math.sqrt(t),d1=(Math.log(s/k)+(r-q+.5*sigma*sigma)*t)/root,d2=d1-root;
   const dq=Math.exp(-q*t),dr=Math.exp(-r*t),pdf=Math.exp(-.5*d1*d1)*0.39894228040143267794;
-  const price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+  const price=Math.max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)));
   const delta=sign*dq*hyun_cdf(sign*d1),gamma=dq*pdf/(s*root),vega=s*dq*pdf*Math.sqrt(t);
   const theta=-s*dq*pdf*sigma/(2*Math.sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
   const rho=sign*k*t*dr*hyun_cdf(sign*d2);
@@ -208,7 +208,7 @@ public class GeneratedCalculator{{
       return new double[]{{sign==1?call:put,Double.NaN,Double.NaN,0,Double.NaN,Double.NaN}};}}
     double root=sigma*Math.sqrt(t),d1=(Math.log(s/k)+(r-q+.5*sigma*sigma)*t)/root,d2=d1-root;
     double dq=Math.exp(-q*t),dr=Math.exp(-r*t),pdf=Math.exp(-.5*d1*d1)*0.39894228040143267794;
-    double price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+    double price=Math.max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)));
     double delta=sign*dq*hyun_cdf(sign*d1),gamma=dq*pdf/(s*root),vega=s*dq*pdf*Math.sqrt(t);
     double theta=-s*dq*pdf*sigma/(2*Math.sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
     double rho=sign*k*t*dr*hyun_cdf(sign*d2);
@@ -235,7 +235,7 @@ public static class GeneratedCalculator{{
       return new double[]{{sign==1?call:put,double.NaN,double.NaN,0,double.NaN,double.NaN}};}}
     double root=sigma*Math.Sqrt(t),d1=(Math.Log(s/k)+(r-q+.5*sigma*sigma)*t)/root,d2=d1-root;
     double dq=Math.Exp(-q*t),dr=Math.Exp(-r*t),pdf=Math.Exp(-.5*d1*d1)*0.39894228040143267794;
-    double price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+    double price=Math.Max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)));
     double delta=sign*dq*hyun_cdf(sign*d1),gamma=dq*pdf/(s*root),vega=s*dq*pdf*Math.Sqrt(t);
     double theta=-s*dq*pdf*sigma/(2*Math.Sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
     double rho=sign*k*t*dr*hyun_cdf(sign*d2);
@@ -260,7 +260,7 @@ func {fn}(_ s:Double,_ k:Double,_ t:Double,_ r:Double,_ sigma:Double,_ q:Double,
     return [sign==1 ? call : put,Double.nan,Double.nan,0,Double.nan,Double.nan]}}
   let root=sigma*sqrt(t),d1=(log(s/k)+(r-q+0.5*sigma*sigma)*t)/root
   let d2=d1-root,dq=exp(-q*t),dr=exp(-r*t),pdf=exp(-0.5*d1*d1)*0.39894228040143267794
-  let price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2))
+  let price=max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)))
   let delta=sign*dq*hyun_cdf(sign*d1),gamma=dq*pdf/(s*root),vega=s*dq*pdf*sqrt(t)
   let theta = -s*dq*pdf*sigma/(2*sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2)
   let rho=sign*k*t*dr*hyun_cdf(sign*d2)
@@ -284,7 +284,7 @@ fun {fn}(s:Double,k:Double,t:Double,r:Double,sigma:Double,q:Double,option:String
     return doubleArrayOf(if(sign==1.0)call else put,Double.NaN,Double.NaN,0.0,Double.NaN,Double.NaN)}}
   val root=sigma*sqrt(t);val d1=(ln(s/k)+(r-q+0.5*sigma*sigma)*t)/root;val d2=d1-root
   val dq=exp(-q*t);val dr=exp(-r*t);val pdf=exp(-0.5*d1*d1)*0.39894228040143267794
-  val price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2))
+  val price=max(0.0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)))
   val delta=sign*dq*hyun_cdf(sign*d1);val gamma=dq*pdf/(s*root);val vega=s*dq*pdf*sqrt(t)
   val theta=-s*dq*pdf*sigma/(2*sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2)
   val rho=sign*k*t*dr*hyun_cdf(sign*d2)
@@ -313,7 +313,7 @@ func {fn}(s,k,t,r,sigma,q float64,option string)[6]float64{{
     return [6]float64{{price,math.NaN(),math.NaN(),0,math.NaN(),math.NaN()}}}}
   root:=sigma*math.Sqrt(t);d1:=(math.Log(s/k)+(r-q+.5*sigma*sigma)*t)/root;d2:=d1-root
   dq:=math.Exp(-q*t);dr:=math.Exp(-r*t);pdf:=math.Exp(-.5*d1*d1)*0.39894228040143267794
-  price:=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2))
+  price:=math.Max(0, sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2)))
   delta:=sign*dq*hyun_cdf(sign*d1);gamma:=dq*pdf/(s*root);vega:=s*dq*pdf*math.Sqrt(t)
   theta:=-s*dq*pdf*sigma/(2*math.Sqrt(t))+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2)
   rho:=sign*k*t*dr*hyun_cdf(sign*d2)
@@ -337,7 +337,7 @@ pub fn {fn}(s:f64,k:f64,t:f64,r:f64,sigma:f64,q:f64,option:&str)->[f64;6]{{
     return [if sign==1.0{{call}}else{{put}},f64::NAN,f64::NAN,0.0,f64::NAN,f64::NAN];}}
   let root=sigma*t.sqrt();let d1=((s/k).ln()+(r-q+0.5*sigma*sigma)*t)/root;let d2=d1-root;
   let dq=(-q*t).exp();let dr=(-r*t).exp();let pdf=(-0.5*d1*d1).exp()*0.39894228040143267794;
-  let price=sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2));
+  let price=(sign*(s*dq*hyun_cdf(sign*d1)-k*dr*hyun_cdf(sign*d2))).max(0.0);
   let delta=sign*dq*hyun_cdf(sign*d1);let gamma=dq*pdf/(s*root);let vega=s*dq*pdf*t.sqrt();
   let theta=-s*dq*pdf*sigma/(2.0*t.sqrt())+sign*q*s*dq*hyun_cdf(sign*d1)-sign*r*k*dr*hyun_cdf(sign*d2);
   let rho=sign*k*t*dr*hyun_cdf(sign*d2);

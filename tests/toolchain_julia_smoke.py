@@ -27,6 +27,10 @@ JULIA_ARGS = {
 }
 
 
+from toolchain_smoke import CASES as SCALAR_CASES
+JULIA_ARGS.update({fid: args for fid, fn, args, expected in SCALAR_CASES if fid != 'FIN-001'})
+
+
 def check(formula, function, expected):
     with TemporaryDirectory(prefix='hyuncalc_julia_') as td:
         root = Path(td)

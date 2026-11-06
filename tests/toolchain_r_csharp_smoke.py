@@ -29,7 +29,15 @@ RETURNS = [.01, -.02, .03, .015, -.005]
 
 
 def cases():
-    return [
+    from toolchain_smoke import CASES as scalar_cases
+    extra = []
+    for fid, fn, args, expected in scalar_cases:
+        if fid == 'FIN-001':
+            continue
+        rargs = args.replace('[-100,60,60]', 'c(-100,60,60)')
+        csargs = args.replace('[-100,60,60]', 'new double[]{-100,60,60}')
+        extra.append((fid, fn, rargs, csargs, [expected]))
+    return extra + [
         ('FIN-001', 'fv', '1000,0.05,10', '1000,0.05,10',
          [float(future_value(1000, .05, 10))]),
         ('FIN-006', 'loan', '120000,0.005,24,12', '120000,0.005,24,12',
@@ -104,7 +112,7 @@ def check_csharp(formula, function, cs_args, expected):
         call = f'GeneratedCalculator.{function}({cs_args})'
         # Scalar output and vector output must both be converted into invariant
         # round-trip representations before comparisons.
-        if formula in ('FIN-001', 'BOND-002'):
+        if formula.startswith('FIN-') and formula != 'FIN-006' or formula == 'BOND-002':
             call = f'new double[]{{{call}}}'
         program = '''using System;
 using System.Globalization;

@@ -40,6 +40,10 @@ ARGUMENTS = {
 }
 
 
+from toolchain_smoke import CASES as SCALAR_CASES
+ARGUMENTS.update({fid: args for fid, fn, args, expected in SCALAR_CASES if fid != 'FIN-001'})
+
+
 def all_cases():
     records = [(formula, function, expected) for formula, function, _ra, _cs, expected in cases()]
     records.extend([

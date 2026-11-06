@@ -39,6 +39,15 @@ CASES = (
         2*((1000/850)**(1/4)-1)]),
 )
 
+from toolchain_smoke import CASES as SCALAR_CASES
+_EXTRA_ARGS = {
+ 'FIN-002': '1000.0,0.05,10', 'FIN-003': '120000.0,0.005,24',
+ 'FIN-004': '0.1,&[-100.0,60.0,60.0]', 'FIN-007': '100.0,150.0,3.0',
+ 'FIN-008': '0.12,12', 'FIN-009': '200.0,0.01,24',
+}
+CASES += tuple((fid, fn+'('+_EXTRA_ARGS[fid]+')', [expected])
+               for fid, fn, args, expected in SCALAR_CASES if fid != 'FIN-001')
+
 _NUMBER = re.compile(r'[-+]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][-+]?\d+)?|NaN|inf', re.I)
 
 

@@ -32,7 +32,6 @@ class RegistryTests(unittest.TestCase):
         for formula,options in [
             ('FIN-001',GenerationOptions(language='C',structure='class')),
             ('FIN-002',GenerationOptions(iteration='for')),
-            ('FIN-004',GenerationOptions(structure='class')),
             ('FIN-003',GenerationOptions(imports='numerical')),
             ('FIN-003',GenerationOptions(function_name='import')),
             ('FIN-003',GenerationOptions(function_name='foo;exec("bad")')),

@@ -48,7 +48,9 @@ jobs:
       - name: Verify remaining six formulas in C and C++
         env:
           MPLBACKEND: Agg
-        run: python tests/toolchain_native_full_numeric.py
+        run: |
+          python tests/toolchain_native_full_numeric.py
+          python tests/toolchain_class_numeric.py C++
 
   gui-smoke:
     runs-on: ubuntu-latest
@@ -284,4 +286,24 @@ jobs:
       - name: Execute all 33 formulas against numerical references
         env:
           MPLBACKEND: Agg
-        run: python tests/toolchain_extended_full_numeric.py '${{ matrix.language }}'
+        run: |
+          python tests/toolchain_extended_full_numeric.py '${{ matrix.language }}'
+          if [ '${{ matrix.language }}' != 'Go' ]; then python tests/toolchain_class_numeric.py '${{ matrix.language }}'; fi
+
+  windows-build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build dependencies
+        run: python -m pip install -r requirements.txt pyinstaller
+      - name: Build and smoke test standalone Windows application
+        shell: pwsh
+        run: ./packaging/build_windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HyunCalculator-Windows-x64
+          path: dist/HyunCalculator-Windows-x64.zip

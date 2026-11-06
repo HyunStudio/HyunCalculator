@@ -73,8 +73,6 @@ def _check_options(formula, opt):
         raise GenerationError('Iteration must be auto, for, or while')
     if formula.function!='fin_npv' and opt.iteration not in ('auto',):
         raise GenerationError('Explicit loops apply to NPV; use auto for this analytic formula')
-    if opt.structure=='class' and formula.function=='fin_npv':
-        raise GenerationError('NPV class architecture is not implemented yet; use function')
     if opt.imports not in ('auto','standard'):
         raise GenerationError('Only automatic or standard-library imports are implemented')
     if opt.variant not in ('periodic','continuous') or (formula.function!='fin_fv' and opt.variant!='periodic'):
@@ -361,6 +359,26 @@ def _render_npv(options,fn):
     return h+'\n'+body
 
 
+def _npv_class(code, language, fn):
+    """Wrap the existing counted-loop implementation without rewriting its math."""
+    if language == 'Python':
+        return 'class GeneratedCalculator:\n    @staticmethod\n' + ''.join('    '+line+'\n' for line in code.splitlines())
+    if language in ('JavaScript', 'TypeScript'):
+        return 'export class GeneratedCalculator {\n' + code.replace('export function '+fn, '  static '+fn, 1) + '}\n'
+    if language in ('Java', 'C#'):
+        return code  # Existing container exposes a static callable method.
+    lines = code.splitlines(keepends=True)
+    headers = ''.join(line for line in lines if line.startswith(('#include', 'import ')))
+    body = ''.join(line for line in lines if not line.startswith(('#include', 'import ')))
+    if language == 'C++':
+        return headers+'class GeneratedCalculator {\npublic:\n  static '+body.strip()+'\n};\n'
+    if language == 'Swift':
+        return headers+'class GeneratedCalculator {\n'+body.replace('func '+fn, 'static func '+fn, 1)+'}\n'
+    if language == 'Kotlin':
+        return headers+'class GeneratedCalculator {\ncompanion object {\n'+body+'}\n}\n'
+    raise GenerationError('Unsupported NPV class language')
+
+
 def generate(formula_id:str, options:GenerationOptions|None=None)->str:
     opt=options or GenerationOptions()
     formula=get_formula(formula_id)
@@ -435,6 +453,8 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
         if any(v in ('total','t','i','cf') for v in final_names):
             raise GenerationError('NPV variables must not shadow internal accumulators')
         code=_render_npv(opt,fn)
+        if opt.structure == 'class':
+            code = _npv_class(code, opt.language, fn)
         # Internal NPV snippets are generated from a fixed template; the only
         # text identifiers replaced here are the two known argument tokens.
         for i,(src,dst) in enumerate(renames.items()):
