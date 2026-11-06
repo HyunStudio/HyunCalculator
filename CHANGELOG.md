@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.0-alpha.16 — 363-Pair Compiler/Typecheck Matrix (2026-11-06)
+
+- Added mandatory per-language GitHub Actions source checks for all
+  **33 formulas × 11 target languages = 363/363 distinct build, typecheck
+  or syntax/parse checks**. Languages: Python, R, C, C++, JavaScript,
+  TypeScript, Java, C#, Swift, Go, Rust. Missing required compilers fail CI.
+- C# Markowitz generators **ALLOC-001** and **ALLOC-002** initially failed
+  isolated .NET 8 compilation because the LINQ `ToArray()` extension
+  namespace was missing. Fixed output to use `Array.Fill`; both now build.
+- Final run **42176479044** passed the entire 363-pair matrix plus
+  existing Python unit, GUI and 74 selected native numeric/edge checks.
+- Generation coverage remains **462/462**; full code-check matrix is
+  incomplete for **Kotlin, Julia, MATLAB (99 pairs)**. Julia and GNU Octave
+  have separate representative native runtime checks; MATLAB proper is
+  not verified. Build checks are not independent numeric parity.
+- Sponsors remains approval-pending with payment controls disabled.
+
 ## v1.2.0-alpha.15 — MATLAB-Compatible Octave Numerical CI (2026-11-06)
 
 - Added required GNU Octave CI job for generated **MATLAB-language source**:

@@ -1,8 +1,48 @@
 # HyunCalculator
 
-**v1.2.0-alpha.15** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.16** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.16 — 363-Pair Source Build/Typecheck CI Matrix
+
+**Code generation:** unchanged at **33 formulas × 14 languages =
+462/462 supported source-generation profiles**.
+
+**New required static/build CI matrix:** ALL **33 formulas** are independently
+checked in **11 languages (363/363 formula-language pairs)**, using
+real installed tools and no missing-toolchain skips:
+
+| Language | Check | Result |
+|---|---|---|
+| Python | `python -m py_compile` | 33/33 |
+| R | `Rscript parse()` (parse only, not execution) | 33/33 |
+| C | `gcc -std=c11 -pedantic-errors -fsyntax-only` | 33/33 |
+| C++ | `g++ -std=c++17 -pedantic-errors -fsyntax-only` | 33/33 |
+| JavaScript | `node --check` | 33/33 |
+| TypeScript | `tsc --noEmit` | 33/33 |
+| Java | `javac` | 33/33 |
+| C# | `dotnet build`, isolated .NET 8 library per formula | 33/33 |
+| Swift | `swiftc -typecheck` | 33/33 |
+| Go | `go test generated.go` | 33/33 |
+| Rust | `rustc --crate-type=lib --emit=metadata` | 33/33 |
+
+**A real C# generator defect was found and repaired:** GMV (ALLOC-001)
+and target-return Markowitz (ALLOC-002) initially failed C# compilation
+because an emitted `Enumerable.Repeat(...).ToArray()` call omitted
+a required LINQ extension namespace. The adapter now uses
+`Array.Fill` and no LINQ dependency. The expanded matrix caught this,
+and the corrected **363/363** checks passed in
+[GitHub Actions run 42176479044](https://github.com/HyunStudio/HyunCalculator/actions/runs/42176479044).
+
+**Scope boundary:** the 363 checks validate syntax, compilation or types,
+depending on the compiler; they do **not** run every numerical algorithm.
+The prior **74 native execution/edge checks** continue to pass. **Kotlin,
+Julia and MATLAB/Octave** are not yet covered by the complete 33-formula
+build/typecheck matrix (99 pairs), although Julia and Octave have separate
+representative numerical runtime tests. Actual proprietary MATLAB has
+not been run. Full 462-way numerical parity, advanced generator options,
+screen-reader acceptance and release hardening remain open.
 
 ## v1.2.0-alpha.15 — MATLAB-Compatible Octave Runtime & Edge Cases
 
