@@ -42,7 +42,7 @@ COMMANDS = {
                      '--configuration', 'Release', '--verbosity', 'quiet', '--nologo')),
     'Kotlin': ('kotlinc', 'generated.kt', ('kotlinc', '-d', 'generated.jar')),
     'Julia': ('julia', 'generated.jl', ('julia', '--startup-file=no', '--color=no',
-                     '--compile=min', '-e', 'Meta.parseall(read("generated.jl", String))')),
+                     '--compile=min', '-e', 'function validate(x); if x isa Expr; x.head in (:error, :incomplete) && error("Julia parse error: $x"); foreach(validate, x.args); end; end; validate(Meta.parseall(read("generated.jl", String)))')),
     # MATLAB output parsed in GNU Octave; this is NOT a MathWorks MATLAB compiler.
     'MATLAB': ('octave-cli', 'generated.m',
                ('octave-cli', '--quiet', '--no-gui', '--eval',

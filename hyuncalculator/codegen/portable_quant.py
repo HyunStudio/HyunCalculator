@@ -104,7 +104,7 @@ def generate_portable(function_name,form,options):
         vals=', '.join(f'`{key}` = {value}' for (key,_),value in zip(spec.outputs,expressions))
         return f'# HyunCalculator {form.id}; named results in a list\n{function_name} <- function({params}) {{\n{check}\n  return(list({vals}))\n}}\n'
     if lang=='MATLAB':
-        vals=', '.join(f"'{key.replace(' ','_').replace('.','').replace('/','_').replace('(','').replace(')','')}', {val}" for (key,_),val in zip(spec.outputs,expressions))
+        vals=', '.join(f"'{key.replace(' ','_').replace('.','').replace('/','_').replace('(','').replace(')','').replace('-','_')}', {val}" for (key,_),val in zip(spec.outputs,expressions))
         return f'% HyunCalculator {form.id}; named struct output\nfunction result = {function_name}({params})\n{check}\n    result = struct({vals});\nend\n'
     if lang=='Julia':
         def symbol(key):return ''.join(c if c.isalnum() else '_' for c in key).strip('_').lower()

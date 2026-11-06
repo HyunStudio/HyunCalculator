@@ -61,7 +61,7 @@ def literal(value,language,rectangular=False):
 
 def check(language,record):
     fid,fn,args,expected=record
-    target='MATLAB' if language=='Octave' else language
+    target='MATLAB' if language in ('Octave','MATLAB') else language
     expr=fn+'('+','.join(literal(a,target,rectangular=fid!='STAT-002') for a in args)+')'
     source=generate(fid,GenerationOptions(language=target))
     with tempfile.TemporaryDirectory(prefix='hyun_catalog_') as tmp:
@@ -72,10 +72,10 @@ def check(language,record):
         elif language=='Julia':
             src=p/'driver.jl';source+='\nflatten(x::Number) = [Float64(x)]\nflatten(x::NamedTuple) = reduce(vcat, (flatten(v) for v in values(x)))\nflatten(x::AbstractArray) = reduce(vcat, (flatten(v) for v in x))\nprintln("HYUN_RESULT ",join(string.(flatten('+expr+')), " "))\n'
             commands=[['julia','--startup-file=no',str(src)]]
-        elif language=='Octave':
+        elif language in ('Octave','MATLAB'):
             (p/(fn+'.m')).write_text(source,encoding='utf-8');src=p/'driver.m'
-            source='v='+expr+';\nif isstruct(v), v=[v.last_sma,v.last_ema,v.sma,v.ema]; end\nfprintf("HYUN_RESULT ");fprintf("%.17g ",v(:));fprintf("\\n");\n'
-            commands=[[shutil.which('octave-cli') or 'octave','--quiet','--no-history',str(src)]]
+            source='v='+expr+';\nif isstruct(v), c=struct2cell(v); v=[c{:}]; end\nfprintf("HYUN_RESULT ");fprintf("%.17g ",v(:));fprintf("\\n");\n'
+            commands=([['matlab','-batch',"run('driver.m')"]] if language=='MATLAB' else [[shutil.which('octave-cli') or 'octave','--quiet','--no-history',str(src)]])
         elif language=='Rust':
             src=p/'driver.rs';exe=p/'driver'
             if fid.startswith('ALLOC-'):expr+='.expect("valid allocation sample")'
@@ -98,7 +98,7 @@ def check(language,record):
         verify_output(run.stdout,expected,fid,language)
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('language',choices=('R','Julia','Rust','C#','Octave'));language=parser.parse_args().language
+    parser=argparse.ArgumentParser();parser.add_argument('language',choices=('R','Julia','Rust','C#','Octave','MATLAB'));language=parser.parse_args().language
     records=list(samples())
     if len(records)!=33 or len({r[0] for r in records})!=33:raise AssertionError('Catalog drift')
     failed=[]

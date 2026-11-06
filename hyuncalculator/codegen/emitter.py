@@ -223,7 +223,7 @@ def _render_scalar(formula,options,fn,renames):
     # MATLAB reserves 'end' for block/array indexing.  The canonical CAGR
     # field is named end, so emit a safe equivalent parameter consistently
     # in its signature, guards, and calculation expression.
-    if lang=='MATLAB' and 'end' in args and renames.get('end','end')=='end':
+    if lang in ('MATLAB','Julia') and 'end' in args and renames.get('end','end')=='end':
         renames={**renames,'end':'ending_value'}
     emitter=ExpressionEmitter(lang,ints,renames)
     params=', '.join(_param(lang,renames.get(a,a),a in ints) for a in args)
