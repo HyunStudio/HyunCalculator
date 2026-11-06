@@ -12,6 +12,8 @@ from . import __version__, legacy_ml
 from .scientific import calculate
 from .graphing import sample_curves
 from .operations import GROUPS
+from .appearance import (AppearancePreferences, load_preferences, save_preferences,
+                         apply_appearance)
 
 
 LABELS = {
@@ -69,7 +71,7 @@ class ScientificTab:
         self.result_heading.grid(row=3, column=0, sticky='w')
         self.result_text = tk.StringVar(value='')
         ttk.Label(self.frame, textvariable=self.result_text, font=('Consolas', 20),
-                  background='#EDF3FA', padding=12).grid(row=4, column=0, sticky='ew', pady=(6,12))
+                  style='Result.TLabel', padding=12).grid(row=4, column=0, sticky='ew', pady=(6,12))
         self.history_heading = ttk.Label(self.frame, font=('Malgun Gothic', 12, 'bold'))
         self.history_heading.grid(row=5, column=0, sticky='w')
         history_frame = ttk.Frame(self.frame); history_frame.grid(row=6, column=0, sticky='nsew', pady=(6,8))
@@ -163,6 +165,7 @@ class GraphingTab:
         self.status=tk.StringVar(value='')
         ttk.Label(self.frame,textvariable=self.status,font=('Malgun Gothic',11)).grid(row=5,column=0,sticky='w')
         self.plotted=False
+        self._palette=None
         self.refresh_language()
         self.plot()
 
@@ -171,6 +174,25 @@ class GraphingTab:
         self.prompt.configure(text=l['functions'])
         for name,widget in self.label_widgets: widget.configure(text=l[name])
         self.button.configure(text=l['plot']); self.export.configure(text=l['export'])
+
+    def apply_palette(self, palette):
+        """Keep chart axes, tick marks and legends readable in each theme."""
+        self._palette=palette
+        self.figure.patch.set_facecolor(palette['surface'])
+        self.ax.set_facecolor(palette['field'])
+        self.ax.tick_params(axis='both',colors=palette['foreground'])
+        self.ax.xaxis.label.set_color(palette['foreground'])
+        self.ax.yaxis.label.set_color(palette['foreground'])
+        for spine in self.ax.spines.values():
+            spine.set_color(palette['border'])
+        self.ax.grid(True,color=palette['grid'],alpha=0.35)
+        legend=self.ax.get_legend()
+        if legend is not None:
+            legend.get_frame().set_facecolor(palette['surface'])
+            legend.get_frame().set_edgecolor(palette['border'])
+            for item in legend.get_texts():
+                item.set_color(palette['foreground'])
+        self.canvas.draw_idle()
 
     def plot(self):
         try:
@@ -183,6 +205,8 @@ class GraphingTab:
             self.ax.axvline(0,color='#777777',linewidth=.65)
             self.ax.grid(True,alpha=.3)
             self.ax.set_xlabel('x'); self.ax.set_ylabel('y'); self.ax.legend(loc='best')
+            if self._palette is not None:
+                self.apply_palette(self._palette)
             self.figure.tight_layout(); self.canvas.draw()
             self.status.set(f'{len(curves)} curve(s) · {len(curves[0][1])} samples')
             self.plotted=True
@@ -198,28 +222,48 @@ class GraphingTab:
             self.figure.savefig(path,dpi=160)
 
 
-def run_gui(initial_language: str='ko'):
+def run_gui(initial_language: str='ko', *, start_mainloop: bool=True,
+            appearance_path=None):
+    """Launch bilingual desktop app. Optional no-loop mode is for GUI smoke tests."""
     root=tk.Tk()
     root.geometry('1550x900')
-    root.minsize(1150,740)
+    root.minsize(1100,690)
     style=ttk.Style(root)
     if 'clam' in style.theme_names(): style.theme_use('clam')
-    style.configure('TButton',font=('Malgun Gothic',12),padding=(10,7))
-    style.configure('TNotebook.Tab',font=('Malgun Gothic',12,'bold'),padding=(9,7))
-    language={'code': initial_language}
+    language={'code': initial_language if initial_language in ('ko','en') else 'ko'}
     def get_language(): return language['code']
-    top=ttk.Frame(root,padding=(12,8)); top.pack(fill='x')
-    title=ttk.Label(top,font=('Malgun Gothic',15,'bold'))
-    title.pack(side='left')
-    switch=tk.StringVar(value='한국어' if initial_language=='ko' else 'English')
-    ttk.Combobox(top,textvariable=switch,values=('한국어','English'),state='readonly',width=10,
-                 font=('Malgun Gothic',12)).pack(side='right',padx=(4,8))
-    language_label=ttk.Label(top,font=('Malgun Gothic',12));language_label.pack(side='right')
+
+    prefs=load_preferences(appearance_path)
+    top=ttk.Frame(root,padding=(12,10))
+    top.pack(fill='x')
+    title=ttk.Label(top,font=('Malgun Gothic',16,'bold'))
+    title.pack(side='left',padx=(0,12))
+    switch=tk.StringVar(value='한국어' if language['code']=='ko' else 'English')
+    language_selector=ttk.Combobox(top,textvariable=switch,values=('한국어','English'),
+                                   state='readonly',width=9,font=('Malgun Gothic',12))
+    language_selector.pack(side='right',padx=(5,7))
+    language_label=ttk.Label(top,font=('Malgun Gothic',12))
+    language_label.pack(side='right')
+    theme_choice=tk.StringVar(value=prefs.theme)
+    theme_selector=ttk.Combobox(top,textvariable=theme_choice,
+                                values=('dark','light','high-contrast'),
+                                state='readonly',width=14)
+    theme_selector.pack(side='right',padx=(6,12))
+    theme_label=ttk.Label(top)
+    theme_label.pack(side='right')
+    size_choice=tk.StringVar(value=f'{round(prefs.font_scale*100)}%')
+    size_selector=ttk.Combobox(top,textvariable=size_choice,
+                               values=('100%','125%','150%','175%'),
+                               state='readonly',width=7)
+    size_selector.pack(side='right',padx=(6,12))
+    size_label=ttk.Label(top)
+    size_label.pack(side='right')
+
     notebook=ttk.Notebook(root)
-    notebook.pack(fill='both',expand=True,padx=12,pady=(0,6))
+    notebook.pack(fill='both',expand=True,padx=12,pady=(0,7))
     pages=[]
     def add(code,widget):
-        notebook.add(widget.frame,text=LABELS[initial_language].get(code.lower(),code))
+        notebook.add(widget.frame,text=LABELS[language['code']].get(code.lower(),code))
         pages.append((code,widget))
     add('Scientific',ScientificTab(notebook,get_language))
     add('Graphing',GraphingTab(notebook,get_language))
@@ -227,20 +271,76 @@ def run_gui(initial_language: str='ko'):
         add(code,legacy_ml.CalculatorTab(notebook,operations,get_language))
     add('Codegen',CodeGeneratorTab(notebook,get_language))
     add('About',AboutTab(notebook,get_language))
-    footer=ttk.Label(root,font=('Malgun Gothic',10));footer.pack(fill='x',padx=16,pady=(0,7))
+    footer=ttk.Label(root,font=('Malgun Gothic',11))
+    footer.pack(fill='x',padx=16,pady=(0,8))
+
     def refresh(_event=None):
         language['code']='en' if switch.get()=='English' else 'ko'
         l=LABELS[language['code']]
-        root.title(l['title']);title.configure(text=l['title'])
-        language_label.configure(text=l['language']);footer.configure(text=l['footnote'])
+        root.title(l['title'])
+        title.configure(text='HyunCalculator')
+        language_label.configure(text=l['language'])
+        theme_label.configure(text='테마' if language['code']=='ko' else 'Theme')
+        size_label.configure(text='글꼴' if language['code']=='ko' else 'Text size')
+        footer.configure(text=l['footnote']+' · Ctrl +/- 글꼴 확대/축소' if language['code']=='ko'
+                          else l['footnote']+' · Ctrl +/- text size')
         for code,widget in pages:
             widget.refresh_language()
             notebook.tab(widget.frame,text=l.get(code.lower(),code))
-    # the language ComboBox is the last child of top? bind explicitly via named widget
-    selector=next(child for child in top.winfo_children() if isinstance(child,ttk.Combobox))
-    selector.bind('<<ComboboxSelected>>',refresh)
+    language_selector.bind('<<ComboboxSelected>>',refresh)
+
+    def apply_preferences(*_events, persist=True):
+        try:
+            requested_scale=float(size_choice.get().rstrip('%'))/100
+        except (ValueError, TypeError):
+            requested_scale=1.25
+        updated=AppearancePreferences.parse({'theme':theme_choice.get(),
+                                             'font_scale':requested_scale})
+        theme_choice.set(updated.theme)
+        size_choice.set(f'{round(updated.font_scale*100)}%')
+        palette=apply_appearance(root,style,updated)
+        for _code,widget in pages:
+            if hasattr(widget,'apply_palette'):
+                widget.apply_palette(palette)
+        root.hyuncalculator_preferences=updated
+        if persist:
+            try:
+                save_preferences(updated, appearance_path)
+            except OSError as exc:
+                footer.configure(text=f'Appearance not saved: {exc}')
+        return updated
+
+    def zoom(direction):
+        choices=(100,125,150,175)
+        current=int(size_choice.get().rstrip('%'))
+        idx=min(range(len(choices)), key=lambda k:abs(choices[k]-current))
+        size_choice.set(f'{choices[max(0,min(len(choices)-1,idx+direction))]}%')
+        apply_preferences()
+        return 'break'
+
+    def toggle_contrast(_event=None):
+        theme_choice.set('dark' if theme_choice.get()=='high-contrast' else 'high-contrast')
+        apply_preferences()
+        return 'break'
+
+    theme_selector.bind('<<ComboboxSelected>>',apply_preferences)
+    size_selector.bind('<<ComboboxSelected>>',apply_preferences)
+    for seq in ('<Control-plus>','<Control-equal>','<Control-KP_Add>'):
+        root.bind_all(seq,lambda _e:zoom(1))
+    for seq in ('<Control-minus>','<Control-KP_Subtract>'):
+        root.bind_all(seq,lambda _e:zoom(-1))
+    root.bind_all('<Control-0>',lambda _e: (size_choice.set('100%'),apply_preferences(),'break')[-1])
+    root.bind_all('<Alt-Shift-h>',toggle_contrast)
+
+    # Public GUI inspection handles for display smoke tests, not a network API.
+    root.hyuncalculator_theme_choice=theme_choice
+    root.hyuncalculator_size_choice=size_choice
+    root.hyuncalculator_apply_preferences=apply_preferences
     refresh()
-    root.mainloop()
+    apply_preferences(persist=False)
+    if start_mainloop:
+        root.mainloop()
+    return root
 
 
 class CodeGeneratorTab:
