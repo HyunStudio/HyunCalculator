@@ -43,7 +43,8 @@ class Formula:
 # remain discoverable but cannot silently generate incomplete code.
 MULTILANG = frozenset(('fin_fv','fin_pv','fin_pmt','fin_npv',
                         'fin_cagr','fin_effective','fin_annuity',
-                        'qf_garch','qf_gbm','qf_ou','qf_cost'))
+                        'qf_garch','qf_gbm','qf_ou','qf_cost',
+                        'qf_bond','qf_ewma','qf_ytm'))
 # The full catalog is exportable as standalone Python. Only a subset has
 # audited emitters for the other 13 languages; never conflate the two.
 EXPORTABLE = frozenset(name for _label, (_domain, names) in DOMAINS.items() for name in names)

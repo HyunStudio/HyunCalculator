@@ -85,8 +85,8 @@ class PythonFullCoverageTests(unittest.TestCase):
         formulas=catalog()
         self.assertEqual(len(formulas),33)
         self.assertEqual(sum('Python' in f.supported_languages for f in formulas),33)
-        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),11)
-        self.assertEqual(sum(len(f.supported_languages) for f in formulas),176)
+        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),14)
+        self.assertEqual(sum(len(f.supported_languages) for f in formulas),215)
 
 
 if __name__=='__main__': unittest.main()

@@ -1,42 +1,54 @@
 # HyunCalculator
 
-**v1.2.0-alpha.2** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.3** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.2 — Expanded Formula to Code (in progress)
+## v1.2.0-alpha.3 — Portable Bonds, YTM and EWMA (in progress)
 
-The Code Generator now catalogs all **33 Financial/Quant functions** and exports
-**all 33 as standalone Python source**, matching the original calculator's numeric
-outputs (including arrays, simulations and performance records). For the other
-**13 languages**, 11 formulas currently have code emitters: 7 established finance
-formulas plus GARCH(1,1) one-step metrics, GBM/OU analytic moments, and trade
-cost metrics. **176 of the targeted 462 formula × language combinations can
-produce source**, compared with 98 in alpha.1.
+The Code Generator catalogs **33 Financial/Quant functions** and exports all 33
+as standalone Python. **14 functions** now have generators in every one of the
+14 target languages: the original 7 financial formulas; GARCH(1,1), GBM/OU
+analytic moments, and transaction costs; plus **coupon-bond price / Macaulay
+and modified duration / convexity (BOND-001)**, **dirty-price nominal YTM
+inversion (BOND-002)**, and **EWMA variance / volatility (TS-001)**.
 
-**Important: source generation != validation.** Python source for all 33 functions
-is compiled and checked against the v1.1 calculator's 33 example inputs.
-Other-language emitters underwent limited real compiler/runtime smoke tests;
-**no claim is made that all 176 combinations are independently compiled and
-numerically verified**. Go, Rust, R, MATLAB, Julia and unavailable toolchains
-must be verified in appropriate runtime environments before relying on output.
+**Source-generation coverage: 215 / 462** (33 Python + 14 × 13 non-Python).
+The remaining **19 formulas** have Python-only exporters, leaving **247
+unimplemented language/formula combinations**. Attempts to generate their
+non-Python code fail clearly; no placeholder implementations are exported.
 
-- **Python 33/33:** 7 existing standalone algorithm emitters and 26 exported
-  from reviewed, trusted source definitions in the repository. Depending on
-  formula, Python code may require `numpy`/`scipy` (printed in the generated
-  dependency header); `imports=standard` rejects formulas requiring these.
-- **11/33 across 14 languages:** FIN-001, FIN-002, FIN-003, FIN-004, FIN-007,
-  FIN-008, FIN-009, TS-002, STOCH-001, STOCH-002, STRAT-001.
-- **Remaining 22:** Python only for now; selecting another language explicitly
-  reports the adapter as not implemented. They are **not** emitted as placeholders.
-- **Output semantics:** Python returns the reference numeric values, dictionaries,
-  and arrays. Portable quant emitters return named records where supported
-  (e.g. JS object, R list, MATLAB struct, Julia named tuple), or ordered
-  numeric arrays with explicit output-index labels elsewhere.
-- **Options:** Auto or Advanced class/function where supported; naming and
-  variable mapping; `for` or `while` for NPV; automatic or standard imports.
-  Full numerical library/provider selection and iteration variants for the
-  remaining quant functions are not implemented yet.
+**Source generation is not proof of compilation or mathematical correctness.**
+All Python samples for 33 formulas have been compared to the v1.1.0 calculator.
+BOND-001, BOND-002 and TS-001 have additional runtime smoke checks on available
+C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go toolchains. Additional
+supported language outputs for C#, R, Rust, MATLAB and Julia were generated,
+**not** runtime-verified in those ecosystems. CI covers Python 3.11 and 3.12
+unit/regression tests; the optional multi-language compiler tests are manual.
+
+- **BOND-001:** periodic coupon dirty price, duration and convexity; outputs are
+  ordered arrays with documented indices for languages without native records.
+  Non-Python iterative emitters cap the number of coupon periods at one million
+  for resource safety; zero and negative coupon rates follow the original model.
+- **BOND-002:** nominal YTM computed using bounded bisection for regular coupon
+  periods, including an analytic zero-coupon case; up to 2,400 coupon payments.
+  Input is full/dirty price, not clean price; no irregular coupon schedules.
+- **TS-001:** sequential EWMA initialized with the square of the first return,
+  with `0 <= decay < 1` and two or more finite observations.
+- **Architecture:** these loop/root-finding emitters use function-style code;
+  `class`, custom loop selection and parameter renaming are not supported for
+  these profiles yet. They fail closed on incompatible options. The original
+  advanced options remain available for eligible functions.
+- **Types/dependencies:** Python functions may use NumPy/SciPy as before;
+  non-Python bond/YTM/EWMA emitters target standard math facilities, with
+  dependency notes where applicable. No generated source is run automatically
+  inside the GUI.
+
+The existing Scientific, Graphing, Financial, Quant, Programmer and ML/DL/RL
+calculators are preserved. The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md)
+remains the target-state specification. The high-fidelity dark UI redesign,
+advanced library selectors, entire 462-way runtime matrix and project-bundle
+exports are not implemented in this alpha.
 
 ### CLI examples / 코드 생성 예제
 
@@ -46,6 +58,9 @@ python -m hyuncalculator --generate DERIV-001 --language Python --output black_s
 python -m hyuncalculator --generate STRAT-002 --language Python --output backtest.py
 python -m hyuncalculator --generate TS-002 --language JavaScript --output garch.js
 python -m hyuncalculator --generate STOCH-001 --language C++ --output gbm.cpp
+python -m hyuncalculator --generate BOND-001 --language Java --output GeneratedCalculator.java
+python -m hyuncalculator --generate BOND-002 --language Swift --output ytm.swift
+python -m hyuncalculator --generate TS-001 --language C++ --output ewma.cpp
 python -m hyuncalculator --generate FIN-004 --language C++ --loop while --output npv.cpp
 ~~~
 
@@ -53,7 +68,7 @@ The bilingual Code Generator tab offers formula/language selection, source
 preview, copy and save. Non-supported language/formula combinations are disabled.
 The generated code is **not executed automatically by the UI**.
 The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) describes the
-remaining 286 source-generation combinations, systematic toolchain testing,
+remaining 247 source-generation combinations, systematic toolchain testing,
 advanced model algorithms, output packaging and accessibility goals.
 Existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL calculators
 are preserved.
@@ -112,7 +127,7 @@ python -m unittest discover -s tests -v
 python hyuncalculator/legacy_ml.py --test
 ```
 
-GitHub Actions runs unit tests on Python 3.11 and 3.12. The **95 automated tests** include existing regression, financial/quant, and code generation verification; all computational tests run without GUI/display. See [CHANGELOG.md](CHANGELOG.md) for the 10-domain implementation checklist.
+GitHub Actions runs unit tests on Python 3.11 and 3.12. The **98 automated tests** include existing regression, financial/quant, and code generation verification; all computational tests run without GUI/display. See [CHANGELOG.md](CHANGELOG.md) for the 10-domain implementation checklist.
 
 ### Examples / 예제
 

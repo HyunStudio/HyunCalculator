@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.2.0-alpha.3 — Multi-Language Coupon Bonds, YTM and EWMA (2026-11-06)
+
+- Extended 13 non-Python emitters for **BOND-001** coupon bond dirty price, Macaulay/modified duration and convexity; **BOND-002** dirty-price YTM inversion via bounded bisection; and **TS-001** sequential EWMA variance and volatility.
+- These three formulas are now exported in all 14 target languages (Python already supported), bringing source-generation coverage to **215 / 462** combinations; **19 formulas** remain Python-only (247 combinations outstanding).
+- Explicit function-only profiles reject unsupported class, loop customization and variable renaming. Input constraints include finite rates/observations, payment period checks, and no accrued-interest adjustment.
+- Added source-generation unit contracts and optional C/C++/JavaScript/TypeScript/Java/Swift/Kotlin/Go build-and-execute numerical smoke tests. **98 local Python regression and generator tests** pass. R, C#, Rust, MATLAB and Julia generated outputs still require runtime validation.
+- Existing calculator functionality and Sponsors pending-approval behavior remain unchanged. Premium visual redesign and 462-combination runtime verification are still pending.
+
 ## v1.2.0-alpha.2 — Broad Python Export + Portable Quant Formulas (2026-11-06)
 
 - Python code generation extended from 7 to **all 33 registered financial/quant formulas** through trusted-source AST extraction with standalone dependencies; sample numeric results compared with the existing calculator for all 33.

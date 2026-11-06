@@ -366,8 +366,14 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
             from .python_full import generate_python
             return generate_python(formula,opt,fn)
         from .portable_quant import PORTABLE, generate_portable
+        from .portable_loops import SUPPORTED as LOOP_PROFILES, generate_loops
         if formula.function in PORTABLE:
             return generate_portable(fn,formula,opt)
+        if formula.function in LOOP_PROFILES:
+            return generate_loops(fn,formula,opt)
+        if formula.function == 'qf_ytm':
+            from .portable_ytm import generate_ytm
+            return generate_ytm(fn,formula,opt)
         raise GenerationError(f'{formula.id}: {opt.language} adapter not implemented')
     valid_names= {'rate','flows'} if formula.function=='fin_npv' else set(SCALARS[formula.function][1])
     renames={}
