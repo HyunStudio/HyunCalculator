@@ -401,6 +401,9 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
         from .portable_normal_risk import SUPPORTED as NORMAL_RISK_PROFILES, generate_normal_risk
         if formula.function in NORMAL_RISK_PROFILES:
             return generate_normal_risk(fn,formula,opt)
+        from .portable_finance import SUPPORTED as FINANCE_PROFILES, generate_finance
+        if formula.function in FINANCE_PROFILES:
+            return generate_finance(fn,formula,opt)
         if formula.function == 'qf_ytm':
             from .portable_ytm import generate_ytm
             return generate_ytm(fn,formula,opt)

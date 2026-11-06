@@ -14,9 +14,9 @@ class AllocationCodegenTests(unittest.TestCase):
     def test_coverage_matrix(self):
         registry=catalog()
         self.assertEqual(len(registry),33)
-        self.assertEqual(sum(map(lambda x:len(x.supported_languages),registry)),384)
-        self.assertEqual(sum(len(x.supported_languages)==14 for x in registry),27)
-        self.assertEqual(sum(len(x.supported_languages)==1 for x in registry),6)
+        self.assertEqual(sum(map(lambda x:len(x.supported_languages),registry)),410)
+        self.assertEqual(sum(len(x.supported_languages)==14 for x in registry),29)
+        self.assertEqual(sum(len(x.supported_languages)==1 for x in registry),4)
         for fid in IDS:
             spec=next(x for x in registry if x.id==fid)
             self.assertEqual(set(spec.supported_languages),set(LANGUAGES))

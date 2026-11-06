@@ -1,8 +1,45 @@
 # HyunCalculator
 
-**v1.2.0-alpha.9** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.10** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.10 — IRR and Amortization in 14 Languages (partial implementation)
+
+Formula to Code now exports **all 33 Financial/Quant functions in Python**, and
+**29/33 formulas in each of the other 13 languages**: **410/462 source-generation
+pairs (88.7%)**. **Four formulas remain Python-only (52 non-Python pairs).**
+
+New portable functions in the 13 non-Python languages:
+
+- **FIN-005 — Internal Rate of Return (IRR):** preserves the v1.1 philosophy
+  of requiring cash flows of both signs and rejecting **multiple sign-changing
+  IRRs**. Uses a bounded 680-point rate grid from **-99.99% to 10000000%**
+  (decimal rate range [-0.9999, 100000]) and 120 bisection steps per bracket.
+  This is a **finite scan**, not a proof of mathematical root uniqueness; even-
+  multiplicity or off-grid roots can be missed. Maximum 10,000 cash flows.
+  C/Go/Rust/Swift return **NaN** for invalid or ambiguous inputs; exception-based
+  languages use their native error mechanism.
+- **FIN-006 — Selected Loan Amortization Period:** computes periodic payment,
+  interest paid, principal paid and remaining balance for a selected installment.
+  Enforces principal ≥ 0, rate > -100%, n ≥ 1, and 1 ≤ period ≤ n; has a
+  dedicated zero-interest branch. Portable result order is
+  `[payment, interest, principal_paid, remaining_balance]` (C returns
+  `HyunLoanResult`). Rates are **per payment period** as decimals, not APR.
+
+**Options:** these new adapters permit function architecture, automatic
+iteration, canonical variable names and standard math imports; unsupported
+class/forced-loop/variable-rename requests fail explicitly. Python retains
+the original `numpy/scipy` implementation and named results.
+
+**Validation:** selected standalone examples in **C, C++, JavaScript,
+TypeScript, Java, Swift, Kotlin and Go** compiled and numerically matched
+reference results for standard inputs. **R, C#, Rust, MATLAB and Julia**
+emit source but are not runtime-verified here. This does not establish
+full correctness for all 410 generated combinations, rate ranges or edge cases.
+Additional unit tests and an optional `tests/toolchain_finance_smoke.py` script
+are included. The 462-way runtime matrix, premium dark UI redesign and
+advanced code/import/project-bundle options remain incomplete.
 
 ## v1.2.0-alpha.9 — Three stochastic path models in 14 languages (partial implementation)
 

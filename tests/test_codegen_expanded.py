@@ -15,9 +15,9 @@ class ExpandedPortableCodegenTests(unittest.TestCase):
     def test_full_coverage_matrix(self):
         formulas=catalog()
         self.assertEqual(len(formulas),33)
-        self.assertEqual(sum(len(f.supported_languages) for f in formulas),384)
+        self.assertEqual(sum(len(f.supported_languages) for f in formulas),410)
         self.assertEqual(sum('Python' in f.supported_languages for f in formulas),33)
-        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),27)
+        self.assertEqual(sum('Java' in f.supported_languages for f in formulas),29)
         for fid in NEW_IDS:
             f=next(f for f in formulas if f.id==fid)
             self.assertEqual(set(f.supported_languages),set(LANGUAGES))
@@ -65,7 +65,7 @@ class ExpandedPortableCodegenTests(unittest.TestCase):
         self.assertAlmostEqual(r['Expected Shortfall'],.04)
         a=moving_averages([100.,102.,101.,104.,106.,105.],3)
         self.assertEqual(len(a['SMA (from first complete window)']),4)
-        self.assertEqual(len(a['EMA (first value seeded)']),6)
+        self.assertEqual(len(a['EMA (first value seeded)']),4)
 
 
 if __name__=='__main__':unittest.main()

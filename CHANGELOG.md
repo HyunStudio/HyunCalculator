@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.2.0-alpha.10 — Portable IRR & Loan Amortization (2026-11-06)
+
+- Added **FIN-005** IRR and **FIN-006** selected-period loan amortization
+  for the 13 non-Python languages; existing standalone Python profiles preserved.
+- Full 14-language source generation grows to **29/33 formulas** and
+  **410/462 formula-language pairs (88.7%)**; 4 functions and 52 other-language
+  generation pairs remain.
+- IRR: 680-point finite search and 120-step bisection for sign-changing roots,
+  rejects multiple detected IRRs and invalid cash flows, with explicit limits
+  (not guaranteed to find tangent/off-grid roots). Loan: zero-interest branch,
+  amortization payment/interests/principal/remaining balance, parameter guards.
+- Selected native compiler/runtime comparisons passed on **C, C++, JavaScript,
+  TypeScript, Java, Swift, Kotlin and Go**. R, C#, Rust, MATLAB and Julia emitted
+  sources are **runtime-unverified** in this iteration. Generation coverage is
+  not equivalent to full 462-way runtime certification.
+- Updated registry, test coverage assertions and documentation; added
+  `test_codegen_finance.py` and optional `toolchain_finance_smoke.py`.
+- Pending GitHub Sponsors profile remains non-payable. Extended GUI/UI themes,
+  alternative imports and complete standalone project bundles are still planned.
+
 ## v1.2.0-alpha.9 — Brownian / GBM / OU Path Simulation (2026-11-06)
 
 - Added 13 non-Python standalone language adapters for **STOCH-003** arithmetic

@@ -20,6 +20,6 @@ class PortableLoopGenerationTests(unittest.TestCase):
                 with self.subTest(formula=fid,opts=kw),self.assertRaises(GenerationError):
                     generate(fid,GenerationOptions(language='C++',**kw))
     def test_total_generated_combinations(self):
-        self.assertEqual(sum(len(f.supported_languages) for f in catalog()),384)
+        self.assertEqual(sum(len(f.supported_languages) for f in catalog()),410)
 
 if __name__=='__main__':unittest.main()

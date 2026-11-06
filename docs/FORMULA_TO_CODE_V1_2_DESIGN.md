@@ -1,22 +1,22 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.9)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.10)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.9)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.10)
 
-- **Generation coverage:** **384 / 462 (83.1%) source combinations**. Python **33/33**; each other language **27/33**. **6 Python-only formulas / 78 non-Python pairs** remain.
-- **New STOCH-003/004/005:** Arithmetic Brownian motion, exact-step GBM and exact-transition OU mean-reverting simulations now emit source for all **14 target languages**. Each returns theoretical terminal mean/standard deviation, simulated terminal sample mean/standard deviation and first example path.
-- **Portable contract:** The **13 non-Python languages** use Park–Miller 16807 / Box–Muller PRNG with path-major traversal. Source is standalone and includes fixed parameter validation. Return layout is numeric vector **[theory_mean, theory_sd, sim_mean, sim_sd, path(t0)..path(tN)]** of length `steps+5`. C uses a `HyunPathResult` struct with a fixed-size buffer and `length=0` to indicate invalid inputs. Portable bounds: years>=0, steps 1..5000, paths 2..100000, steps*paths<=2,000,000, seed 1..2147483646. Python original code retains NumPy default_rng and uses a different RNG stream.
-- **Verification:** **131 local Python automated tests passed**, 42 new language/formula emissions covered by tests. Generated example programs for **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin** compiled/ran and agreed with independently implemented portable RNG path statistics and complete first paths. **Go** execution test timed out; **Go, R, C#, Rust, MATLAB, Julia** outputs are not reported runtime-verified in this iteration. Full 384-pair build/numerical coverage is still outstanding.
-- **Options:** new non-Python path generators support function only, automatic iteration, fixed canonical parameters and standard imports. Class / forced-loop / arbitrary variable renaming / numerical library choices are refused until audited.
-- **Remaining:** 78 non-Python source-generation pairs (FIN-005/006, STAT-001/002, RISK-003, STRAT-002), full 462-pair runtime validation, advanced generator controls, complete project ZIP export, premium dark/accessible UI overhaul.
-- **Sponsorship:** HyunStudio GitHub Sponsors stays **pending approval**; payment/donation controls remain inactive and no unverified PayPal link is published.
-- This document continues to specify a full planned release and partial alpha progress; do not describe v1.2.0 as complete. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Source-generation coverage:** **410/462 (88.7%)**, comprising Python **33/33** and the other 13 target languages **29/33** each. **4 formulas / 52 non-Python combinations** remain.
+- **New FIN-005:** IRR (annual/per-period decimal rate) with 680 sampled rates over [-0.9999,1e5], sign-change detection, up to 120 steps of bisection and multiple-root rejection for detected roots (1e-7 deduplication). The finite scan may miss tangent/off-grid IRRs, as in the original Python calculator; not a mathematically complete solver. Cash flows must be finite and include positive and negative values, 2–10000 entries.
+- **New FIN-006:** Loan amortization for one specified installment. Result order for non-Python targets: [payment,interest,principal_paid,remaining_balance]; Python preserves named dictionary output. Rate is decimal per payment period, with a dedicated near-zero-rate path; check principal>=0, rate>-1, n>=1, period in [1,n].
+- **Implementation options:** function-only, automatic iteration, standard mathematical dependencies, canonical parameter names. Unsupported class, explicit loop or rename combinations fail closed.
+- **Verification:** selected generated C/C++/JavaScript/TypeScript/Java/Swift/Kotlin/Go examples compiled and numerically matched a hand-calculated expected result for both models; **R/C#/Rust/MATLAB/Julia runtime verification is pending**. Python generated source still uses verified v1.1 algorithms. New Python unit and optional toolchain smoke tests included; full 410/462 numerical verification is not complete.
+- **Remaining four Python-only formulas:** STAT-001 normal PDF/CDF/quantile, STAT-002 sample covariance/correlation, RISK-003 Sharpe/Sortino/drawdown performance, STRAT-002 single-asset cost-aware backtest. Non-Python generation count remaining **52**.
+- **Sponsors:** HyunStudio GitHub Sponsors is still **pending approval**; payment/donation links remain disabled and no unverified PayPal destination is published.
+- Work remains alpha-level until the complete emitter matrix and broad runtime/numeric verification, advanced user implementation options, project bundles and accessible premium UI are delivered.
 
 ## 1. 목적과 핵심 원칙
 
@@ -299,4 +299,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.9은 Python 33개와 다른 13개 언어 각각 27개, 총 **384/462개 코드 생성 조합(83.1%)**을 제공한다. 나머지 6개 수식에 해당하는 **78개 비Python 생성 조합**과 전 언어 컴파일·수치 검증, 고급 옵션 및 UI/UX 전면 적용은 개발 중이다. GitHub Sponsors는 승인 대기 상태를 유지한다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.10은 Python 전체 33개와 다른 13개 언어 각각 29개 수식, 총 **410/462개 생성 조합(88.7%)**을 제공한다. 아직 **4개 수식 × 13개 언어 = 52개 조합** 및 전체 컴파일·수치 검증, 고급 옵션과 UI/UX 적용이 남아 있다. Sponsors 승인 전 후원 결제 기능은 비활성이다.
