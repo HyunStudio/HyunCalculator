@@ -102,3 +102,16 @@ This invariant is checked automatically by the CI scripts.
 
 GitHub Sponsors profile approval is pending; no payment action is
 enabled until a verified payment destination is available.
+
+## Follow-up: C/C++ full representative coverage
+
+The mandatory `tests/toolchain_native_full_numeric.py` adds the six missing
+formula IDs in each of C and C++: 12 planned numerical cases. Every output
+field is compared with the Python references and model-specific tolerances
+used by the JavaScript suite. Combined coverage must match all 33 unique
+catalog IDs. Missing compilers, compilation errors and nonfinite results fail.
+
+The alpha.18 totals above remain the historical baseline. Once the added
+CI step passes, totals become 143 cases (137 numerical, 6 rejection),
+132 distinct formula/runtime pairs, and 33 formulas each in C/C++/JS.
+These additions do not establish exhaustive input or boundary coverage.

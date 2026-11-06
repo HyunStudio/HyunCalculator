@@ -45,6 +45,11 @@ jobs:
           MPLBACKEND: Agg
         run: python tests/toolchain_js_full_numeric.py
 
+      - name: Verify remaining six formulas in C and C++
+        env:
+          MPLBACKEND: Agg
+        run: python tests/toolchain_native_full_numeric.py
+
   gui-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 10
