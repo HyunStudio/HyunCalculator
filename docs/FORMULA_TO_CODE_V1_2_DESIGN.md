@@ -1,20 +1,21 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.3)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.4)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.3)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.4)
 
-- **Code generation available:** all **33 formulas in Python**, plus **14 formulas in each of the other 13 languages**. Total **215 / 462** source-generation pairs; remaining **19 formulas are Python-only**, leaving **247 non-Python pairs**.
-- **Added this iteration:** BOND-001 fixed-coupon dirty price/Macaulay and modified duration/convexity; BOND-002 coupon bond YTM via bounded bisection and zero-coupon analytic branch; TS-001 EWMA variance/volatility. These profiles are function-only and reject unsupported class, loop, variable-rename options.
-- **Verification:** 98 automated Python regression/source-generation tests pass locally. Selected C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go examples compile and match numeric reference values for new models; R, C#, Rust, MATLAB and Julia are **not runtime-verified** in this environment. Generated code is not equivalent to fully verified production code.
-- **Pending:** 247 source-generation pairs, complete 462-way compiler/numeric verification, advanced algorithm/import policies, project bundle exports and premium dark UI implementation.
-- **HyunStudio Sponsors:** GitHub Sponsors profile **pending approval**; never advertise a functional sponsorship/payment button until independently approved and verified.
-- This remains a **target-state design document**; alpha.3 is not the completed v1.2.0 feature set. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Generation available:** all **33 Financial/Quant formulas in standalone Python**; **18 formulas × the 13 additional languages** for a total of **267 / 462 (57.8%)** source-generation pairs. **15 formulas** remain Python-only, leaving **195 pairs** still to implement.
+- **Added in alpha.4:** DERIV-001 European dividend-adjusted Black–Scholes and five Greeks (call/put, with T=0/σ=0 edge semantics); PORT-001 expected portfolio return/volatility/Sharpe with SPD covariance check; RISK-001 signed-loss historical VaR/ES using type-7 quantile and inclusive discrete tail; TS-003 SMA/EMA including all output series.
+- **Implementation constraints:** These 4 new cross-language profiles are function-only with standard parameter names and automatic loop selection; class/renaming/manual loop options are deliberately rejected until proven. The normal CDF uses a convergent power series in non-Python adapters. C portfolio uses flat row-major covariance; C moving average requires caller-supplied output buffers.
+- **Verification:** **104 local Python unittest/regression tests** pass. Source emission succeeds across all 267 enabled pairs. Selected C/C++/JS/TS/Java/Swift/Kotlin/Go programs were compiled/executed and numerically compared to existing Python references. R/C#/Rust/MATLAB/Julia outputs are **not runtime-tested** in this environment; 'generated' does not mean 'verified'.
+- **Remaining work:** 195 source-emission pairs; complete 462-pair cross-language runtime matrix; advanced library/algorithm selection, user-configurable structure across all profiles, production export bundles, and premium UI/UX implementation.
+- **HyunStudio Sponsors:** Pending staff approval; no active donation button, PayPal link or payment URL is exposed. Only activate after approval and verified destination.
+- This remains an **implementation design and progress record**, not a claim that v1.2.0 is complete. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -297,4 +298,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.1.0 계산 기능 33개는 그대로 유지된다. v1.2.0-alpha.3은 **Python 33개 및 다른 13개 언어 각각 14개, 총 215개 소스코드 생성 조합을 부분 구현**했다. 남은 **247개 언어별 생성 조합**, 전체 컴파일/수치 검증, 추가 UI/UX는 후속 개발 대상이다.
+**현황 요약 (2026-11-06):** v1.1.0의 33개 금융 계산 함수는 유지된다. v1.2.0-alpha.4는 **Python 33개 및 다른 13개 언어 각각 18개, 총 267/462개 소스코드 생성 조합을 부분 구현**했다. 나머지 **195개 생성 조합**, 전체 언어별 컴파일·수치 검증 및 프리미엄 UI/UX는 후속 개발 대상으로 남아 있다.
