@@ -65,7 +65,7 @@ class ExpandedPortableCodegenTests(unittest.TestCase):
         self.assertAlmostEqual(r['Expected Shortfall'],.04)
         a=moving_averages([100.,102.,101.,104.,106.,105.],3)
         self.assertEqual(len(a['SMA (from first complete window)']),4)
-        self.assertEqual(len(a['EMA (first value seeded)']),4)
+        self.assertEqual(len(a['EMA (first value seeded)']),6)
 
 
 if __name__=='__main__':unittest.main()
