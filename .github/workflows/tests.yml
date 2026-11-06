@@ -128,3 +128,24 @@ jobs:
           DOTNET_NOLOGO: '1'
           DOTNET_CLI_TELEMETRY_OPTOUT: '1'
         run: python tests/toolchain_r_csharp_smoke.py --language 'C#'
+
+  julia-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+      - name: Install Python reference dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Ensure Julia runtime
+        run: julia --version
+      - name: Execute six Julia numeric generator checks
+        env:
+          MPLBACKEND: Agg
+        run: python tests/toolchain_julia_smoke.py
