@@ -1,54 +1,60 @@
 # HyunCalculator
 
-**v1.2.0-alpha.3** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.4** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## v1.2.0-alpha.3 — Portable Bonds, YTM and EWMA (in progress)
+## v1.2.0-alpha.4 — Four more quantitative models (partial implementation)
 
-The Code Generator catalogs **33 Financial/Quant functions** and exports all 33
-as standalone Python. **14 functions** now have generators in every one of the
-14 target languages: the original 7 financial formulas; GARCH(1,1), GBM/OU
-analytic moments, and transaction costs; plus **coupon-bond price / Macaulay
-and modified duration / convexity (BOND-001)**, **dirty-price nominal YTM
-inversion (BOND-002)**, and **EWMA variance / volatility (TS-001)**.
+**Code generation:** the existing 33 Financial/Quant calculations remain available in the
+calculator, and all 33 generate standalone Python. **18 of the 33** now generate
+source in **all 14 target languages**: Python, R, C, C++, JavaScript, TypeScript,
+Java, C#, Swift, Kotlin, Go, Rust, MATLAB and Julia. That is **267 / 462**
+source-generation pairs (33 Python + 18×13 non-Python), or 57.8%. The remaining
+**15 formulas** support Python only, leaving **195 unfinished pairs**. Unsupported
+combinations fail explicitly rather than generating placeholder code.
 
-**Source-generation coverage: 215 / 462** (33 Python + 14 × 13 non-Python).
-The remaining **19 formulas** have Python-only exporters, leaving **247
-unimplemented language/formula combinations**. Attempts to generate their
-non-Python code fail clearly; no placeholder implementations are exported.
+**Four new full-language formulas:**
 
-**Source generation is not proof of compilation or mathematical correctness.**
-All Python samples for 33 formulas have been compared to the v1.1.0 calculator.
-BOND-001, BOND-002 and TS-001 have additional runtime smoke checks on available
-C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go toolchains. Additional
-supported language outputs for C#, R, Rust, MATLAB and Julia were generated,
-**not** runtime-verified in those ecosystems. CI covers Python 3.11 and 3.12
-unit/regression tests; the optional multi-language compiler tests are manual.
+| Formula ID | Source function | Generated computation | Output interface |
+|---|---|---|---|
+| `DERIV-001` | `qf_bs` | Dividend-adjusted European Black–Scholes, call/put, Delta/Gamma/Vega/Theta/Rho | 6 ordered numbers (or named R/Julia/MATLAB results) |
+| `PORT-001` | `qf_portfolio` | Expected return, volatility, Sharpe with fully-invested weights and symmetric positive-definite covariance | 3 numbers; native 2D matrix except C row-major flat covariance |
+| `RISK-001` | `qf_hist_var` | Signed-loss historical VaR with linear empirical quantile and inclusive tail ES | 2 numbers |
+| `TS-003` | `qf_moving` | Complete-window SMA and first-observation-seeded EMA | Last values **and entire series**; C caller supplies output buffers |
 
-- **BOND-001:** periodic coupon dirty price, duration and convexity; outputs are
-  ordered arrays with documented indices for languages without native records.
-  Non-Python iterative emitters cap the number of coupon periods at one million
-  for resource safety; zero and negative coupon rates follow the original model.
-- **BOND-002:** nominal YTM computed using bounded bisection for regular coupon
-  periods, including an analytic zero-coupon case; up to 2,400 coupon payments.
-  Input is full/dirty price, not clean price; no irregular coupon schedules.
-- **TS-001:** sequential EWMA initialized with the square of the first return,
-  with `0 <= decay < 1` and two or more finite observations.
-- **Architecture:** these loop/root-finding emitters use function-style code;
-  `class`, custom loop selection and parameter renaming are not supported for
-  these profiles yet. They fail closed on incompatible options. The original
-  advanced options remain available for eligible functions.
-- **Types/dependencies:** Python functions may use NumPy/SciPy as before;
-  non-Python bond/YTM/EWMA emitters target standard math facilities, with
-  dependency notes where applicable. No generated source is run automatically
-  inside the GUI.
+**Compatibility and validation:** The four new profiles use a fixed
+**function-style** interface and `auto` iteration mode. Parameter renaming,
+class wrappers and alternative algorithms for these profiles are not yet supported;
+unsupported settings raise an explicit error. Mathematical conventions mirror
+`hyuncalculator/quant.py`, including the one-sided historical loss definition,
+`Vega` and `Rho` units per 1.00 of annual volatility/rate, and Black–Scholes
+`T=0`/`sigma=0` undefined Greeks as NaN. The Black–Scholes normal CDF uses a
+convergent-series approximation with approximately 1e-15 absolute accuracy on
+-8 <= x <= 8; extreme tails are saturated and outputs must be verified for
+sensitive applications. The portable portfolio adapter uses Cholesky SPD checks;
+near-singular boundary behavior can differ from the Python eigenvalue criterion.
 
-The existing Scientific, Graphing, Financial, Quant, Programmer and ML/DL/RL
-calculators are preserved. The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md)
-remains the target-state specification. The high-fidelity dark UI redesign,
-advanced library selectors, entire 462-way runtime matrix and project-bundle
-exports are not implemented in this alpha.
+**Tests:** 104 local Python unittest/regression tests pass. Selected C, C++,
+JavaScript, TypeScript, Java, Swift, Kotlin and Go generated programs compiled
+or executed and matched the calculator's reference outputs on representative
+Black–Scholes, historical VaR, moving-average and portfolio cases. Additional
+R, C#, Rust, MATLAB and Julia output was generated but **not runtime-verified**
+in this environment. Source generation does not certify production quality or
+financial suitability; existing GitHub CI runs Python 3.11 and 3.12 unit tests.
+Optional toolchain checks are available under `tests/toolchain_bs_smoke.py`,
+`tests/toolchain_series_smoke.py` and `tests/toolchain_portfolio_smoke.py`.
+
+**Earlier portable profiles remain supported:** 7 original financial calculations,
+GARCH(1,1), GBM/OU moments, transaction costs, coupon-bond price/duration,
+YTM, and EWMA. The original Scientific, Graphing, Financial, Quant, Programmer,
+and ML/DL/RL calculator screens are preserved.
+
+The full 462-pair runtime validation matrix, advanced dependency choice,
+project ZIP bundles, universal custom variable/structure controls and premium
+dark UI redesign are **not complete**. The [v1.2 specification](docs/FORMULA_TO_CODE_V1_2_DESIGN.md)
+tracks progress and open items. The sponsor status remains **pending approval**;
+no donation or PayPal payment link is activated.
 
 ### CLI examples / 코드 생성 예제
 
@@ -68,7 +74,7 @@ The bilingual Code Generator tab offers formula/language selection, source
 preview, copy and save. Non-supported language/formula combinations are disabled.
 The generated code is **not executed automatically by the UI**.
 The [v1.2 technical design](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) describes the
-remaining 247 source-generation combinations, systematic toolchain testing,
+remaining 195 source-generation combinations, systematic toolchain testing,
 advanced model algorithms, output packaging and accessibility goals.
 Existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL calculators
 are preserved.

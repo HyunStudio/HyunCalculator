@@ -371,6 +371,18 @@ def generate(formula_id:str, options:GenerationOptions|None=None)->str:
             return generate_portable(fn,formula,opt)
         if formula.function in LOOP_PROFILES:
             return generate_loops(fn,formula,opt)
+        from .portable_risk import SUPPORTED as RISK_PROFILES, generate_risk
+        if formula.function in RISK_PROFILES:
+            return generate_risk(fn,formula,opt)
+        from .portable_moving import SUPPORTED as MOVING_PROFILES, generate_moving
+        if formula.function in MOVING_PROFILES:
+            return generate_moving(fn,formula,opt)
+        from .portable_portfolio import SUPPORTED as PORTFOLIO_PROFILES, generate_portfolio
+        if formula.function in PORTFOLIO_PROFILES:
+            return generate_portfolio(fn,formula,opt)
+        from .portable_bs import SUPPORTED as BS_PROFILES, generate_bs
+        if formula.function in BS_PROFILES:
+            return generate_bs(fn,formula,opt)
         if formula.function == 'qf_ytm':
             from .portable_ytm import generate_ytm
             return generate_ytm(fn,formula,opt)

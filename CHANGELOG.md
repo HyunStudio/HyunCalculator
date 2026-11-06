@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.2.0-alpha.4 — Black–Scholes, Historical VaR/ES, Moving Averages and Portfolio (2026-11-06)
+
+- Added **DERIV-001** Black–Scholes with call/put, dividend yield and all five Greeks using a high-accuracy series standard-normal CDF in each of 13 non-Python languages.
+- Added **PORT-001** weighted portfolio expected return/volatility/Sharpe with covariance dimension, symmetry and positive-definiteness checks; C uses a flattened row-major covariance input.
+- Added **RISK-001** empirical signed-loss VaR and ES with linear quantile interpolation and inclusive tail rule matching the existing reference.
+- Added **TS-003** full SMA/EMA calculation including output series (EMA first-value seeded; SMA only for complete windows).
+- **267 / 462** source-generation combinations (33 Python plus 18 formulas × 13 additional languages); 15 formulas still Python-only, 195 cross-language adapters outstanding.
+- All **104 local automated regression/generation tests** pass; selected real toolchain checks for C/C++/JavaScript/TypeScript/Java/Swift/Kotlin/Go match reference numeric cases. Other ecosystems are still unverified.
+- Formula-specific advanced-structure restrictions remain fail-closed; existing calculation engine and HyunStudio Sponsors pending status remain unchanged.
+- Full 462-way compiler/numeric verification, dark UI overhaul, optional advanced imports and project ZIP export remain planned rather than claimed as shipped.
+
 ## v1.2.0-alpha.3 — Multi-Language Coupon Bonds, YTM and EWMA (2026-11-06)
 
 - Extended 13 non-Python emitters for **BOND-001** coupon bond dirty price, Macaulay/modified duration and convexity; **BOND-002** dirty-price YTM inversion via bounded bisection; and **TS-001** sequential EWMA variance and volatility.

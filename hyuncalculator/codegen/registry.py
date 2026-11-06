@@ -44,7 +44,7 @@ class Formula:
 MULTILANG = frozenset(('fin_fv','fin_pv','fin_pmt','fin_npv',
                         'fin_cagr','fin_effective','fin_annuity',
                         'qf_garch','qf_gbm','qf_ou','qf_cost',
-                        'qf_bond','qf_ewma','qf_ytm'))
+                        'qf_bond','qf_ewma','qf_ytm','qf_hist_var','qf_moving','qf_portfolio','qf_bs'))
 # The full catalog is exportable as standalone Python. Only a subset has
 # audited emitters for the other 13 languages; never conflate the two.
 EXPORTABLE = frozenset(name for _label, (_domain, names) in DOMAINS.items() for name in names)
