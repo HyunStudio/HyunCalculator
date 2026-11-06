@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.2.0-alpha.1 — Formula to Code initial implementation (2026-11-06)
+
+- Added a stable, bilingual 33-formula Financial/Quant registry; 26 code adapters
+  are explicitly marked **planned** and cannot be exported as placeholders.
+- Working AST-based 14-language source emitters for **7 finance functions**:
+  Future Value (periodic/continuous), Present Value, Loan Payment, NPV, CAGR,
+  Effective Annual Rate, and Ordinary Annuity PV.
+- Generated code can be configured with function names, eligible class wrappers,
+  variable renames, appropriate NPV for/while loops and standard imports.
+  Unsupported language/structure/algorithm combinations fail explicitly.
+- Added desktop Code Generator preview/copy/save and CLI `--generate` and
+  `--list-formulas`. Code generation never executes user-supplied programs.
+- Added **About & Support** with creator 황현기 / HyunGi Hwang,
+  project contact and HyunStudio GitHub Sponsors **pending approval** notice.
+  No live donation button is shown while approval is pending.
+- Preserved existing calculator tabs and included generator regression tests.
+- This is an **alpha milestone**, not completion of the 462-combination design.
+
+
 ## v1.1.0 — Quantitative Finance Completeness Update
 
 The ten requested quantitative finance domains are now reachable in the **Quant / 금융공학** tab.

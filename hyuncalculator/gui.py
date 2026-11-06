@@ -18,7 +18,7 @@ LABELS = {
     'ko': {
         'title': f'HyunCalculator {__version__} | 통합 공학·금융·AI 계산기',
         'scientific': '공학용', 'graphing': '그래프', 'financial': '금융',
-        'quant': '금융공학', 'programmer': '프로그래머', 'ml': 'ML', 'dl': 'DL', 'rl': 'RL',
+        'quant': '금융공학', 'programmer': '프로그래머', 'codegen': '코드 생성', 'about': '제작자·후원', 'ml': 'ML', 'dl': 'DL', 'rl': 'RL',
         'language': '언어', 'calc': '계산하기', 'copy': '결과 복사', 'clear': '지우기',
         'memory_add': 'M+', 'memory_recall': 'MR', 'memory_clear': 'MC',
         'input': '수식', 'result': '결과', 'history': '계산 내역',
@@ -30,7 +30,7 @@ LABELS = {
     'en': {
         'title': f'HyunCalculator {__version__} | Scientific · Financial · AI',
         'scientific': 'Scientific', 'graphing': 'Graphing', 'financial': 'Financial',
-        'quant': 'Quant', 'programmer': 'Programmer', 'ml': 'ML', 'dl': 'DL', 'rl': 'RL',
+        'quant': 'Quant', 'programmer': 'Programmer', 'codegen': 'Code Generator', 'about': 'About', 'ml': 'ML', 'dl': 'DL', 'rl': 'RL',
         'language': 'Language', 'calc': 'Calculate', 'copy': 'Copy result', 'clear': 'Clear',
         'memory_add': 'M+', 'memory_recall': 'MR', 'memory_clear': 'MC',
         'input': 'Expression', 'result': 'Result', 'history': 'History',
@@ -200,12 +200,12 @@ class GraphingTab:
 
 def run_gui(initial_language: str='ko'):
     root=tk.Tk()
-    root.geometry('1380x900')
-    root.minsize(1020,740)
+    root.geometry('1550x900')
+    root.minsize(1150,740)
     style=ttk.Style(root)
     if 'clam' in style.theme_names(): style.theme_use('clam')
     style.configure('TButton',font=('Malgun Gothic',12),padding=(10,7))
-    style.configure('TNotebook.Tab',font=('Malgun Gothic',12,'bold'),padding=(16,8))
+    style.configure('TNotebook.Tab',font=('Malgun Gothic',12,'bold'),padding=(9,7))
     language={'code': initial_language}
     def get_language(): return language['code']
     top=ttk.Frame(root,padding=(12,8)); top.pack(fill='x')
@@ -225,6 +225,8 @@ def run_gui(initial_language: str='ko'):
     add('Graphing',GraphingTab(notebook,get_language))
     for code,operations in GROUPS.items():
         add(code,legacy_ml.CalculatorTab(notebook,operations,get_language))
+    add('Codegen',CodeGeneratorTab(notebook,get_language))
+    add('About',AboutTab(notebook,get_language))
     footer=ttk.Label(root,font=('Malgun Gothic',10));footer.pack(fill='x',padx=16,pady=(0,7))
     def refresh(_event=None):
         language['code']='en' if switch.get()=='English' else 'ko'
@@ -239,3 +241,183 @@ def run_gui(initial_language: str='ko'):
     selector.bind('<<ComboboxSelected>>',refresh)
     refresh()
     root.mainloop()
+
+
+class CodeGeneratorTab:
+    """Formula registry browser + safe source preview/export (no code execution)."""
+    def __init__(self, parent, language_getter):
+        from .codegen import catalog, get_formula, generate, GenerationOptions, GenerationError, LANGUAGES
+        self._catalog=catalog()
+        self._get_formula=get_formula
+        self._generate=generate
+        self._options_type=GenerationOptions
+        self._generation_error=GenerationError
+        self.language_getter=language_getter
+        self.frame=ttk.Frame(parent,padding=16)
+        self.frame.columnconfigure(0,weight=1)
+        self.frame.rowconfigure(8,weight=1)
+        self.title=ttk.Label(self.frame,font=('Malgun Gothic',15,'bold'))
+        self.title.grid(row=0,column=0,sticky='w')
+        self.description=ttk.Label(self.frame,font=('Malgun Gothic',11))
+        self.description.grid(row=1,column=0,sticky='w',pady=(0,12))
+        top=ttk.Frame(self.frame);top.grid(row=2,column=0,sticky='ew',pady=(0,9))
+        self.formula_items=[f'{f.id}  {f.title_en}'+('' if f.exportable else '  [Planned]') for f in self._catalog]
+        self.selected=tk.StringVar(value=self.formula_items[0])
+        ttk.Label(top,text='Formula / 수식',font=('Malgun Gothic',11,'bold')).pack(side='left',padx=(0,8))
+        selector=ttk.Combobox(top,textvariable=self.selected,values=self.formula_items,
+                              width=65,state='readonly',font=('Malgun Gothic',11))
+        selector.pack(side='left',fill='x',expand=True)
+        selector.bind('<<ComboboxSelected>>',lambda _e:self._selection_changed())
+        options=ttk.Frame(self.frame);options.grid(row=3,column=0,sticky='ew',pady=(0,9))
+        self.target=tk.StringVar(value='Python')
+        self.structure=tk.StringVar(value='function')
+        self.loop=tk.StringVar(value='auto')
+        self.imports=tk.StringVar(value='auto')
+        self.variant=tk.StringVar(value='periodic')
+        for label,var,values,width in [
+            ('Language / 언어',self.target,LANGUAGES,13),
+            ('Structure / 구조',self.structure,('function','class'),10),
+            ('Iteration / 반복',self.loop,('auto','for','while'),9),
+            ('Imports',self.imports,('auto','standard'),10),
+            ('FV variant',self.variant,('periodic','continuous'),13),
+        ]:
+            box=ttk.Frame(options);box.pack(side='left',padx=(0,13))
+            ttk.Label(box,text=label).pack(anchor='w')
+            combo=ttk.Combobox(box,textvariable=var,values=values,state='readonly',width=width)
+            combo.pack(anchor='w',pady=(4,0))
+        fn_row=ttk.Frame(self.frame);fn_row.grid(row=4,column=0,sticky='ew',pady=(0,9))
+        ttk.Label(fn_row,text='Function name / 함수명').pack(side='left',padx=(0,8))
+        self.fn=tk.StringVar(value='fv')
+        self.class_name=tk.StringVar(value='GeneratedCalculator')
+        self.renames=tk.StringVar(value='')
+        ttk.Entry(fn_row,textvariable=self.fn,width=32,font=('Consolas',12)).pack(side='left',padx=(0,10))
+        self.generate_btn=ttk.Button(fn_row,command=self.preview)
+        self.generate_btn.pack(side='left',padx=4)
+        self.copy_btn=ttk.Button(fn_row,command=self.copy)
+        self.copy_btn.pack(side='left',padx=4)
+        self.save_btn=ttk.Button(fn_row,command=self.save)
+        self.save_btn.pack(side='left',padx=4)
+        row=ttk.Frame(self.frame);row.grid(row=5,column=0,sticky='ew',pady=(0,8))
+        ttk.Label(row,text='Class / 클래스명').pack(side='left',padx=(0,8))
+        ttk.Entry(row,textvariable=self.class_name,width=25).pack(side='left',padx=(0,20))
+        ttk.Label(row,text='Rename variables / 변수명 (e.g. pv=principal,rate=r)').pack(side='left',padx=(0,8))
+        ttk.Entry(row,textvariable=self.renames,width=35).pack(side='left',fill='x',expand=True)
+        self.formula_label=ttk.Label(self.frame,font=('Consolas',11))
+        self.formula_label.grid(row=6,column=0,sticky='w',pady=(0,5))
+        self.status=tk.StringVar(value='')
+        ttk.Label(self.frame,textvariable=self.status,font=('Malgun Gothic',11),wraplength=1250).grid(row=7,column=0,sticky='w',pady=(0,6))
+        preview_frame=ttk.Frame(self.frame)
+        preview_frame.grid(row=8,column=0,sticky='nsew')
+        preview_frame.columnconfigure(0,weight=1)
+        preview_frame.rowconfigure(0,weight=1)
+        self.code=tk.Text(preview_frame,wrap='none',font=('Consolas',13),height=22,
+                          background='#102034',foreground='#E5F3FF',insertbackground='white',
+                          relief='flat',padx=16,pady=12)
+        self.code.grid(row=0,column=0,sticky='nsew')
+        scrollbar=ttk.Scrollbar(preview_frame,orient='vertical',command=self.code.yview)
+        scrollbar.grid(row=0,column=1,sticky='ns');self.code.configure(yscrollcommand=scrollbar.set)
+        hscroll=ttk.Scrollbar(preview_frame,orient='horizontal',command=self.code.xview)
+        hscroll.grid(row=1,column=0,sticky='ew');self.code.configure(xscrollcommand=hscroll.set)
+        self.last_code=None
+        self._selection_changed()
+        self.refresh_language()
+
+    def _selection_changed(self):
+        f=self._get_formula(self.selected.get().split()[0])
+        self.fn.set(f.function.removeprefix('fin_'))
+        self.renames.set('')
+        self.loop.set('auto')
+        self.variant.set('periodic')
+        self.formula_label.configure(text=f'{f.id}: {f.formula}')
+        self.last_code=None
+        self.code.delete('1.0','end')
+        self.generate_btn.configure(state='normal' if f.exportable else 'disabled')
+        self.copy_btn.configure(state='disabled')
+        self.save_btn.configure(state='disabled')
+        self.status.set(('Ready to generate (initial 7 formulas).' if f.exportable else
+                        'PLANNED: This formula is in the 33-item registry; a verified generator is not available yet.'))
+
+    def refresh_language(self):
+        korean=self.language_getter()=='ko'
+        self.title.configure(text='수학식 → 코드 생성 | Formula to Code' if korean else 'Formula to Code Generator')
+        self.description.configure(text=('14개 언어 · 함수/Class · 반복문 · Import · 미지원 조합은 명시적으로 차단' if korean else
+                                          '14 languages · function/class · loops · imports · unsupported combinations blocked'))
+        self.generate_btn.configure(text='코드 생성' if korean else 'Generate')
+        self.copy_btn.configure(text='복사' if korean else 'Copy')
+        self.save_btn.configure(text='파일 저장' if korean else 'Save file')
+
+    def preview(self):
+        from .codegen.emitter import EXTENSIONS
+        f=self._get_formula(self.selected.get().split()[0])
+        try:
+            mappings=[]
+            if self.renames.get().strip():
+                for part in self.renames.get().split(','):
+                    if '=' not in part:raise self._generation_error('Use original_name=new_name, separated by commas')
+                    source,destination=(x.strip() for x in part.split('=',1))
+                    mappings.append((source,destination))
+            opts=self._options_type(language=self.target.get(),structure=self.structure.get(),
+                                iteration=self.loop.get(),imports=self.imports.get(),
+                                variant=self.variant.get(),function_name=self.fn.get(),
+                                class_name=self.class_name.get(),variable_names=tuple(mappings))
+            code=self._generate(f.id,opts)
+        except self._generation_error as exc:
+            self.status.set(f'Unavailable / 미지원: {exc}')
+            self.last_code=None
+            self.copy_btn.configure(state='disabled');self.save_btn.configure(state='disabled')
+            return
+        self.last_code=code
+        self.code.delete('1.0','end');self.code.insert('1.0',code)
+        self.status.set(f'Generated {len(code)} chars · {f.id} · {opts.language} · Compilation and numeric verification not performed in-app.')
+        self.copy_btn.configure(state='normal');self.save_btn.configure(state='normal')
+
+    def copy(self):
+        if self.last_code is not None:
+            self.frame.clipboard_clear();self.frame.clipboard_append(self.last_code)
+
+    def save(self):
+        if self.last_code is None:return
+        from .codegen.emitter import EXTENSIONS
+        extension=EXTENSIONS[self.target.get()]
+        fn=self.fn.get()
+        filename='GeneratedCalculator.java' if self.target.get()=='Java' else f'{fn}.{extension}'
+        path=filedialog.asksaveasfilename(title='Export generated source',initialfile=filename,
+                                           defaultextension=f'.{extension}',filetypes=[('Source code',f'*.{extension}'),('All files','*.*')])
+        if path:
+            try:
+                with open(path,'w',encoding='utf-8') as out:out.write(self.last_code)
+                self.status.set('Source saved locally. Run toolchain tests before using it in production.')
+            except OSError as exc:
+                messagebox.showerror('Export failed',str(exc))
+
+
+class AboutTab:
+    """Author details and a NON-ACTIVE sponsorship placeholder while pending review."""
+    def __init__(self,parent,language_getter):
+        self.language_getter=language_getter
+        self.frame=ttk.Frame(parent,padding=32)
+        self.frame.columnconfigure(0,weight=1)
+        self.heading=ttk.Label(self.frame,font=('Malgun Gothic',18,'bold'))
+        self.heading.grid(row=0,column=0,sticky='w',pady=(0,16))
+        self.author=ttk.Label(self.frame,font=('Malgun Gothic',14))
+        self.author.grid(row=1,column=0,sticky='w',pady=7)
+        self.contact=ttk.Label(self.frame,font=('Consolas',13))
+        self.contact.grid(row=2,column=0,sticky='w',pady=7)
+        self.github=ttk.Label(self.frame,text='GitHub: https://github.com/HyunStudio/HyunCalculator',font=('Consolas',12))
+        self.github.grid(row=3,column=0,sticky='w',pady=7)
+        self.sponsors=ttk.Label(self.frame,font=('Malgun Gothic',13),wraplength=950)
+        self.sponsors.grid(row=4,column=0,sticky='w',pady=(24,8))
+        self.explain=ttk.Label(self.frame,font=('Malgun Gothic',11),wraplength=950)
+        self.explain.grid(row=5,column=0,sticky='w',pady=6)
+        self.refresh_language()
+
+    def refresh_language(self):
+        ko=self.language_getter()=='ko'
+        self.heading.configure(text='제작자 및 후원 | About & Support' if ko else 'About & Support')
+        self.author.configure(text='제작자: 황현기 (HyunGi Hwang)  |  HyunStudio' if ko else
+                                    'Created by HyunGi Hwang (황현기)  |  HyunStudio')
+        self.contact.configure(text='Contact: hyungi2344@gmail.com')
+        self.sponsors.configure(text=('GitHub Sponsors: 승인 대기 (Pending) · 후원 결제 기능 비활성화' if ko else
+                                      'GitHub Sponsors: pending approval · donations unavailable'))
+        self.explain.configure(text=('GitHub Sponsors 프로필이 승인된 뒤에만 공식 후원 링크를 검증하여 활성화합니다. 현재는 후원 결제를 요청하지 않습니다.' if ko else
+                                     'The official sponsorship link will only be enabled after the profile is approved and verified. No payment link is active.'))

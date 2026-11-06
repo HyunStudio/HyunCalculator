@@ -6,6 +6,17 @@ def main():
     parser = argparse.ArgumentParser(description='HyunCalculator desktop application')
     parser.add_argument('--lang', choices=('ko','en'), default='ko')
     parser.add_argument('--test', action='store_true', help='Run project unit tests (headless)')
+    parser.add_argument('--list-formulas', action='store_true', help='List all 33 formula IDs and availability')
+    parser.add_argument('--generate', metavar='FORMULA_ID', help='Generate code for a registered formula')
+    parser.add_argument('--language', default='Python', help='Code output language')
+    parser.add_argument('--structure', choices=('function','class'), default='function')
+    parser.add_argument('--loop', choices=('auto','for','while'), default='auto')
+    parser.add_argument('--variant', choices=('periodic','continuous'), default='periodic')
+    parser.add_argument('--imports', choices=('auto','standard'), default='auto')
+    parser.add_argument('--function-name', help='Generated function name')
+    parser.add_argument('--class-name', default='GeneratedCalculator', help='Name for class structure')
+    parser.add_argument('--rename', metavar='OLD=NEW', action='append', default=[], help='Rename a canonical input parameter')
+    parser.add_argument('--output', metavar='PATH', help='Write generated UTF-8 source file; otherwise print to stdout')
     args = parser.parse_args()
     if args.test:
         import unittest
@@ -13,6 +24,31 @@ def main():
         tests = pathlib.Path(__file__).resolve().parent.parent / 'tests'
         result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.discover(str(tests)))
         raise SystemExit(0 if result.wasSuccessful() else 1)
+    if args.list_formulas or args.generate:
+        from .codegen import catalog, generate, GenerationOptions, GenerationError
+        if args.list_formulas:
+            for item in catalog():
+                print(f'{item.id}  {"SUPPORTED" if item.exportable else "PLANNED"}  {item.title_en}')
+            return
+        try:
+            renames=[]
+            for pair in args.rename:
+                if '=' not in pair: raise GenerationError('--rename requires OLD=NEW')
+                original,new=(s.strip() for s in pair.split('=',1))
+                renames.append((original,new))
+            code = generate(args.generate, GenerationOptions(language=args.language,
+                structure=args.structure, iteration=args.loop, imports=args.imports,
+                variant=args.variant, function_name=args.function_name,
+                class_name=args.class_name,variable_names=tuple(renames)))
+        except GenerationError as exc:
+            parser.error(str(exc))
+        if args.output:
+            from pathlib import Path
+            Path(args.output).write_text(code, encoding='utf-8')
+            print(f'Generated: {args.output}')
+        else:
+            print(code, end='')
+        return
     from .gui import run_gui
     run_gui(args.lang)
 

@@ -1,12 +1,57 @@
 # HyunCalculator
 
-**v1.1.0** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.1** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
-## Planned v1.2.0 — Formula to Code Generator (design only)
+## v1.2.0-alpha.1 — Formula to Code (initial implementation)
 
-The [Formula to Code Generator design document](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) specifies the future conversion of **33 registered Financial/Quant calculations into 14 programming languages**, with configurable class/function structure, algorithms, loops, imports, numerical validation, bilingual UI and source export (**33 × 14 = 462 target combinations**). **This is a planning specification, not an implemented feature in v1.1.0.**
+The first **working** Formula to Code tab and CLI are available. The goal remains
+**33 Financial/Quant formulas × 14 languages (462 combinations)**, but **this
+alpha currently exports only 7 complete formulas across 14 language emitters
+(98 source-generation combinations)**. The other 26 formulas are listed as
+**PLANNED**, and attempting to generate their code raises a clear error instead
+of emitting misleading placeholders. All seven have codegen unit tests; only
+installed compiler toolchains have been runtime-tested.
+
+**Currently exportable:** FIN-001 Future Value (periodic/continuous), FIN-002 Present
+Value, FIN-003 Loan Payment, FIN-004 Net Present Value, FIN-007 CAGR, FIN-008
+Effective Annual Rate, FIN-009 Annuity Present Value. NPV supports `for` and
+`while` loop choices; analytic formulas reject irrelevant loop selections.
+
+**Languages:** Python, R, C, C++, JavaScript, TypeScript, Java, C#, Swift, Kotlin,
+Go, Rust, MATLAB, Julia. **Class architecture:** supported only for Python,
+C++, JavaScript, TypeScript, Java, C#, Swift and Kotlin in scalar-formula mode.
+Custom function/class names and variable renames are validated to block
+invalid identifiers. Imports are currently automatic or standard-library-only;
+external scientific-library choice is not yet implemented.
+
+### Example: generate source files
+
+~~~bash
+python -m hyuncalculator --list-formulas
+python -m hyuncalculator --generate FIN-001 --language Python --output future_value.py
+python -m hyuncalculator --generate FIN-002 --language Java --structure class --class-name FinanceMath --function-name discount --rename fv=face_value --output FinanceMath.java
+python -m hyuncalculator --generate FIN-004 --language C++ --loop while --output npv.cpp
+~~~
+
+Use the new **Code Generator** tab to preview, copy, and save source code. A generated
+file is not automatically compiled or executed in the UI; verify correctness and
+required toolchains for your target language. The [v1.2 design specification](docs/FORMULA_TO_CODE_V1_2_DESIGN.md)
+describes the remaining 26 formula adapters, validation matrix, deployment and advanced
+controls. The project's existing Scientific/Graphing/Financial/Quant/Programmer/ML/DL/RL
+calculations are retained.
+
+### About, creator, and sponsorship
+
+**Creator:** 황현기 / HyunGi Hwang (HyunStudio)  
+**Public project contact:** hyungi2344@gmail.com  
+**GitHub:** https://github.com/HyunStudio/HyunCalculator
+
+**GitHub Sponsors status: pending approval as of 2026-11-06**. The sponsor profile
+has been submitted but is not live. The app's About tab displays a pending notice;
+**there is no active donation/payment button or unverified PayPal link**. Activate a
+verified sponsorship link only after GitHub approves the HyunStudio profile.
 
 ## Features / 주요 기능
 
