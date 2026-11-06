@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.2.0-alpha.18 — 33/33 JavaScript Numerical Examples (2026-11-06)
+
+- Required C/C++/JavaScript native numerical runtime CI now covers
+  **27 distinct formula IDs per language (81/81 passing samples)**,
+  expanded from eleven examples. Added 16 new formula families including
+  additional finance, parametric risk, stochastic, Monte Carlo and
+  optimization calculations.
+- New standalone JavaScript runtime smoke validates **six remaining
+  formula IDs** (STAT-001/002, BOND-001, RISK-003, TS-001, STRAT-002)
+  and **three expected RangeError input guards**, with complete
+  returned-vector comparisons to NumPy/SciPy backed references.
+- The combined JavaScript suites now numerically execute **33/33
+  registered formula IDs** with an explicit unique-ID catalog assertion.
+- Current required native runtime ledger: **131 passing examples**
+  (125 numerical valid-input cases, 6 malformed-input rejection cases);
+  **120 distinct formula-language/run target combinations**.
+  All 462 generated source combinations continue to pass their
+  language-appropriate build/type/syntax/parse checks. Full 462-way
+  numerical parity and corner cases are not certified.
+- Added `docs/NUMERICAL_VALIDATION_V1_2.md` with honest coverage
+  accounting and open gaps. GitHub Sponsors remains approval-pending;
+  no payment buttons or unverified payment destinations enabled.
+
 ## v1.2.0-alpha.17 — 462/462 Source Validation (2026-11-06)
 
 - Extended the mandatory all-formula build/syntax matrix to **Kotlin,

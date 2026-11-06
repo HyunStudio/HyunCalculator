@@ -1,22 +1,21 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.17)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.18)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.17)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.18)
 
-- **Source generation:** all **462/462** formula-language pairs are supported (33 formulas × 14 targets).
-- **Mandatory 14-language source-validation matrix:** all **462/462 source-level parse/build/type checks passed**. Previously checked 11 languages (363 pairs) plus newly added **Kotlin / Julia / MATLAB target under GNU Octave (99 pairs)**. Kotlin is fully compiled with `kotlinc` for each formula; Julia is parsed via `Meta.parseall`; Octave parses all MATLAB functions without executing financial calculations. R remains syntax-parse only. Other languages use the documented compilers, syntax or typecheck commands.
-- **Defect discovered:** FIN-007 MATLAB CAGR generated a parameter literally called `end`, a reserved MATLAB keyword. Scalar source emitter now consistently renames this parameter to `ending_value` for MATLAB, leaving other language contracts unchanged.
-- **Checker correction:** plain Octave `source()` ran function bodies without parameters. The checker now creates and invokes an otherwise-empty wrapper containing the generated definitions, forcing parse without invoking them. Octave remains only a MATLAB-compatible alternative, not proof of licensed MathWorks MATLAB compatibility.
-- **Verified code-run evidence:** [GitHub Actions run 42178554024](https://github.com/HyunStudio/HyunCalculator/actions/runs/42178554024) succeeded for all 14 language matrix jobs and established Python, GUI, native smoke jobs. Prior **74 selected native numerical/negative-input execution checks** remain passing and separate from static-source checks.
-- **Not complete:** full numerical execution for all 462 pairs, input-edge-value matrices, all platform/screen-reader accessibility acceptance, unrestricted class/loop/import options and production-grade financial certification.
-- **Sponsors:** approval pending; no active/unverified donation links or payment actions.
-- This is an alpha implementation progress record, not a declaration of finished v1.2.0. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Source generation and source-level validation:** complete at **33 formulas × 14 languages = 462/462**. Tests span language-appropriate syntax parsing, compile or type checks, not universal executable proof.
+- **Expanded runtime parity:** common C/C++/JavaScript CI runs **27 distinct formula examples per language (81/81 successful)**. New JavaScript numeric/validation suite covers the remaining **6 formula IDs** (STAT-001/002, BOND-001, RISK-003, TS-001, STRAT-002) with **6 full output-vector comparisons and 3 negative-input rejection checks**, yielding a **33/33 JavaScript registered-ID coverage guarantee**. The numeric CI enforces registered IDs match exactly and contain no duplicates.
+- **Native execution ledger:** **125 successful valid-input numeric cases + 6 successful invalid-input guards = 131 native test cases**. There are **120 distinct formula-language/runtime pairs** in that sample ledger; the remaining 11 represent variants/guard cases. Of these, 81 valid numeric cases are C/C++/JavaScript, 6 valid JS numeric, 24 are Rust/R/C#/Julia, and 14 valid + 3 invalid cases run under GNU Octave. The 3 JS guards complete the count.
+- **Numerical qualifications:** one or more input examples per JavaScript formula is much less than full numerical parity across possible inputs. Portable Monte Carlo/stochastic RNG streams differ from NumPy Python RNG by design; their checks use independent portable RNG reference implementations. Numerical tolerances are documented in each smoke script; no one tolerance fits all.
+- **Still pending:** full 462-way runtime and multi-edge numerical verification, proprietary MATLAB execution, advanced class/iteration/import options, real assistive-technology accessibility tests and release/packaging hardening.
+- **Sponsors:** profile approval pending; unverified payment/donation links remain inactive.
+- See [numerical validation ledger](NUMERICAL_VALIDATION_V1_2.md) and [README](../README.md) for details.
 
 ## 1. 목적과 핵심 원칙
 
@@ -299,4 +298,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.2.0-alpha.17에서는 **33개 수식 × 14개 언어 = 462/462개 생성 조합**과 **462/462개 컴파일·타입·구문 검사**를 달성했다. Kotlin은 실제 컴파일, Julia 및 MATLAB 대상 Octave는 구문 검사다. MATLAB CAGR의 예약어 충돌을 수정했으며 기존 74개 대표 네이티브 실행 검증도 유지된다. 전체 조합의 수치 정확성 검증 및 정식 MATLAB·스크린리더·고급 코드옵션 검증은 미완성이고 Sponsors 승인은 대기 상태다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.18은 **462/462개 언어별 소스 생성 및 문법·컴파일 검사**를 유지한다. C·C++·JavaScript의 27개씩 81건과 JavaScript 나머지 6개 수식 수치 검증 및 잘못된 입력 거부 3건을 추가했다. 기존 다른 언어 검증을 합산하면 **125개 정상 수치 사례와 6개 입력 오류 거부, 총 131건**이 성공했다. JavaScript는 **33/33개 수식별 최소 하나의 수치 사례**를 확보했지만 462개 전체 수치 검증은 아직 아니다. GitHub Sponsors는 승인 대기를 유지한다.

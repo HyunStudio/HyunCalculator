@@ -1,8 +1,48 @@
 # HyunCalculator
 
-**v1.2.0-alpha.17** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.18** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.18 — Full JavaScript Formula Numerical Smoke
+
+**All 33 registered Financial/Quant formulas now have at least one real
+JavaScript runtime numerical comparison against the Python reference or,
+for Monte Carlo/stochastic paths, an independently implemented seeded
+portable RNG reference.** This is a representative-input runtime milestone,
+not numerical certification across all parameter ranges.
+
+- Required C, C++, JavaScript smoke expanded from **11 to 27 distinct
+  formula IDs per language**: **81/81 native execute-and-compare cases**.
+  Newly covered quantitative and derivatives calculations include
+  GARCH, GBM/OU analytics and simulated paths, transaction costs,
+  implied volatility, parametric VaR/ES, portfolio target-return
+  allocation and Monte Carlo pricing.
+- A second mandatory JavaScript smoke executes the **six formula IDs
+  previously absent** from that native sample set: STAT-001 normal
+  PDF/CDF/PPF, STAT-002 covariance/correlation, BOND-001 bond duration,
+  RISK-003 annualized risk/return metrics, TS-001 EWMA and STRAT-002
+  cost-aware backtest. It checks **6 numerical cases and 3 error
+  rejections**, using complete output vectors, not only a single scalar.
+- Both suites enforce **33 unique formula IDs exactly matching the
+  registered catalog**, so accidental omissions or duplicates fail CI.
+  Existing R/C#/Julia/Rust and Octave runtime CI continues unchanged.
+
+**Totals for this alpha:** **462/462 source build/parse/type checks**,
+plus **131 native runtime test cases** (**125 valid numerical cases and
+6 negative-input checks**). Of these, **120 represent distinct
+formula-language/runtime sample pairs**, with eleven additional
+input variants/rejection checks. Source-level checks and numeric runtime
+checks are separate dimensions; the 131 checks are *not* 131 new formulas.
+
+The added tests live in `tests/toolchain_ci_smoke.py`,
+`tests/toolchain_smoke.py` and `tests/toolchain_js_full_numeric.py`.
+See the [numeric validation ledger](docs/NUMERICAL_VALIDATION_V1_2.md)
+for exact counts, target languages and unresolved gaps.
+The full 462-pair *numerical* comparison matrix, licensed MATLAB
+execution, high-volume edge/fuzz testing, unrestricted class/loop/import
+codegen options and screen-reader acceptance are not complete.
+GitHub Sponsors remains pending approval; payment controls are inactive.
 
 ## v1.2.0-alpha.17 — Full 462-Pair Source Validation Matrix
 
