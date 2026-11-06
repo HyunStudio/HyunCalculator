@@ -6,6 +6,18 @@ An integrated scientific, graphing, financial, quantitative finance, programmer 
 
 ## v1.2.0-alpha.13 — Dark, Light, High-Contrast & Large-Text Accessibility Pass
 
+**Verified CI status for alpha.13:** The source repo now runs **154 Python
+unit/regression tests on Python 3.11 and 3.12** (both passing), a required
+**10-tab virtual-display Tk accessibility smoke** (passing), **33 numerical
+C/C++/JavaScript native cases** (11 formula samples × 3 languages), and
+**six additional native Rust numerical cases** (FIN-001, FIN-005, FIN-006,
+RISK-002, STOCH-001, BOND-002). The six Rust sources compiled and executed
+with `rustc` and agreed with numerical reference outputs. Total required
+native smoke = **39 sample cases, all passing** in
+[GitHub Actions run 42171893846](https://github.com/HyunStudio/HyunCalculator/actions/runs/42171893846).
+Full 462-pair runtime/edge-case certification, plus R/C#/MATLAB/Julia
+verification, is still outstanding.
+
 The desktop GUI now supports **dark (default), light and high-contrast** themes
 across Tk/ttk controls, editable code, lists, scientific results and Matplotlib
 graphs. Settings can be changed using the toolbar and are stored locally at

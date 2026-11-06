@@ -2,6 +2,13 @@
 
 ## v1.2.0-alpha.13 — Accessible Desktop Themes (2026-11-06)
 
+- Added mandatory CI for 6 generated **Rust** numerical code samples,
+  compiled and executed with `rustc` (6 PASS / 0 FAIL), in addition to the
+  33 C/C++/JavaScript native smoke cases (33 PASS / 0 FAIL). Latest Python
+  3.11 and 3.12 runs each passed **154 tests**; Xvfb/Tk 10-tab accessibility
+  test also passed. **39 representative native cases**, not full 462-pair
+  compiler/numeric validation.
+
 - Added reusable native Tk appearance module with dark/light/high-contrast
   palettes, toolbar selection, 100–175% text sizes, keyboard zoom/toggle,
   local validated preference persistence and atomic settings writes.

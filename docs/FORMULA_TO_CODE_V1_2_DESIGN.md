@@ -9,6 +9,15 @@
 
 ### Implementation status — 2026-11-06 (v1.2.0-alpha.13)
 
+- **Latest required CI evidence (run 42171893846):** Python 3.11/3.12
+  **154/154 unit tests each**, Xvfb/Tk ten-tab accessibility smoke **passed**,
+  C/C++/JavaScript **33/33 numerical cases** and generated Rust **6/6
+  compiled/executed numeric cases**. Rust cases: FIN-001, FIN-005, FIN-006,
+  RISK-002, STOCH-001 and BOND-002. The total **39 native cases** are selected
+  representative inputs, not exhaustive per-language code certification.
+  R, C#, MATLAB/Octave, Julia and many other pairs still require runtime
+  checks and edge-case parity testing.
+
 - **Code generation:** 33 Financial/Quant formulas × 14 languages = **462/462 emitted source combinations**; this remains incomplete compiler/runtime certification.
 - **Visual accessibility pass:** live dark, light and high-contrast theme selection. Tk controls, code editor, listboxes, result fields and Matplotlib chart labels/grids use a coordinated readable color palette with >=7:1 foreground/background contrast in core text surfaces.
 - **Text scaling and keyboard:** 100%, 125% (default), 150%, 175% font-size presets, Ctrl +/−/0 shortcuts and Alt+Shift+H high-contrast toggle. Persistent optional local `~/.hyuncalculator/appearance.json` settings, validated JSON and atomic writes.
