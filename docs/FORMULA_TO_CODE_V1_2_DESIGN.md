@@ -1,19 +1,21 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.1)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.2)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.1)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.2)
 
-- **Completed in alpha:** stable 33-function catalog; **7 fully mapped financial functions** (FIN-001/002/003/004/007/008/009) emitted in 14 programming languages = **98 code-generation combinations**; strict option validation for supported function/class and for/while choices; custom function/class names and parameter renaming; bilingual Tkinter Code Generator tab (preview/copy/save), CLI and tests.
-- **Not yet implemented:** remaining **26 function adapters** across 14 languages (**364 combinations**), advanced numerical-library selection, full 462-combination build/numerical verification matrix, production-grade bundles and runtime sandbox.
-- **Testing:** 91 local automated tests (including existing regression suite) and selected real compiler/runtime smoke checks. Toolchains not installed are **unverified** rather than reported as passing.
-- **Support:** HyunStudio GitHub Sponsors profile is **pending approval**, not live. App About tab shows pending status, with **no active donation button**. No payment URL is published.
-- This document continues to describe the **v1.2.0 target state**. Completion criteria in later sections have **not** all been met by alpha. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
+- **Exportable today:** all **33 finance/quant formulas to standalone Python**, using trusted, reviewed local numerical implementations; **11 formulas to each of 13 additional languages** (the original seven FIN-001/002/003/004/007/008/009 plus TS-002, STOCH-001, STOCH-002, STRAT-001). Total: **176/462 source generation combinations**.
+- **Python verification:** all 33 generated modules compile and their sample numerical results match the v1.1.0 calculator, including nested records/arrays. Source may require NumPy/SciPy. Generation is not a production security sandbox.
+- **Non-Python verification:** code generation succeeds for 143 non-Python targets, but actual compiler/runtime/numerical verification is only partial. Selected C, C++, JavaScript, TypeScript, Java, Swift and Kotlin examples pass; other language/toolchain paths require verification. Do not equate generated with build verified.
+- **Next work:** **286 combinations** for the 22 remaining Python-only formulas, expanded algorithm profiles/import management, 462-way verification matrix, bundled project exports, polished dark UI, more accessibility work.
+- **Current options:** eligible class/function choices, trusted formula-specific structures, parameter/function/class name edits, NPV for/while loops; new multi-output portable adapters use function structure. Unsupported choices are rejected.
+- **Sponsor safety:** HyunStudio GitHub Sponsors account is **pending approval**, not live; no active donation/PayPal button. Enable only after independent approval and URL verification.
+- This document describes the **v1.2.0 target state**, not completed implementation. See [README](../README.md), [CHANGELOG](../CHANGELOG.md) and current test results for supported scope.
 
 ## 1. 목적과 핵심 원칙
 
@@ -296,4 +298,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** v1.1.0에는 33개 기존 금융 계산 기능이 구현되어 있고, **v1.2.0-alpha.1에서 7개 계산 기능 × 14개 언어의 코드 생성 기능이 부분 구현**되었다. 나머지 26개 기능과 전체 462개 조합 검증은 후속 개발 대상이며, 이 설계서의 목표 범위를 완료한 것은 아니다.
+**현황 요약 (2026-11-06):** v1.1.0의 33개 금융 계산 기능은 기존대로 유지된다. **v1.2.0-alpha.2는 Python 33개 및 그 외 13개 언어 각각 11개 기능, 총 176개 소스코드 생성 조합을 부분 구현**했다. 나머지 286개 생성 조합과 전체 언어별 컴파일·수치 검증은 후속 개발 대상으로 남아 있다.
