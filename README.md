@@ -1,8 +1,42 @@
 # HyunCalculator
 
-**v1.2.0-alpha.18** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
+**v1.2.0-alpha.19** · **한국어 / English** · Desktop (Windows, macOS, Linux) · Python 3.11+
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
+
+## v1.2.0-alpha.19 — Shared workbench UI and full representative runtime catalogs
+
+The default UI now follows an IntelliJ / financial-terminal layout: charcoal
+panels, a calculator explorer, editor-style expression entry, purple accents,
+mint results, searchable calculators and local history. The responsive shared
+UI targets Windows, Linux, macOS and Android. Desktop keeps the Python engine;
+Android currently targets a static/offline PWA, **not a signed native APK**.
+
+- All **57 registered form calculators** remain available in the desktop UI.
+- The static mobile UI includes all **33 financial/quant formulas** and a safe
+  real-valued scientific parser, graphs and default JavaScript source export.
+- Required runtime jobs now exercise **33 formulas in each of 13 native
+  language targets**, plus **33 MATLAB-target formulas in GNU Octave**.
+  Licensed MathWorks MATLAB execution is still unavailable; Octave is a proxy.
+- Added seeded numerical properties, financial invariants, zero-rate and
+  invalid-input checks; fixed negative roundoff option premiums, Julia CAGR's
+  reserved `end` argument and Julia IV ternary syntax. The Julia source gate
+  now rejects returned parser error expressions instead of treating them as a pass.
+- NPV now supports class wrappers in the eight class-capable targets, with
+  for/while loops, custom names and auto/standard import choices.
+- Windows portable ZIP packaging and Linux/macOS artifact build jobs added.
+
+```sh
+pip install -r requirements-desktop.txt
+python -m hyuncalculator
+# Browser mode: python -m hyuncalculator --browser
+# Original interface: python -m hyuncalculator --classic
+```
+
+See [platform status and remaining acceptance work](docs/CROSS_PLATFORM_UI.md)
+and the [numerical validation ledger](docs/NUMERICAL_VALIDATION_V1_2.md).
+Build and runtime outcomes are recorded in [GitHub Actions](https://github.com/HyunStudio/HyunCalculator/actions).
+The sections below describe historical alpha milestones.
 
 ## v1.2.0-alpha.18 — Full JavaScript Formula Numerical Smoke
 

@@ -1,5 +1,41 @@
 # HyunCalculator v1.2 numerical validation ledger
 
+## Current alpha.19 runtime matrix
+
+The required suites now execute all 33 catalog IDs per target.
+
+| Targets | Unique formula/target pairs | Runtime |
+|---|---:|---|
+| Python | 33 | Python, compared with original calculator samples |
+| C, C++, JavaScript | 99 | gcc / g++ / Node |
+| TypeScript, Java, Swift, Kotlin, Go | 165 | tsc + Node / JVM / Swift / JVM / Go |
+| R, Julia, Rust, C# | 132 | Rscript / Julia / rustc / .NET |
+| **13 native targets** | **429** | Representative valid inputs |
+| MATLAB source target | 33 | **GNU Octave compatibility runtime** |
+
+This is not 462-pair licensed native execution: proprietary MathWorks MATLAB
+has not been run. All cases check complete numerical outputs with finite-value
+and shape validation. Stochastic results use independent portable PRNG references.
+Individual tolerances remain model-specific; these representative cases do not
+prove all ranges, precision, convergence or extreme-tail behavior.
+
+`toolchain_extended_full_numeric.py` covers five extra targets;
+`toolchain_catalog_numeric.py` covers R/Julia/Rust/C#/Octave. The latter also
+supports a manually invoked `MATLAB` argument when a licensed local executable
+is available. `test_numeric_properties.py` adds seeded time-value identities,
+put-call parity, shared Greeks, covariance allocation constraints and rejected
+invalid inputs in generated Python/JavaScript. These extra variants and
+class-option tests are deliberately excluded from the unique-pair counts.
+
+New runtime checks discovered two Julia emission errors (CAGR reserved argument
+and implied-volatility ternary spacing). The historical Julia Meta.parseall
+gate returned error expressions without rejecting them; alpha.19 recursively
+rejects those expressions. Earlier 462/462 source-check results should be read
+as the old gate outcome, not proof that those Julia sources were executable.
+
+## Historical alpha.18 snapshot
+
+
 **Snapshot:** v1.2.0-alpha.18, 2026-11-06.
 
 This document separates **source generation**, **syntax/build/type checks**

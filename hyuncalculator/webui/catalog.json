@@ -1,0 +1,2766 @@
+{
+  "version": "1.2.0a19",
+  "operations": [
+    {
+      "id": "fin_fv",
+      "group": "Financial",
+      "ko": "미래가치·연속복리",
+      "en": "Future Value / Continuous Interest",
+      "description": {
+        "ko": "일정 기간 뒤 자산의 가치",
+        "en": "Future value after N periods."
+      },
+      "formula": "FV=PV(1+r)^n / FV=PV exp(rn)",
+      "code": "FIN-001",
+      "function": "fv",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "pv",
+          "ko": "현재가치",
+          "en": "Present value",
+          "example": "1000"
+        },
+        {
+          "key": "rate",
+          "ko": "기간별 수익률",
+          "en": "Rate per period (decimal)",
+          "example": "0.05"
+        },
+        {
+          "key": "n",
+          "ko": "기간 수",
+          "en": "Periods",
+          "example": "10"
+        },
+        {
+          "key": "continuous",
+          "ko": "연속복리(1)/이산복리(0)",
+          "en": "Continuous (1) / discrete (0)",
+          "example": "0"
+        }
+      ]
+    },
+    {
+      "id": "fin_pv",
+      "group": "Financial",
+      "ko": "현재가치",
+      "en": "Present Value",
+      "description": {
+        "ko": "미래 현금흐름의 할인 가치",
+        "en": "Discounted value of a future lump sum."
+      },
+      "formula": "PV=FV/(1+r)^n",
+      "code": "FIN-002",
+      "function": "pv",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "fv",
+          "ko": "미래가치",
+          "en": "Future value",
+          "example": "1628.8946"
+        },
+        {
+          "key": "rate",
+          "ko": "기간별 할인율",
+          "en": "Discount rate (decimal)",
+          "example": "0.05"
+        },
+        {
+          "key": "n",
+          "ko": "기간 수",
+          "en": "Periods",
+          "example": "10"
+        }
+      ]
+    },
+    {
+      "id": "fin_pmt",
+      "group": "Financial",
+      "ko": "원리금균등 상환액",
+      "en": "Loan Payment",
+      "description": {
+        "ko": "기간당 균등 상환액",
+        "en": "Constant amortizing payment per period."
+      },
+      "formula": "PMT=P*r/(1-(1+r)^(-n))",
+      "code": "FIN-003",
+      "function": "pmt",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "principal",
+          "ko": "대출 원금",
+          "en": "Principal",
+          "example": "300000"
+        },
+        {
+          "key": "rate",
+          "ko": "기간당 이자율",
+          "en": "Rate per period (decimal)",
+          "example": "0.005"
+        },
+        {
+          "key": "n",
+          "ko": "총 상환기간",
+          "en": "Number of payments",
+          "example": "360"
+        }
+      ]
+    },
+    {
+      "id": "fin_npv",
+      "group": "Financial",
+      "ko": "순현재가치(NPV)",
+      "en": "Net Present Value",
+      "description": {
+        "ko": "초기 투자금 포함 현금흐름을 할인",
+        "en": "Discount cash flows (first flow at time 0)."
+      },
+      "formula": "NPV=sum(CF_t/(1+r)^t)",
+      "code": "FIN-004",
+      "function": "npv",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "rate",
+          "ko": "기간별 할인율",
+          "en": "Rate per period (decimal)",
+          "example": "0.1"
+        },
+        {
+          "key": "flows",
+          "ko": "현금흐름 (t=0부터)",
+          "en": "Cash flows from t=0",
+          "example": "-100, 60, 60"
+        }
+      ]
+    },
+    {
+      "id": "fin_irr",
+      "group": "Financial",
+      "ko": "내부수익률(IRR)",
+      "en": "Internal Rate of Return",
+      "description": {
+        "ko": "NPV=0인 연 수익률 (여러 해는 오류 처리)",
+        "en": "Rate that makes NPV zero; reject multiple solutions."
+      },
+      "formula": "NPV(IRR)=0",
+      "code": "FIN-005",
+      "function": "calculate_irr",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "flows",
+          "ko": "기간별 현금흐름",
+          "en": "Cash flows from t=0",
+          "example": "-100, 60, 60"
+        }
+      ]
+    },
+    {
+      "id": "fin_loan",
+      "group": "Financial",
+      "ko": "대출 상환표 한 회차",
+      "en": "Loan Amortization Period",
+      "description": {
+        "ko": "특정 회차 이자·원금·잔액",
+        "en": "Interest, principal and balance at a selected installment."
+      },
+      "formula": "Interest_t=Balance_(t-1)*r",
+      "code": "FIN-006",
+      "function": "loan",
+      "outputs": [
+        {
+          "label": "Payment",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Interest (selected period)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Principal (selected period)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Remaining balance",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "principal",
+          "ko": "대출 원금",
+          "en": "Principal",
+          "example": "120000"
+        },
+        {
+          "key": "rate",
+          "ko": "기간별 이자율",
+          "en": "Rate per payment period",
+          "example": "0.005"
+        },
+        {
+          "key": "n",
+          "ko": "총 상환 횟수",
+          "en": "Total payments",
+          "example": "24"
+        },
+        {
+          "key": "period",
+          "ko": "조회 회차",
+          "en": "Selected payment number",
+          "example": "12"
+        }
+      ]
+    },
+    {
+      "id": "fin_cagr",
+      "group": "Financial",
+      "ko": "연평균 성장률(CAGR)",
+      "en": "Compound Annual Growth Rate",
+      "description": {
+        "ko": "기간 전체의 연복리 성장률",
+        "en": "Annualized compound growth between values."
+      },
+      "formula": "CAGR=(End/Start)^(1/years)-1",
+      "code": "FIN-007",
+      "function": "cagr",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "start",
+          "ko": "초기 값",
+          "en": "Starting value",
+          "example": "100"
+        },
+        {
+          "key": "end",
+          "ko": "종료 값",
+          "en": "Ending value",
+          "example": "150"
+        },
+        {
+          "key": "years",
+          "ko": "기간(년)",
+          "en": "Years",
+          "example": "3"
+        }
+      ]
+    },
+    {
+      "id": "fin_effective",
+      "group": "Financial",
+      "ko": "실효 연이율",
+      "en": "Effective Annual Rate",
+      "description": {
+        "ko": "명목 연이율과 연간 복리 횟수로 환산",
+        "en": "Effective annual rate with m compounds per year."
+      },
+      "formula": "EAR=(1+r/m)^m-1",
+      "code": "FIN-008",
+      "function": "effective",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "rate",
+          "ko": "명목 연이율",
+          "en": "Nominal annual rate",
+          "example": "0.12"
+        },
+        {
+          "key": "m",
+          "ko": "연간 복리 횟수",
+          "en": "Compounds per year",
+          "example": "12"
+        }
+      ]
+    },
+    {
+      "id": "fin_annuity",
+      "group": "Financial",
+      "ko": "연금 현재가치",
+      "en": "Ordinary Annuity Present Value",
+      "description": {
+        "ko": "기간 말 지급 연금의 현재가치",
+        "en": "PV of end-of-period payments."
+      },
+      "formula": "PV=PMT*(1-(1+r)^-n)/r",
+      "code": "FIN-009",
+      "function": "annuity",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "payment",
+          "ko": "기간별 지급액",
+          "en": "Payment per period",
+          "example": "100"
+        },
+        {
+          "key": "rate",
+          "ko": "기간별 할인율",
+          "en": "Rate per period",
+          "example": "0.04"
+        },
+        {
+          "key": "n",
+          "ko": "지급 기간 수",
+          "en": "Periods",
+          "example": "12"
+        }
+      ]
+    },
+    {
+      "id": "qf_bs",
+      "group": "Quant",
+      "ko": "Black–Scholes 옵션·Greeks",
+      "en": "Black–Scholes + Greeks",
+      "description": {
+        "ko": "유럽형 옵션·연속배당, 연간 Greeks",
+        "en": "European option, continuous dividend yield and Greeks."
+      },
+      "formula": "d1=[ln(S/K)+(r-q+sigma²/2)T]/(sigma sqrt(T))",
+      "code": "DERIV-001",
+      "function": "bs",
+      "outputs": [
+        {
+          "label": "Price",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Delta",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Gamma",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Vega (per 1.00 vol)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Theta (per year)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Rho (per 1.00 rate)",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "s",
+          "ko": "기초자산 S",
+          "en": "Spot S",
+          "example": "100"
+        },
+        {
+          "key": "k",
+          "ko": "행사가 K",
+          "en": "Strike K",
+          "example": "100"
+        },
+        {
+          "key": "t",
+          "ko": "잔존만기(년)",
+          "en": "Maturity T (years)",
+          "example": "1"
+        },
+        {
+          "key": "r",
+          "ko": "무위험 연이율",
+          "en": "Risk-free annual rate",
+          "example": "0.05"
+        },
+        {
+          "key": "sigma",
+          "ko": "연변동성",
+          "en": "Annual volatility",
+          "example": "0.2"
+        },
+        {
+          "key": "q",
+          "ko": "연배당수익률",
+          "en": "Annual dividend yield",
+          "example": "0.0"
+        },
+        {
+          "key": "type",
+          "ko": "옵션 종류 call/put",
+          "en": "Option type: call/put",
+          "example": "call"
+        }
+      ]
+    },
+    {
+      "id": "qf_iv",
+      "group": "Quant",
+      "ko": "내재변동성",
+      "en": "Implied Volatility",
+      "description": {
+        "ko": "옵션 시장가격으로 변동성을 역산",
+        "en": "Solve Black–Scholes volatility from observed premium."
+      },
+      "formula": "BS(IV)=market price",
+      "code": "DERIV-002",
+      "function": "iv",
+      "outputs": [
+        {
+          "label": "Result",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "price",
+          "ko": "시장 옵션가격",
+          "en": "Market option price",
+          "example": "10.45058357"
+        },
+        {
+          "key": "s",
+          "ko": "기초자산 S",
+          "en": "Spot",
+          "example": "100"
+        },
+        {
+          "key": "k",
+          "ko": "행사가 K",
+          "en": "Strike",
+          "example": "100"
+        },
+        {
+          "key": "t",
+          "ko": "잔존만기(년)",
+          "en": "Maturity (years)",
+          "example": "1"
+        },
+        {
+          "key": "r",
+          "ko": "무위험 연이율",
+          "en": "Risk-free rate",
+          "example": "0.05"
+        },
+        {
+          "key": "q",
+          "ko": "연배당수익률",
+          "en": "Dividend yield",
+          "example": "0"
+        },
+        {
+          "key": "type",
+          "ko": "종류 call/put",
+          "en": "Option: call/put",
+          "example": "call"
+        }
+      ]
+    },
+    {
+      "id": "qf_mc",
+      "group": "Quant",
+      "ko": "몬테카를로 옵션",
+      "en": "Monte Carlo European Option",
+      "description": {
+        "ko": "GBM과 대칭변수로 시뮬레이션",
+        "en": "Seeded antithetic-path option Monte Carlo with confidence interval."
+      },
+      "formula": "exp(-rT) E[max(±(S_T-K),0)]",
+      "code": "DERIV-003",
+      "function": "mc",
+      "outputs": [
+        {
+          "label": "Monte Carlo price",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Std. error (paired)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "95% CI lower",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "95% CI upper",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "s",
+          "ko": "기초자산 S",
+          "en": "Spot S",
+          "example": "100"
+        },
+        {
+          "key": "k",
+          "ko": "행사가 K",
+          "en": "Strike K",
+          "example": "100"
+        },
+        {
+          "key": "t",
+          "ko": "만기(년)",
+          "en": "Maturity T",
+          "example": "1"
+        },
+        {
+          "key": "r",
+          "ko": "무위험 이율",
+          "en": "Annual rate",
+          "example": "0.05"
+        },
+        {
+          "key": "sigma",
+          "ko": "연변동성",
+          "en": "Annual volatility",
+          "example": "0.2"
+        },
+        {
+          "key": "q",
+          "ko": "배당수익률",
+          "en": "Dividend yield",
+          "example": "0"
+        },
+        {
+          "key": "type",
+          "ko": "옵션 call/put",
+          "en": "Option call/put",
+          "example": "call"
+        },
+        {
+          "key": "paths",
+          "ko": "경로 수(짝수)",
+          "en": "Even simulation path count",
+          "example": "20000"
+        },
+        {
+          "key": "seed",
+          "ko": "난수 시드",
+          "en": "Random seed",
+          "example": "42"
+        }
+      ]
+    },
+    {
+      "id": "qf_portfolio",
+      "group": "Quant",
+      "ko": "포트폴리오 위험·성과",
+      "en": "Portfolio Risk / Return",
+      "description": {
+        "ko": "가중치·공분산 기반 연간 성과",
+        "en": "Expected portfolio return and volatility."
+      },
+      "formula": "mu_p=wᵀmu; sigma_p=sqrt(wᵀΣw)",
+      "code": "PORT-001",
+      "function": "portfolio",
+      "outputs": [
+        {
+          "label": "Expected return",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Sharpe ratio",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "w",
+          "ko": "자산 가중치",
+          "en": "Asset weights",
+          "example": "0.6, 0.4"
+        },
+        {
+          "key": "mu",
+          "ko": "기대수익률",
+          "en": "Expected returns",
+          "example": "0.08, 0.12"
+        },
+        {
+          "key": "cov",
+          "ko": "공분산 행렬",
+          "en": "Covariance rows separated by ;",
+          "example": "0.04, 0.01; 0.01, 0.09"
+        },
+        {
+          "key": "rf",
+          "ko": "무위험 이율",
+          "en": "Risk-free return",
+          "example": "0.02"
+        }
+      ]
+    },
+    {
+      "id": "qf_gmv",
+      "group": "Quant",
+      "ko": "최소분산 포트폴리오",
+      "en": "Global Minimum Variance",
+      "description": {
+        "ko": "공매도 허용 완전투자 포트폴리오",
+        "en": "Minimum-variance weights, shorts allowed."
+      },
+      "formula": "w=Σ^-1 1/(1ᵀΣ^-1 1)",
+      "code": "ALLOC-001",
+      "function": "gmv",
+      "outputs": [
+        {
+          "label": "Weights",
+          "size": 2,
+          "shape": [
+            2
+          ]
+        },
+        {
+          "label": "Portfolio variance",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "cov",
+          "ko": "자산 공분산 행렬",
+          "en": "Asset covariance matrix",
+          "example": "0.04, 0.01; 0.01, 0.09"
+        }
+      ]
+    },
+    {
+      "id": "qf_target",
+      "group": "Quant",
+      "ko": "목표수익률 최소분산",
+      "en": "Target Return Markowitz",
+      "description": {
+        "ko": "공매도 허용 평균분산 최적화",
+        "en": "Minimum variance with target return; shorts allowed."
+      },
+      "formula": "min wᵀΣw; 1ᵀw=1; muᵀw=target",
+      "code": "ALLOC-002",
+      "function": "target_portfolio",
+      "outputs": [
+        {
+          "label": "Weights",
+          "size": 2,
+          "shape": [
+            2
+          ]
+        },
+        {
+          "label": "Expected portfolio return",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "mu",
+          "ko": "기대수익률",
+          "en": "Expected returns",
+          "example": "0.08, 0.12"
+        },
+        {
+          "key": "cov",
+          "ko": "공분산 행렬",
+          "en": "Covariance matrix",
+          "example": "0.04, 0.01; 0.01, 0.09"
+        },
+        {
+          "key": "target",
+          "ko": "목표수익률",
+          "en": "Target expected return",
+          "example": "0.1"
+        }
+      ]
+    },
+    {
+      "id": "qf_bl",
+      "group": "Quant",
+      "ko": "Black–Litterman 배분",
+      "en": "Black–Litterman Posterior",
+      "description": {
+        "ko": "균형수익률과 사용자 뷰의 사후 기대수익률",
+        "en": "Bayesian blending of equilibrium returns and investor views."
+      },
+      "formula": "pi=delta Σw; mu=pi+tau ΣPᵀ(P tau ΣPᵀ+Ω)^-1(Q-Ppi)",
+      "code": "ALLOC-003",
+      "function": "bl",
+      "outputs": [
+        {
+          "label": "Equilibrium returns",
+          "size": 2,
+          "shape": [
+            2
+          ]
+        },
+        {
+          "label": "Posterior expected returns",
+          "size": 2,
+          "shape": [
+            2
+          ]
+        },
+        {
+          "label": "Posterior predictive covariance",
+          "size": 4,
+          "shape": [
+            2,
+            2
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "cov",
+          "ko": "공분산 행렬",
+          "en": "Covariance Σ",
+          "example": "0.04,0.01;0.01,0.09"
+        },
+        {
+          "key": "market",
+          "ko": "시장 비중",
+          "en": "Market cap weights",
+          "example": "0.6,0.4"
+        },
+        {
+          "key": "delta",
+          "ko": "위험회피계수",
+          "en": "Risk aversion δ",
+          "example": "2.5"
+        },
+        {
+          "key": "tau",
+          "ko": "사전 불확실성",
+          "en": "Prior scale τ",
+          "example": "0.05"
+        },
+        {
+          "key": "views",
+          "ko": "뷰 행렬 P (행 구분 ;)",
+          "en": "View matrix P (rows ;)",
+          "example": "1,-1"
+        },
+        {
+          "key": "returns",
+          "ko": "뷰 수익률 Q",
+          "en": "View returns Q",
+          "example": "0.02"
+        },
+        {
+          "key": "omega",
+          "ko": "뷰 오차 분산 대각",
+          "en": "Diagonal view variances Ω",
+          "example": "0.001"
+        }
+      ]
+    },
+    {
+      "id": "qf_hist_var",
+      "group": "Quant",
+      "ko": "과거수익률 VaR·ES",
+      "en": "Historical VaR / ES",
+      "description": {
+        "ko": "손실 분포 분위수와 역사적 기대손실",
+        "en": "Historical signed-loss quantile and tail average."
+      },
+      "formula": "Loss=-return; VaR=Q_c(Loss)",
+      "code": "RISK-001",
+      "function": "hist_var",
+      "outputs": [
+        {
+          "label": "VaR (signed loss quantile)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Expected Shortfall",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "r",
+          "ko": "수익률 목록",
+          "en": "Simple returns (decimals)",
+          "example": "-0.02,0.01,0.005,-0.04,0.02,-0.01,0.03"
+        },
+        {
+          "key": "confidence",
+          "ko": "신뢰수준",
+          "en": "Confidence (0..1)",
+          "example": "0.95"
+        }
+      ]
+    },
+    {
+      "id": "qf_normal_var",
+      "group": "Quant",
+      "ko": "정규분포 VaR·ES",
+      "en": "Parametric Normal VaR / ES",
+      "description": {
+        "ko": "정규 수익률 분포를 가정",
+        "en": "Normal return distribution, signed loss values."
+      },
+      "formula": "VaR=-mu+z sigma; ES=-mu+sigma phi(z)/(1-c)",
+      "code": "RISK-002",
+      "function": "normal_var",
+      "outputs": [
+        {
+          "label": "VaR (signed loss quantile)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Expected Shortfall",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "mean",
+          "ko": "평균 수익률",
+          "en": "Mean return",
+          "example": "0.001"
+        },
+        {
+          "key": "sigma",
+          "ko": "수익률 표준편차",
+          "en": "Return standard deviation",
+          "example": "0.02"
+        },
+        {
+          "key": "confidence",
+          "ko": "신뢰수준",
+          "en": "Confidence",
+          "example": "0.95"
+        }
+      ]
+    },
+    {
+      "id": "qf_performance",
+      "group": "Quant",
+      "ko": "샤프·소르티노·MDD",
+      "en": "Sharpe / Sortino / Drawdown",
+      "description": {
+        "ko": "수익률 시계열의 연환산 지표",
+        "en": "Annualized mean, volatility, ratios and max drawdown."
+      },
+      "formula": "Sharpe=sqrt(P)*(mean(r-rf)/stdev(r-rf))",
+      "code": "RISK-003",
+      "function": "performance",
+      "outputs": [
+        {
+          "label": "Annualized arithmetic mean",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized Sharpe",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized Sortino",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Max drawdown",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Compounded total return",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "r",
+          "ko": "기간별 단순수익률",
+          "en": "Simple returns per period",
+          "example": "0.01,-0.02,0.015,0.007,-0.005,0.02"
+        },
+        {
+          "key": "rf",
+          "ko": "기간당 무위험 수익률",
+          "en": "Risk-free per period",
+          "example": "0"
+        },
+        {
+          "key": "ppy",
+          "ko": "연 환산 기간수",
+          "en": "Periods per year",
+          "example": "252"
+        }
+      ]
+    },
+    {
+      "id": "qf_bond",
+      "group": "Quant",
+      "ko": "채권가격·듀레이션",
+      "en": "Bond Price / Duration / Convexity",
+      "description": {
+        "ko": "고정금리 쿠폰채 할인·민감도",
+        "en": "Coupon bond dirty price and yield sensitivity."
+      },
+      "formula": "P=sum(CF_t/(1+y/m)^t)",
+      "code": "BOND-001",
+      "function": "bond",
+      "outputs": [
+        {
+          "label": "Price",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Macaulay duration (years)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Modified duration (years)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Convexity (years²)",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "face",
+          "ko": "액면가",
+          "en": "Face value",
+          "example": "1000"
+        },
+        {
+          "key": "coupon",
+          "ko": "연 쿠폰율",
+          "en": "Annual coupon rate",
+          "example": "0.05"
+        },
+        {
+          "key": "yield",
+          "ko": "연 명목 YTM",
+          "en": "Annual nominal yield",
+          "example": "0.04"
+        },
+        {
+          "key": "years",
+          "ko": "만기(년)",
+          "en": "Maturity years",
+          "example": "5"
+        },
+        {
+          "key": "freq",
+          "ko": "연간 지급 횟수",
+          "en": "Payments per year",
+          "example": "2"
+        }
+      ]
+    },
+    {
+      "id": "qf_ewma",
+      "group": "Quant",
+      "ko": "EWMA 변동성",
+      "en": "EWMA Volatility",
+      "description": {
+        "ko": "RiskMetrics 스타일 지수가중 변동성",
+        "en": "Exponentially weighted next-state variance."
+      },
+      "formula": "var_t=lambda*var_(t-1)+(1-lambda)*r_t²",
+      "code": "TS-001",
+      "function": "ewma",
+      "outputs": [
+        {
+          "label": "EWMA variance",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "EWMA volatility",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "r",
+          "ko": "수익률 열",
+          "en": "Return series",
+          "example": "0.01,-0.02,0.015,0.005"
+        },
+        {
+          "key": "decay",
+          "ko": "감쇠계수 lambda",
+          "en": "Decay lambda",
+          "example": "0.94"
+        }
+      ]
+    },
+    {
+      "id": "qf_garch",
+      "group": "Quant",
+      "ko": "GARCH(1,1) 예측",
+      "en": "GARCH(1,1) One-Step",
+      "description": {
+        "ko": "다음 기간 조건부 분산",
+        "en": "One-step conditional variance forecast."
+      },
+      "formula": "v_next=omega+alpha*epsilon²+beta*v",
+      "code": "TS-002",
+      "function": "garch",
+      "outputs": [
+        {
+          "label": "Forecast variance",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Forecast volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Unconditional variance",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "lastvar",
+          "ko": "직전 분산",
+          "en": "Previous variance",
+          "example": "0.0004"
+        },
+        {
+          "key": "shock",
+          "ko": "직전 잔차",
+          "en": "Previous shock",
+          "example": "-0.01"
+        },
+        {
+          "key": "omega",
+          "ko": "상수 omega",
+          "en": "Omega",
+          "example": "0.00001"
+        },
+        {
+          "key": "alpha",
+          "ko": "충격계수 alpha",
+          "en": "Alpha",
+          "example": "0.08"
+        },
+        {
+          "key": "beta",
+          "ko": "지속계수 beta",
+          "en": "Beta",
+          "example": "0.9"
+        }
+      ]
+    },
+    {
+      "id": "qf_gbm",
+      "group": "Quant",
+      "ko": "GBM 가격 확률모멘트",
+      "en": "GBM Moments",
+      "description": {
+        "ko": "기하브라운운동의 기댓값·표준편차",
+        "en": "Expected terminal price and standard deviation of GBM."
+      },
+      "formula": "E[S_T]=S0 exp(mu T)",
+      "code": "STOCH-001",
+      "function": "gbm",
+      "outputs": [
+        {
+          "label": "Expected price",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Std. deviation",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "s",
+          "ko": "시작가격",
+          "en": "Initial price",
+          "example": "100"
+        },
+        {
+          "key": "mu",
+          "ko": "연 드리프트",
+          "en": "Annual drift",
+          "example": "0.07"
+        },
+        {
+          "key": "sigma",
+          "ko": "연 변동성",
+          "en": "Annual volatility",
+          "example": "0.2"
+        },
+        {
+          "key": "t",
+          "ko": "기간(년)",
+          "en": "Years",
+          "example": "1"
+        }
+      ]
+    },
+    {
+      "id": "qf_ou",
+      "group": "Quant",
+      "ko": "OU 평균회귀 모멘트",
+      "en": "Ornstein–Uhlenbeck Moments",
+      "description": {
+        "ko": "평균회귀 확률과정의 기댓값·표준편차",
+        "en": "Expected state and volatility of mean-reverting OU."
+      },
+      "formula": "E[X_T]=theta+(X0-theta) exp(-kappa T)",
+      "code": "STOCH-002",
+      "function": "ou",
+      "outputs": [
+        {
+          "label": "Expected state",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Std. deviation",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "초기 상태",
+          "en": "Initial state",
+          "example": "2"
+        },
+        {
+          "key": "level",
+          "ko": "장기 평균",
+          "en": "Long-run mean",
+          "example": "1"
+        },
+        {
+          "key": "kappa",
+          "ko": "회귀속도",
+          "en": "Mean reversion speed",
+          "example": "0.8"
+        },
+        {
+          "key": "sigma",
+          "ko": "확산계수",
+          "en": "Diffusion volatility",
+          "example": "0.2"
+        },
+        {
+          "key": "t",
+          "ko": "기간(년)",
+          "en": "Years",
+          "example": "1"
+        }
+      ]
+    },
+    {
+      "id": "qf_cov",
+      "group": "Quant",
+      "ko": "표본 공분산·상관관계",
+      "en": "Covariance / Correlation",
+      "description": {
+        "ko": "행별 시점, 열별 자산 수익률",
+        "en": "Sample covariance and correlation across asset return columns."
+      },
+      "formula": "Cov_ij=Σ (r_i-mean_i)(r_j-mean_j)/(n-1)",
+      "code": "STAT-002",
+      "function": "cov",
+      "outputs": [
+        {
+          "label": "Sample covariance",
+          "size": 4,
+          "shape": [
+            2,
+            2
+          ]
+        },
+        {
+          "label": "Sample correlation",
+          "size": 4,
+          "shape": [
+            2,
+            2
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "returns",
+          "ko": "관측값 행렬 (행=시간)",
+          "en": "Return matrix (rows=time)",
+          "example": "0.01,0.02;0.02,0.01;-0.01,-0.02;0.03,0.01"
+        }
+      ]
+    },
+    {
+      "id": "qf_normal",
+      "group": "Quant",
+      "ko": "정규분포 PDF·CDF·분위수",
+      "en": "Normal PDF / CDF / Quantile",
+      "description": {
+        "ko": "평균·표준편차에 따른 확률밀도와 누적확률, 역누적분포",
+        "en": "Probability density, cumulative probability and inverse CDF of normal distribution."
+      },
+      "formula": "z=(x-mu)/sigma; PDF=phi(z)/sigma; CDF=Phi(z)",
+      "code": "STAT-001",
+      "function": "normal",
+      "outputs": [
+        {
+          "label": "Z score",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "PDF at x",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "CDF P(X <= x)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Survival P(X > x)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Quantile at probability",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "평가값 x",
+          "en": "Value x",
+          "example": "1.96"
+        },
+        {
+          "key": "mean",
+          "ko": "평균 μ",
+          "en": "Mean",
+          "example": "0"
+        },
+        {
+          "key": "std",
+          "ko": "표준편차 σ",
+          "en": "Standard deviation",
+          "example": "1"
+        },
+        {
+          "key": "p",
+          "ko": "분위수 확률",
+          "en": "Quantile probability",
+          "example": "0.95"
+        }
+      ]
+    },
+    {
+      "id": "qf_ytm",
+      "group": "Quant",
+      "ko": "채권 수익률 YTM 역산",
+      "en": "Bond Yield to Maturity",
+      "description": {
+        "ko": "쿠폰채 가격으로 연 명목 만기수익률 계산 (전액/dirty 가격)",
+        "en": "Solve nominal annual YTM from full coupon bond price (dirty price)."
+      },
+      "formula": "P=sum(CF_t/(1+y/m)^t)",
+      "code": "BOND-002",
+      "function": "ytm",
+      "outputs": [
+        {
+          "label": "Annual nominal yield to maturity",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "price",
+          "ko": "현재 채권가격(전액)",
+          "en": "Current full bond price",
+          "example": "1044.9129"
+        },
+        {
+          "key": "face",
+          "ko": "액면가",
+          "en": "Face amount",
+          "example": "1000"
+        },
+        {
+          "key": "coupon",
+          "ko": "연 쿠폰율",
+          "en": "Annual coupon rate",
+          "example": "0.05"
+        },
+        {
+          "key": "years",
+          "ko": "잔존 만기(년)",
+          "en": "Maturity in years",
+          "example": "5"
+        },
+        {
+          "key": "freq",
+          "ko": "연 지급 횟수",
+          "en": "Coupon payments per year",
+          "example": "2"
+        }
+      ]
+    },
+    {
+      "id": "qf_moving",
+      "group": "Quant",
+      "ko": "단순·지수 이동평균",
+      "en": "Simple / Exponential Moving Average",
+      "description": {
+        "ko": "가격 또는 시계열 관측값의 SMA·EMA",
+        "en": "Simple rolling averages and exponentially weighted moving average."
+      },
+      "formula": "SMA=sum(x[i-n+1:i+1])/n; EMA=alpha*x+(1-alpha)*EMAprev",
+      "code": "TS-003",
+      "function": "moving",
+      "outputs": [
+        {
+          "label": "Last SMA",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Last EMA",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "SMA (from first complete window)",
+          "size": 4,
+          "shape": [
+            4
+          ]
+        },
+        {
+          "label": "EMA (first value seeded)",
+          "size": 6,
+          "shape": [
+            6
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "values",
+          "ko": "관측 시계열",
+          "en": "Series of observations",
+          "example": "100,102,101,104,106,105"
+        },
+        {
+          "key": "window",
+          "ko": "이동평균 기간",
+          "en": "Window length",
+          "example": "3"
+        }
+      ]
+    },
+    {
+      "id": "qf_brownian",
+      "group": "Quant",
+      "ko": "브라운 운동 시뮬레이션",
+      "en": "Brownian Motion Simulation",
+      "description": {
+        "ko": "산술 브라운 운동의 기대값·변동성·경로 생성",
+        "en": "Simulate arithmetic Brownian paths with terminal moments."
+      },
+      "formula": "X(T)=x0+mu*T+sigma*W(T)",
+      "code": "STOCH-003",
+      "function": "brownian",
+      "outputs": [
+        {
+          "label": "Expected terminal state",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Theoretical terminal volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Simulated terminal mean",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Simulated terminal volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Sample path (t=0 to T)",
+          "size": 51,
+          "shape": [
+            51
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "years",
+          "ko": "기간(년)",
+          "en": "Horizon in years",
+          "example": "1"
+        },
+        {
+          "key": "steps",
+          "ko": "시간 간격 개수",
+          "en": "Number of steps",
+          "example": "50"
+        },
+        {
+          "key": "paths",
+          "ko": "경로 개수",
+          "en": "Simulated paths",
+          "example": "1000"
+        },
+        {
+          "key": "seed",
+          "ko": "난수 시드",
+          "en": "RNG seed",
+          "example": "42"
+        },
+        {
+          "key": "initial",
+          "ko": "시작값",
+          "en": "Initial state",
+          "example": "0"
+        },
+        {
+          "key": "mu",
+          "ko": "드리프트",
+          "en": "Drift (per year)",
+          "example": "0"
+        },
+        {
+          "key": "sigma",
+          "ko": "확산계수",
+          "en": "Diffusion coefficient",
+          "example": "1"
+        }
+      ]
+    },
+    {
+      "id": "qf_gbm_paths",
+      "group": "Quant",
+      "ko": "GBM 가격경로 시뮬레이션",
+      "en": "GBM Price Path Simulation",
+      "description": {
+        "ko": "기하브라운운동의 경로와 이론·시뮬레이션 모멘트",
+        "en": "Generate exact-increment GBM paths and compare moments."
+      },
+      "formula": "S(T)=S0*exp((mu-sigma²/2)T+sigma*W(T))",
+      "code": "STOCH-004",
+      "function": "gbm_paths",
+      "outputs": [
+        {
+          "label": "Expected terminal price",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Theoretical terminal volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Simulated terminal mean",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Simulated terminal volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Sample price path (t=0 to T)",
+          "size": 51,
+          "shape": [
+            51
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "s",
+          "ko": "시작가격",
+          "en": "Initial asset price",
+          "example": "100"
+        },
+        {
+          "key": "mu",
+          "ko": "연 드리프트",
+          "en": "Drift per year",
+          "example": "0.06"
+        },
+        {
+          "key": "sigma",
+          "ko": "연 변동성",
+          "en": "Annual volatility",
+          "example": "0.2"
+        },
+        {
+          "key": "years",
+          "ko": "기간(년)",
+          "en": "Years",
+          "example": "1"
+        },
+        {
+          "key": "steps",
+          "ko": "시간 간격 개수",
+          "en": "Number of steps",
+          "example": "50"
+        },
+        {
+          "key": "paths",
+          "ko": "경로 개수",
+          "en": "Simulated paths",
+          "example": "1000"
+        },
+        {
+          "key": "seed",
+          "ko": "난수 시드",
+          "en": "RNG seed",
+          "example": "42"
+        }
+      ]
+    },
+    {
+      "id": "qf_ou_paths",
+      "group": "Quant",
+      "ko": "OU 평균회귀 경로 시뮬레이션",
+      "en": "OU Mean-Reverting Path Simulation",
+      "description": {
+        "ko": "Ornstein–Uhlenbeck의 정확한 이산화 시뮬레이션",
+        "en": "Simulate exact OU transition distribution and compare moments."
+      },
+      "formula": "dX=kappa*(theta-X)*dt+sigma*dW",
+      "code": "STOCH-005",
+      "function": "ou_paths",
+      "outputs": [
+        {
+          "label": "Expected terminal state",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Theoretical terminal volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Simulated terminal mean",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Simulated terminal volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Sample state path (t=0 to T)",
+          "size": 51,
+          "shape": [
+            51
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "초기 상태",
+          "en": "Initial state",
+          "example": "2"
+        },
+        {
+          "key": "level",
+          "ko": "장기 평균",
+          "en": "Long-run level",
+          "example": "1"
+        },
+        {
+          "key": "kappa",
+          "ko": "평균회귀 속도",
+          "en": "Reversion speed",
+          "example": "0.8"
+        },
+        {
+          "key": "sigma",
+          "ko": "확산계수",
+          "en": "Diffusion volatility",
+          "example": "0.2"
+        },
+        {
+          "key": "years",
+          "ko": "기간(년)",
+          "en": "Years",
+          "example": "1"
+        },
+        {
+          "key": "steps",
+          "ko": "시간 간격 개수",
+          "en": "Number of steps",
+          "example": "50"
+        },
+        {
+          "key": "paths",
+          "ko": "경로 개수",
+          "en": "Simulated paths",
+          "example": "1000"
+        },
+        {
+          "key": "seed",
+          "ko": "난수 시드",
+          "en": "RNG seed",
+          "example": "42"
+        }
+      ]
+    },
+    {
+      "id": "qf_cost",
+      "group": "Quant",
+      "ko": "매매 거래비용 계산",
+      "en": "Trade Transaction Cost",
+      "description": {
+        "ko": "수수료·슬리피지·절반 스프레드의 단방향 또는 왕복 비용",
+        "en": "Estimate commissions, slippage, and half-spread per execution side."
+      },
+      "formula": "Cost=Notional*sides*(commission+slippage+half_spread)/10000",
+      "code": "STRAT-001",
+      "function": "cost",
+      "outputs": [
+        {
+          "label": "One-way effective cost (bps)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Total traded notional",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Total estimated trading cost",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Total cost / single-side notional",
+          "size": 1,
+          "shape": []
+        }
+      ],
+      "fields": [
+        {
+          "key": "notional",
+          "ko": "한 방향 거래대금",
+          "en": "One-side traded notional",
+          "example": "100000"
+        },
+        {
+          "key": "commission",
+          "ko": "수수료(bps)",
+          "en": "Commission basis points",
+          "example": "5"
+        },
+        {
+          "key": "slippage",
+          "ko": "슬리피지(bps)",
+          "en": "Slippage basis points",
+          "example": "3"
+        },
+        {
+          "key": "spread",
+          "ko": "절반 스프레드(bps)",
+          "en": "Half spread basis points",
+          "example": "2"
+        },
+        {
+          "key": "sides",
+          "ko": "거래 방향 수 1/2",
+          "en": "1=one way, 2=round trip",
+          "example": "2"
+        }
+      ]
+    },
+    {
+      "id": "qf_backtest",
+      "group": "Quant",
+      "ko": "거래비용 반영 전략 백테스트",
+      "en": "Cost-Aware Strategy Backtest",
+      "description": {
+        "ko": "1기간 후행 신호(룩어헤드 방지)·비용·샤프·소르티노·MDD·CAGR",
+        "en": "One-period delayed target weights, trading friction, equity curve and performance."
+      },
+      "formula": "w[t]=signal[t-1]; net[t]=w[t]*r[t]-abs(dw[t])*cost_bps/10000",
+      "code": "STRAT-002",
+      "function": "backtest",
+      "outputs": [
+        {
+          "label": "Net compounded return",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Gross compounded return",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Buy-and-hold compounded return",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized CAGR",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized volatility",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized Sharpe",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Annualized Sortino",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Max drawdown",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Active-period win rate",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Executed position changes",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Total absolute turnover",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Total cost drag (sum of return fractions)",
+          "size": 1,
+          "shape": []
+        },
+        {
+          "label": "Effective positions (1-period delayed)",
+          "size": 6,
+          "shape": [
+            6
+          ]
+        },
+        {
+          "label": "Net returns per period",
+          "size": 6,
+          "shape": [
+            6
+          ]
+        },
+        {
+          "label": "Cumulative equity curve (start=1)",
+          "size": 7,
+          "shape": [
+            7
+          ]
+        },
+        {
+          "label": "Buy-and-hold equity curve (start=1)",
+          "size": 7,
+          "shape": [
+            7
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "key": "returns",
+          "ko": "기간별 단순수익률",
+          "en": "Simple return per interval",
+          "example": "0.01,-0.02,0.015,0.007,-0.005,0.02"
+        },
+        {
+          "key": "signals",
+          "ko": "각 기간 말 목표포지션[-1,1]",
+          "en": "Target weights at each close",
+          "example": "1,1,0,1,1,0"
+        },
+        {
+          "key": "commission",
+          "ko": "수수료(bps)",
+          "en": "Commission per trade (bps)",
+          "example": "5"
+        },
+        {
+          "key": "slippage",
+          "ko": "슬리피지(bps)",
+          "en": "Slippage per trade (bps)",
+          "example": "3"
+        },
+        {
+          "key": "rf",
+          "ko": "기간별 무위험 수익률",
+          "en": "Risk free return per interval",
+          "example": "0"
+        },
+        {
+          "key": "ppy",
+          "ko": "연 환산 기간 수",
+          "en": "Periods per year",
+          "example": "252"
+        }
+      ]
+    },
+    {
+      "id": "prog_convert",
+      "group": "Programmer",
+      "ko": "진법·2의 보수 변환",
+      "en": "Base Conversion / Two's Complement",
+      "description": {
+        "ko": "고정 워드 길이로 모든 진법 출력",
+        "en": "Convert to signed/unsigned binary, octal, decimal and hex."
+      },
+      "formula": "value mod 2^width",
+      "code": null,
+      "function": "prog_convert",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "value",
+          "ko": "입력 정수",
+          "en": "Integer input",
+          "example": "-42"
+        },
+        {
+          "key": "base",
+          "ko": "입력 진법 2/8/10/16",
+          "en": "Input base 2/8/10/16",
+          "example": "10"
+        },
+        {
+          "key": "width",
+          "ko": "비트 수 8/16/32/64",
+          "en": "Word width",
+          "example": "16"
+        }
+      ]
+    },
+    {
+      "id": "prog_logic",
+      "group": "Programmer",
+      "ko": "비트 논리연산",
+      "en": "Bitwise Logic",
+      "description": {
+        "ko": "AND OR XOR NAND NOR NOT A",
+        "en": "Fixed-word logical operations; choose AND/OR/XOR/NAND/NOR/NOT A."
+      },
+      "formula": "A op B (mod 2^width)",
+      "code": null,
+      "function": "prog_logic",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "a",
+          "ko": "정수 A",
+          "en": "Integer A",
+          "example": "0xF0"
+        },
+        {
+          "key": "b",
+          "ko": "정수 B",
+          "en": "Integer B",
+          "example": "0x0F"
+        },
+        {
+          "key": "op",
+          "ko": "논리 연산명",
+          "en": "Operation (AND/OR/XOR/NAND/NOR/NOT A)",
+          "example": "XOR"
+        },
+        {
+          "key": "base",
+          "ko": "입력 진법",
+          "en": "Input base",
+          "example": "16"
+        },
+        {
+          "key": "width",
+          "ko": "비트 길이",
+          "en": "Word width",
+          "example": "8"
+        }
+      ]
+    },
+    {
+      "id": "prog_shift",
+      "group": "Programmer",
+      "ko": "시프트",
+      "en": "Bit Shift",
+      "description": {
+        "ko": "왼쪽/논리 오른쪽/산술 오른쪽",
+        "en": "Left, logical right and arithmetic right shifts."
+      },
+      "formula": "LEFT | RIGHT | ARITH RIGHT",
+      "code": null,
+      "function": "prog_shift",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "a",
+          "ko": "정수 A",
+          "en": "Integer A",
+          "example": "-16"
+        },
+        {
+          "key": "count",
+          "ko": "시프트 비트 수",
+          "en": "Shift bits",
+          "example": "2"
+        },
+        {
+          "key": "direction",
+          "ko": "방향 LEFT/RIGHT/ARITH RIGHT",
+          "en": "Direction",
+          "example": "ARITH RIGHT"
+        },
+        {
+          "key": "base",
+          "ko": "입력 진법",
+          "en": "Input base",
+          "example": "10"
+        },
+        {
+          "key": "width",
+          "ko": "비트 길이",
+          "en": "Word width",
+          "example": "8"
+        }
+      ]
+    },
+    {
+      "id": "prog_rotate",
+      "group": "Programmer",
+      "ko": "순환 시프트",
+      "en": "Rotate Bits",
+      "description": {
+        "ko": "순환 왼쪽/오른쪽",
+        "en": "Rotate bits within a fixed word."
+      },
+      "formula": "ROL / ROR",
+      "code": null,
+      "function": "prog_rotate",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "a",
+          "ko": "정수 A",
+          "en": "Integer A",
+          "example": "0x81"
+        },
+        {
+          "key": "count",
+          "ko": "순환 비트 수",
+          "en": "Rotate bits",
+          "example": "1"
+        },
+        {
+          "key": "direction",
+          "ko": "방향 LEFT/RIGHT",
+          "en": "Direction",
+          "example": "LEFT"
+        },
+        {
+          "key": "base",
+          "ko": "입력 진법",
+          "en": "Input base",
+          "example": "16"
+        },
+        {
+          "key": "width",
+          "ko": "비트 길이",
+          "en": "Word width",
+          "example": "8"
+        }
+      ]
+    },
+    {
+      "id": "prog_count",
+      "group": "Programmer",
+      "ko": "비트 수 세기",
+      "en": "Population Count",
+      "description": {
+        "ko": "1 비트와 0 비트 개수",
+        "en": "Count set/clear bits in fixed width."
+      },
+      "formula": "popcount(value mod 2^width)",
+      "code": null,
+      "function": "prog_count",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "a",
+          "ko": "정수 A",
+          "en": "Integer A",
+          "example": "0xF0"
+        },
+        {
+          "key": "base",
+          "ko": "입력 진법",
+          "en": "Input base",
+          "example": "16"
+        },
+        {
+          "key": "width",
+          "ko": "비트 길이",
+          "en": "Word width",
+          "example": "8"
+        }
+      ]
+    },
+    {
+      "id": "ml_linear",
+      "group": "ML",
+      "ko": "선형 예측",
+      "en": "Linear Prediction",
+      "description": {
+        "ko": "특성 벡터와 가중치를 이용한 선형 모델 예측",
+        "en": "Predict with a feature vector, weights, and bias."
+      },
+      "formula": "ŷ = w·x + b",
+      "code": null,
+      "function": "ml_linear",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "특성 x (벡터)",
+          "en": "Features x (vector)",
+          "example": "1, 2, 3"
+        },
+        {
+          "key": "w",
+          "ko": "가중치 w (벡터)",
+          "en": "Weights w (vector)",
+          "example": "0.2, 0.4, 0.6"
+        },
+        {
+          "key": "b",
+          "ko": "편향 b",
+          "en": "Bias b",
+          "example": "0.1"
+        }
+      ]
+    },
+    {
+      "id": "ml_mse",
+      "group": "ML",
+      "ko": "MSE",
+      "en": "MSE",
+      "description": {
+        "ko": "회귀 평균제곱오차",
+        "en": "Mean squared error for regression."
+      },
+      "formula": "MSE = mean((y − ŷ)²)",
+      "code": null,
+      "function": "ml_mse",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "y",
+          "ko": "정답 y",
+          "en": "True targets y",
+          "example": "1, 0, 1"
+        },
+        {
+          "key": "p",
+          "ko": "예측 ŷ",
+          "en": "Predictions ŷ",
+          "example": "0.8, 0.1, 0.6"
+        }
+      ]
+    },
+    {
+      "id": "ml_mae",
+      "group": "ML",
+      "ko": "MAE",
+      "en": "MAE",
+      "description": {
+        "ko": "회귀 평균절대오차",
+        "en": "Mean absolute error for regression."
+      },
+      "formula": "MAE = mean(|y − ŷ|)",
+      "code": null,
+      "function": "ml_mae",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "y",
+          "ko": "정답 y",
+          "en": "True targets y",
+          "example": "1, 0, 1"
+        },
+        {
+          "key": "p",
+          "ko": "예측 ŷ",
+          "en": "Predictions ŷ",
+          "example": "0.8, 0.1, 0.6"
+        }
+      ]
+    },
+    {
+      "id": "ml_accuracy",
+      "group": "ML",
+      "ko": "Accuracy",
+      "en": "Accuracy",
+      "description": {
+        "ko": "분류 정확도",
+        "en": "Classification accuracy."
+      },
+      "formula": "Accuracy = 맞힌 수 / 전체 수",
+      "code": null,
+      "function": "ml_accuracy",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "y",
+          "ko": "정답 레이블",
+          "en": "True labels",
+          "example": "1, 0, 1, 0"
+        },
+        {
+          "key": "p",
+          "ko": "예측 레이블",
+          "en": "Predicted labels",
+          "example": "1, 0, 0, 0"
+        }
+      ]
+    },
+    {
+      "id": "ml_binary_metrics",
+      "group": "ML",
+      "ko": "Precision / Recall / F1",
+      "en": "Precision / Recall / F1",
+      "description": {
+        "ko": "이진 분류 성능 평가(0/1)",
+        "en": "Evaluate binary classification (0/1)."
+      },
+      "formula": "P = TP/(TP+FP), R = TP/(TP+FN), F1 = 2PR/(P+R)",
+      "code": null,
+      "function": "ml_binary_metrics",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "y",
+          "ko": "정답(0/1)",
+          "en": "True labels (0/1)",
+          "example": "1, 0, 1, 0, 1"
+        },
+        {
+          "key": "p",
+          "ko": "예측(0/1)",
+          "en": "Predicted labels (0/1)",
+          "example": "1, 1, 1, 0, 0"
+        }
+      ]
+    },
+    {
+      "id": "ml_bce",
+      "group": "ML",
+      "ko": "Binary Cross-Entropy",
+      "en": "Binary Cross-Entropy",
+      "description": {
+        "ko": "이진 분류의 평균 교차엔트로피(자연로그)",
+        "en": "Mean binary cross-entropy with natural logarithms."
+      },
+      "formula": "BCE = −mean(y·ln(p) + (1−y)·ln(1−p))",
+      "code": null,
+      "function": "ml_bce",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "y",
+          "ko": "정답(0/1)",
+          "en": "True labels (0/1)",
+          "example": "1, 0, 1"
+        },
+        {
+          "key": "p",
+          "ko": "양성(1) 예측확률",
+          "en": "Predicted P(class=1)",
+          "example": "0.9, 0.3, 0.7"
+        }
+      ]
+    },
+    {
+      "id": "dl_sigmoid",
+      "group": "DL",
+      "ko": "Sigmoid",
+      "en": "Sigmoid",
+      "description": {
+        "ko": "시그모이드 활성화 함수",
+        "en": "Sigmoid activation function."
+      },
+      "formula": "σ(x) = 1/(1+e^(−x))",
+      "code": null,
+      "function": "dl_sigmoid",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "입력 벡터 x",
+          "en": "Input vector x",
+          "example": "-2, 0, 2"
+        }
+      ]
+    },
+    {
+      "id": "dl_relu",
+      "group": "DL",
+      "ko": "ReLU",
+      "en": "ReLU",
+      "description": {
+        "ko": "ReLU 활성화 함수",
+        "en": "Rectified linear unit activation."
+      },
+      "formula": "ReLU(x) = max(0, x)",
+      "code": null,
+      "function": "dl_relu",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "입력 벡터 x",
+          "en": "Input vector x",
+          "example": "-3, -1, 0, 2, 4"
+        }
+      ]
+    },
+    {
+      "id": "dl_softmax",
+      "group": "DL",
+      "ko": "Softmax",
+      "en": "Softmax",
+      "description": {
+        "ko": "로짓을 확률분포로 변환(수치적으로 안정한 계산)",
+        "en": "Convert logits to probabilities using stable arithmetic."
+      },
+      "formula": "softmax(xᵢ) = exp(xᵢ−max(x)) / Σ exp(xⱼ−max(x))",
+      "code": null,
+      "function": "dl_softmax",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "로짓 x",
+          "en": "Logits x",
+          "example": "1, 2, 3"
+        }
+      ]
+    },
+    {
+      "id": "dl_dense",
+      "group": "DL",
+      "ko": "Dense Layer Forward",
+      "en": "Dense Layer Forward",
+      "description": {
+        "ko": "완전연결층 한 층의 순전파",
+        "en": "Forward pass through a fully connected layer."
+      },
+      "formula": "y = W·x + b (W: 출력×입력)",
+      "code": null,
+      "function": "dl_dense",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "x",
+          "ko": "입력 벡터 x",
+          "en": "Input vector x",
+          "example": "1, 2"
+        },
+        {
+          "key": "w",
+          "ko": "가중치 행렬 W (행은 ; 구분)",
+          "en": "Weight matrix W (separate rows with ;)",
+          "example": "0.2, 0.4; 0.6, 0.8"
+        },
+        {
+          "key": "b",
+          "ko": "바이어스 벡터 b",
+          "en": "Bias vector b",
+          "example": "0.1, -0.1"
+        }
+      ]
+    },
+    {
+      "id": "dl_params",
+      "group": "DL",
+      "ko": "Dense Parameters",
+      "en": "Dense Parameters",
+      "description": {
+        "ko": "완전연결층 파라미터 수",
+        "en": "Count trainable parameters in a dense layer."
+      },
+      "formula": "Weights = in×out; Bias = out (사용 시)",
+      "code": null,
+      "function": "dl_params",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "ni",
+          "ko": "입력 뉴런 수",
+          "en": "Number of input neurons",
+          "example": "128"
+        },
+        {
+          "key": "no",
+          "ko": "출력 뉴런 수",
+          "en": "Number of output neurons",
+          "example": "64"
+        },
+        {
+          "key": "bias",
+          "ko": "바이어스 사용(1=예, 0=아니오)",
+          "en": "Use bias? (1=yes, 0=no)",
+          "example": "1"
+        }
+      ]
+    },
+    {
+      "id": "dl_conv_output",
+      "group": "DL",
+      "ko": "Convolution Output Size",
+      "en": "Convolution Output Size",
+      "description": {
+        "ko": "1차원 기준 합성곱 출력 길이(높이/너비 각각 적용 가능)",
+        "en": "1D convolution output length (apply separately to height and width)."
+      },
+      "formula": "out = floor((in+2P−D(K−1)−1)/S+1)",
+      "code": null,
+      "function": "dl_conv_output",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "h",
+          "ko": "입력 길이",
+          "en": "Input length",
+          "example": "32"
+        },
+        {
+          "key": "k",
+          "ko": "커널 K",
+          "en": "Kernel size K",
+          "example": "3"
+        },
+        {
+          "key": "p",
+          "ko": "패딩 P",
+          "en": "Padding P",
+          "example": "1"
+        },
+        {
+          "key": "s",
+          "ko": "스트라이드 S",
+          "en": "Stride S",
+          "example": "2"
+        },
+        {
+          "key": "d",
+          "ko": "딜레이션 D",
+          "en": "Dilation D",
+          "example": "1"
+        }
+      ]
+    },
+    {
+      "id": "dl_gradient",
+      "group": "DL",
+      "ko": "Gradient Descent Step",
+      "en": "Gradient Descent Step",
+      "description": {
+        "ko": "기울기 하강법 1회 업데이트",
+        "en": "Perform one gradient descent update."
+      },
+      "formula": "w_new = w − learning_rate×gradient",
+      "code": null,
+      "function": "dl_gradient",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "w",
+          "ko": "현재 가중치 w",
+          "en": "Current weights w",
+          "example": "1, 2, 3"
+        },
+        {
+          "key": "g",
+          "ko": "기울기 gradient",
+          "en": "Gradients g",
+          "example": "0.1, -0.2, 0.3"
+        },
+        {
+          "key": "lr",
+          "ko": "학습률",
+          "en": "Learning rate",
+          "example": "0.01"
+        }
+      ]
+    },
+    {
+      "id": "rl_return",
+      "group": "RL",
+      "ko": "Discounted Return",
+      "en": "Discounted Return",
+      "description": {
+        "ko": "주어진 보상열의 할인 누적 보상",
+        "en": "Discounted sum of a reward sequence."
+      },
+      "formula": "G₀ = r₀ + γr₁ + γ²r₂ + …",
+      "code": null,
+      "function": "rl_return",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "r",
+          "ko": "보상열 r",
+          "en": "Rewards r",
+          "example": "1, 2, 3"
+        },
+        {
+          "key": "gamma",
+          "ko": "할인율 γ (0~1)",
+          "en": "Discount factor γ (0–1)",
+          "example": "0.9"
+        }
+      ]
+    },
+    {
+      "id": "rl_td_target",
+      "group": "RL",
+      "ko": "TD Target",
+      "en": "TD Target",
+      "description": {
+        "ko": "종료 상태 처리 포함 1-step TD 목표값",
+        "en": "One-step TD target with terminal-state handling."
+      },
+      "formula": "target = r + γ·V(next) (done=1이면 r)",
+      "code": null,
+      "function": "rl_td_target",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "r",
+          "ko": "보상 r",
+          "en": "Reward r",
+          "example": "1"
+        },
+        {
+          "key": "gamma",
+          "ko": "할인율 γ",
+          "en": "Discount factor γ",
+          "example": "0.9"
+        },
+        {
+          "key": "vnext",
+          "ko": "다음 상태 가치 V(next)",
+          "en": "Next-state value V(next)",
+          "example": "5"
+        },
+        {
+          "key": "done",
+          "ko": "에피소드 종료(0/1)",
+          "en": "Terminal state? (0/1)",
+          "example": "0"
+        }
+      ]
+    },
+    {
+      "id": "rl_td_error",
+      "group": "RL",
+      "ko": "TD Error",
+      "en": "TD Error",
+      "description": {
+        "ko": "1-step TD 오차",
+        "en": "One-step temporal-difference error."
+      },
+      "formula": "δ = [r+γV(next)] − V(current) (done 반영)",
+      "code": null,
+      "function": "rl_td_error",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "r",
+          "ko": "보상 r",
+          "en": "Reward r",
+          "example": "1"
+        },
+        {
+          "key": "gamma",
+          "ko": "할인율 γ",
+          "en": "Discount factor γ",
+          "example": "0.9"
+        },
+        {
+          "key": "vnext",
+          "ko": "다음 상태 가치",
+          "en": "Next-state value",
+          "example": "5"
+        },
+        {
+          "key": "current",
+          "ko": "현재 상태 가치",
+          "en": "Current-state value",
+          "example": "4"
+        },
+        {
+          "key": "done",
+          "ko": "에피소드 종료(0/1)",
+          "en": "Terminal state? (0/1)",
+          "example": "0"
+        }
+      ]
+    },
+    {
+      "id": "rl_q_update",
+      "group": "RL",
+      "ko": "Q-Learning Update",
+      "en": "Q-Learning Update",
+      "description": {
+        "ko": "Q-learning 1회 오프폴리시 업데이트",
+        "en": "One off-policy Q-learning update."
+      },
+      "formula": "Q_new = Q_old + α[r + γ·max Q(next,a) − Q_old] (done 반영)",
+      "code": null,
+      "function": "rl_q_update",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "q",
+          "ko": "현재 Q(s,a)",
+          "en": "Current Q(s,a)",
+          "example": "2"
+        },
+        {
+          "key": "alpha",
+          "ko": "학습률 α (0~1)",
+          "en": "Learning rate α (0–1)",
+          "example": "0.1"
+        },
+        {
+          "key": "r",
+          "ko": "보상 r",
+          "en": "Reward r",
+          "example": "1"
+        },
+        {
+          "key": "gamma",
+          "ko": "할인율 γ (0~1)",
+          "en": "Discount factor γ (0–1)",
+          "example": "0.9"
+        },
+        {
+          "key": "nextq",
+          "ko": "다음 상태 행동별 Q값",
+          "en": "Next-state action Q values",
+          "example": "2, 4, 3"
+        },
+        {
+          "key": "done",
+          "ko": "에피소드 종료(0/1)",
+          "en": "Terminal state? (0/1)",
+          "example": "0"
+        }
+      ]
+    },
+    {
+      "id": "rl_bellman_expect",
+      "group": "RL",
+      "ko": "Bellman Expectation",
+      "en": "Bellman Expectation",
+      "description": {
+        "ko": "전이 확률 분포가 주어졌을 때 기대 목표값",
+        "en": "Expected target with transition probabilities."
+      },
+      "formula": "E[r+γV(next)] = Σ pᵢ(rᵢ+γVᵢ)",
+      "code": null,
+      "function": "rl_bellman_expect",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "probs",
+          "ko": "전이 확률 p",
+          "en": "Transition probabilities p",
+          "example": "0.7, 0.3"
+        },
+        {
+          "key": "rewards",
+          "ko": "결과별 보상 r",
+          "en": "Rewards by outcome r",
+          "example": "1, -1"
+        },
+        {
+          "key": "values",
+          "ko": "다음 상태 가치 V",
+          "en": "Next-state values V",
+          "example": "4, 2"
+        },
+        {
+          "key": "gamma",
+          "ko": "할인율 γ",
+          "en": "Discount factor γ",
+          "example": "0.9"
+        }
+      ]
+    },
+    {
+      "id": "rl_epsilon_greedy",
+      "group": "RL",
+      "ko": "Epsilon-Greedy",
+      "en": "Epsilon-Greedy",
+      "description": {
+        "ko": "ε-greedy의 행동별 선택 확률(최댓값 동률은 균등 분배)",
+        "en": "Action probabilities under ε-greedy; ties share probability equally."
+      },
+      "formula": "P(a) = ε/|A| + (1−ε)/|argmax Q| (최적 행동일 때)",
+      "code": null,
+      "function": "rl_epsilon_greedy",
+      "outputs": [],
+      "fields": [
+        {
+          "key": "q",
+          "ko": "행동별 Q 값",
+          "en": "Q value for each action",
+          "example": "2, 5, 5, 1"
+        },
+        {
+          "key": "eps",
+          "ko": "탐험률 ε (0~1)",
+          "en": "Exploration rate ε (0–1)",
+          "example": "0.1"
+        }
+      ]
+    }
+  ]
+}

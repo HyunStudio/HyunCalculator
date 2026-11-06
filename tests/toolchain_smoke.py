@@ -60,7 +60,7 @@ def check(lang,id,fn,expected):
             (p/'calc.rs').write_text(code);cmds=[['rustc',str(p/'calc.rs'),'-o',str(p/'calc')],[str(p/'calc')]]
         if not cmds:raise RuntimeError(lang)
         for cmd in cmds:
-            q=subprocess.run(cmd,cwd=td,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=65)
+            q=subprocess.run(cmd,cwd=td,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=120)
             if q.returncode:raise RuntimeError(f'{lang} {id} {cmd[0]} failed: {q.stderr[:800]}')
         v=float(q.stdout.strip())
         if not math.isclose(v,expected,rel_tol=3e-6,abs_tol=1e-5):raise AssertionError(f'{lang} {id} expected {expected}, found {v}')

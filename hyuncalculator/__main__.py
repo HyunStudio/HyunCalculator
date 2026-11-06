@@ -4,6 +4,8 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description='HyunCalculator desktop application')
+    parser.add_argument('--classic', action='store_true', help='Open the original Tk desktop interface')
+    parser.add_argument('--browser', action='store_true', help='Open the responsive interface in a browser')
     parser.add_argument('--lang', choices=('ko','en'), default='ko')
     parser.add_argument('--test', action='store_true', help='Run project unit tests (headless)')
     parser.add_argument('--list-formulas', action='store_true', help='List all 33 formula IDs and availability')
@@ -63,8 +65,12 @@ def main():
         else:
             print(code, end='')
         return
-    from .gui import run_gui
-    run_gui(args.lang)
+    if args.classic:
+        from .gui import run_gui
+        run_gui(args.lang)
+    else:
+        from .modern import run_modern
+        run_modern(args.lang, browser=args.browser)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 param([string]$OutputDirectory = "dist", [string]$PythonExecutable = "python")
 $ErrorActionPreference = "Stop"
-& $PythonExecutable -m PyInstaller --noconfirm --clean --onedir --console --name HyunCalculator --paths . --collect-all matplotlib --hidden-import scipy.special._ufuncs --distpath $OutputDirectory --workpath work/pyinstaller --specpath work packaging/windows_entry.py
+$webAssets = (Resolve-Path "hyuncalculator/webui").Path
+& $PythonExecutable -m PyInstaller --noconfirm --clean --onedir --console --name HyunCalculator --paths . --collect-all matplotlib --collect-all webview --add-data "$webAssets;hyuncalculator/webui" --hidden-import scipy.special._ufuncs --distpath $OutputDirectory --workpath work/pyinstaller --specpath work packaging/windows_entry.py
 if ($LASTEXITCODE -ne 0) { throw "Windows build failed" }
 $exe = Join-Path $OutputDirectory 'HyunCalculator/HyunCalculator.exe'
 & $exe --list-formulas

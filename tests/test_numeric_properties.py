@@ -40,7 +40,7 @@ class GeneratedNumericalProperties(unittest.TestCase):
         scripts=[]
         for loop in ('for','while'):
             scripts.append(generate('FIN-004',GenerationOptions(language='JavaScript',structure='class',iteration=loop,class_name='Cashflows'+loop)))
-        for fid in ('FIN-001','FIN-002','FIN-003','FIN-009','DERIV-001'):
+        for fid in ('FIN-001','FIN-002','FIN-003','FIN-009','DERIV-001','ALLOC-001','STAT-001','TS-001'):
             scripts.append(generate(fid,GenerationOptions(language='JavaScript')))
         scripts.append('''
 function assert(ok,message){if(!ok)throw new Error(message);}
@@ -65,7 +65,18 @@ for(let i=0;i<100;i++){
 }
 assert(bs(120,100,0,.03,.2,0,'call')[0]===20,'expiry intrinsic value');
 assert(close(bs(120,100,1,.03,0,0,'call')[0],120-100*Math.exp(-.03)),'zero-volatility option');
-for(const call of [()=>pmt(100,-1,12),()=>fv(100,.1,-1),()=>bs(0,100,1,.03,.2,0,'call')]){
+for(const variance of [.001,.01,.1,1]){
+ const allocation=gmv([[variance,0],[0,variance*2]]);
+ assert(close(allocation[0]+allocation[1],1),'fully invested allocation');
+ assert(close(allocation[0],2/3)&&close(allocation[1],1/3),'inverse variance weights');
+ assert(close(allocation[2],variance*2/3),'minimum portfolio variance');
+}
+for(const x of [-10,-8,0,8,10]){
+ const values=normal(x,0,1,.95);
+ assert(values[2]>=0&&values[2]<=1,'CDF bounds');
+ assert(close(values[2]+values[3],1),'CDF survival complement');
+}
+for(const call of [()=>gmv([[1,1],[1,1]]),()=>gmv([[1,2],[0,1]]),()=>normal(0,0,0,.95),()=>normal(0,0,1,1),()=>ewma([.01,.02],1),()=>pmt(100,-1,12),()=>fv(100,.1,-1),()=>bs(0,100,1,.03,.2,0,'call')]){
  let rejected=false;try{call();}catch(e){rejected=e instanceof RangeError;}
  assert(rejected,'invalid input rejection');
 }

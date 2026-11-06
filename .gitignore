@@ -10,3 +10,6 @@ build/
 *.log
 
 work/
+
+!hyuncalculator/webui/icon-192.png
+!hyuncalculator/webui/icon-512.png
