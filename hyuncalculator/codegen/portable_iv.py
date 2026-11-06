@@ -100,7 +100,7 @@ export function {fn}({args}){rettype}{{
 func {fn}(_ price:Double,_ s:Double,_ k:Double,_ t:Double,_ r:Double,_ q:Double,_ option:String)->Double{{
   guard [price,s,k,t,r,q].allSatisfy({{$0.isFinite}}),s>0,k>0,t>0,price>=0,(option=="call"||option=="put") else {{return Double.nan}}
   let ds=s*exp(-q*t),dk=k*exp(-r*t),sign=option=="call" ? 1.0 : -1.0
-  let lower=max(sign*(ds-dk),0),upper=sign>0 ? ds:dk
+  let lower=max(sign*(ds-dk),0),upper=sign>0 ? ds : dk
   if price<lower-1e-9 || price>=upper{{return Double.nan}}
   if price<=lower+1e-12{{return 0}}
   var lo=1e-10,hi=10.0
@@ -192,7 +192,7 @@ function {fn}(price,s,k,t,r,q=0.0,option="call")
     throw(ArgumentError("Invalid IV inputs"))
   end
   ds=s*exp(-q*t);dk=k*exp(-r*t);sign=option=="call" ? 1.0 : -1.0
-  lower=max(sign*(ds-dk),0);upper=sign>0 ? ds:dk
+  lower=max(sign*(ds-dk),0);upper=sign>0 ? ds : dk
   if price<lower-1e-9 || price>=upper;throw(ArgumentError("IV violates no-arbitrage bound"));end
   if price<=lower+1e-12;return 0.0;end
   lo=1e-10;hi=10.0
