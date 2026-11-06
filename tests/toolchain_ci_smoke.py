@@ -1,6 +1,6 @@
 """Real native toolchain numerical smoke checks for CI: C, C++ and JavaScript.
 
-Exercises 21 named generated formula-language pairs per native target, NOT the
+Exercises 27 distinct formula-language pairs per native target, NOT the
 complete 462-pair matrix. Missing required toolchains are an error, not a pass.
 The numerical references are supplied by the existing optional smoke modules.
 Run from repository root: python tests/toolchain_ci_smoke.py
@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from toolchain_smoke import check as scalar_check
+from toolchain_smoke import check as scalar_check, CASES as SCALAR_CASES
 from toolchain_finance_smoke import test as finance_check
 from toolchain_portfolio_smoke import check as portfolio_check
 from toolchain_bs_smoke import check as bs_check, CASES as BS_CASES
@@ -36,6 +36,12 @@ def run_all() -> int:
             raise RuntimeError(f'Required CI toolchain not installed: {language} ({executable})')
     cases = (
         ('FIN-001', lambda lang: scalar_check(lang, 'FIN-001', 'fv', 1628.894626777442)),
+        ('FIN-002', lambda lang: scalar_check(lang, 'FIN-002', 'pv', SCALAR_CASES[1][3])),
+        ('FIN-003', lambda lang: scalar_check(lang, 'FIN-003', 'pmt', SCALAR_CASES[2][3])),
+        ('FIN-004', lambda lang: scalar_check(lang, 'FIN-004', 'npv', SCALAR_CASES[3][3])),
+        ('FIN-007', lambda lang: scalar_check(lang, 'FIN-007', 'cagr', SCALAR_CASES[4][3])),
+        ('FIN-008', lambda lang: scalar_check(lang, 'FIN-008', 'effective', SCALAR_CASES[5][3])),
+        ('FIN-009', lambda lang: scalar_check(lang, 'FIN-009', 'annuity', SCALAR_CASES[6][3])),
         ('FIN-005', lambda lang: finance_check(lang, 'fin_irr')),
         ('FIN-006', lambda lang: finance_check(lang, 'fin_loan')),
         ('PORT-001', lambda lang: portfolio_check(lang)),
@@ -58,8 +64,8 @@ def run_all() -> int:
         ('STOCH-004', lambda lang: stochastic_check(lang, 'STOCH-004')),
         ('STOCH-005', lambda lang: stochastic_check(lang, 'STOCH-005')),
     )
-    if len(cases) != 21 or len({name for name, _ in cases}) != len(cases):
-        raise AssertionError('Expected 21 distinct numerical formula cases')
+    if len(cases) != 27 or len({name for name, _ in cases}) != len(cases):
+        raise AssertionError('Expected 27 distinct numerical formula cases')
     checks = 0
     failures = []
     for language in TOOLS:

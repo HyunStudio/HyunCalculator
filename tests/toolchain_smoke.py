@@ -8,12 +8,23 @@ sys.path.insert(0,str(Path(__file__).resolve().parent.parent))
 from hyuncalculator.codegen import generate,GenerationOptions
 from hyuncalculator.codegen.emitter import EXTENSIONS
 
+# Frozen finance-function reference values verified against the Python
+# calculator. All 9 time-value-of-money formulas can now be checked natively.
 CASES=[('FIN-001','fv','1000, 0.05, 10',1628.894626777442),
-       ('FIN-003','pmt','120000, 0.005, 24',5318.4733),
-       ('FIN-004','npv','0.1, [-100,60,60]',4.132231404958667)]
+       ('FIN-002','pv','1000, 0.05, 10',613.9132535407591),
+       ('FIN-003','pmt','120000, 0.005, 24',5318.4732303309365),
+       ('FIN-004','npv','0.1, [-100,60,60]',4.132231404958667),
+       ('FIN-007','cagr','100, 150, 3',0.14471424255333187),
+       ('FIN-008','effective','0.12, 12',0.12682503013196977),
+       ('FIN-009','annuity','200, 0.01, 24',4248.677451525573)]
 
 def check(lang,id,fn,expected):
     arg={'FIN-001':{'C':'1000,.05,10','C++':'1000,.05,10','JavaScript':'1000,.05,10','TypeScript':'1000,.05,10','Java':'1000,.05,10','Swift':'1000,0.05,10','Kotlin':'1000.0,.05,10','Go':'1000,.05,10','Rust':'1000.0,.05,10'},
+         'FIN-002':{'C':'1000,.05,10','C++':'1000,.05,10','JavaScript':'1000,.05,10','TypeScript':'1000,.05,10','Java':'1000,.05,10','Swift':'1000,0.05,10','Kotlin':'1000.0,.05,10','Go':'1000,.05,10','Rust':'1000.0,.05,10'},
+         'FIN-007':{'C':'100,150,3','C++':'100,150,3','JavaScript':'100,150,3','TypeScript':'100,150,3','Java':'100,150,3','Swift':'100,150,3','Kotlin':'100.0,150.0,3.0','Go':'100,150,3','Rust':'100.0,150.0,3.0'},
+         'FIN-008':{'C':'.12,12','C++':'.12,12','JavaScript':'.12,12','TypeScript':'.12,12','Java':'.12,12','Swift':'0.12,12','Kotlin':'0.12,12','Go':'.12,12','Rust':'0.12,12'},
+         'FIN-009':{'C':'200,.01,24','C++':'200,.01,24','JavaScript':'200,.01,24','TypeScript':'200,.01,24','Java':'200,.01,24','Swift':'200,0.01,24','Kotlin':'200.0,0.01,24','Go':'200,.01,24','Rust':'200.0,0.01,24'},
+         
          'FIN-003':{'C':'120000,.005,24','C++':'120000,.005,24','JavaScript':'120000,.005,24','TypeScript':'120000,.005,24','Java':'120000,.005,24','Swift':'120000,0.005,24','Kotlin':'120000.0,.005,24','Go':'120000,.005,24','Rust':'120000.0,.005,24'},
          'FIN-004':{'C':'.1, (double[]){-100,60,60}, 3','C++':'.1,std::vector<double>{-100,60,60}','JavaScript':'.1,[-100,60,60]','TypeScript':'.1,[-100,60,60]','Java':'.1,new double[]{-100,60,60}','Swift':'0.1,[-100,60,60]','Kotlin':'.1,doubleArrayOf(-100.0,60.0,60.0)','Go':'.1,[]float64{-100,60,60}','Rust':'0.1,&[-100.0,60.0,60.0]'}}[id][lang]
     code=generate(id,GenerationOptions(language=lang))
