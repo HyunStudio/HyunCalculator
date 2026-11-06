@@ -31,6 +31,11 @@ COMMANDS = {
     'JavaScript': ('node', 'generated.js', ('node', '--check')),
     'TypeScript': ('tsc', 'generated.ts', ('tsc', '--noEmit', '--target', 'ES2020',
                                            '--lib', 'ES2020,DOM', '--skipLibCheck')),
+    'Java': ('javac', 'GeneratedCalculator.java', ('javac', '-encoding', 'UTF-8')),
+    'Go': ('go', 'generated.go', ('go', 'test')),
+    'Rust': ('rustc', 'generated.rs', ('rustc', '--edition=2021', '--crate-type=lib',
+                                      '--emit=metadata', '-o', 'generated.rmeta')),
+    'Swift': ('swiftc', 'generated.swift', ('swiftc', '-typecheck')),
 }
 
 

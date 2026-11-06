@@ -178,7 +178,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['C', 'C++', 'JavaScript', 'TypeScript']
+        language: ['C', 'C++', 'JavaScript', 'TypeScript', 'Java', 'Go', 'Rust', 'Swift']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -201,6 +201,10 @@ jobs:
             C++) command -v g++ ;;
             JavaScript) command -v node ;;
             TypeScript) command -v tsc ;;
+            Java) command -v javac ;;
+            Go) command -v go ;;
+            Rust) command -v rustc ;;
+            Swift) command -v swiftc ;;
           esac
       - name: Build/syntax check all 33 generated formula sources
         env:
