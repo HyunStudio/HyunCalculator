@@ -1,22 +1,22 @@
 # HyunCalculator v1.2.0 — Formula to Code Generator 기획·기술 설계서
 
-> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.5)**  
+> 문서 상태: **DESIGN / PARTIALLY IMPLEMENTED (v1.2.0-alpha.6)**  
 > 작성일: 2026-11-06  
 > 프로젝트: [HyunStudio/HyunCalculator](https://github.com/HyunStudio/HyunCalculator)  
 > 기준 버전: **v1.1.0** (현재 계산 엔진 유지)  
 > 목표: 금융수학·금융공학 **기존 33개 등록 계산 기능 × 14개 프로그래밍 언어 = 462개 생성 조합**  
 > **주의:** 본 문서는 개발 범위와 검증 기준을 규정하는 설계서이며, 코드 생성기 구현·컴파일·런타임 검증이 완료되었다는 뜻이 아니다.
 
-### Implementation status — 2026-11-06 (v1.2.0-alpha.5)
+### Implementation status — 2026-11-06 (v1.2.0-alpha.6)
 
-- **Generation coverage:** all 33 Financial/Quant formulas export standalone **Python** code. **20 formulas** have code emitters for all 14 target languages; total **293 / 462 (63.4%)** source-generation pairs. **13 remaining formulas are Python-only** (169 non-Python pairs yet to implement).
-- **New DERIV-002 — implied volatility:** 13 non-Python standalone implementations invert the already-supported European Black–Scholes (continuous-dividend) price by bounded bisection; validate call/put premiums against no-arbitrage bounds, with volatility bracketing [1e-10,10] and explicit invalid/no-bracket results.
-- **New RISK-002 — parametric normal VaR/ES:** 13 non-Python emitters use the Acklam rational inverse-normal approximation (approximately 1e-9 absolute error in z under typical conditions). VaR is the signed-loss quantile; ES is the conditional normal loss tail. Rates, returns and volatility are decimal, with consistent period units.
-- **Limits and options:** New non-Python functions use function-only structure, automatic iteration, fixed inputs and standard mathematical functions. Unsupported class, for/while, external-import or parameter renaming requests fail closed. Python retains trusted SciPy implementations.
-- **Verification:** **109 local unit/regression/generator tests** pass, covering all 293 generated pairs, invalid options and reference values. Representative C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go examples compile/execute and match reference outputs; **R, C#, Rust, MATLAB and Julia remain runtime-unverified** in this environment. Generated code is NOT equivalent to compiler/numerical certification for every target or edge case.
-- **Remaining:** 169 additional non-Python formula adapters, whole-matrix toolchain/numerical verification, advanced library selection, user-defined structure/algorithms across profiles, export bundles, complete premium dark UI.
-- **Sponsorship:** HyunStudio GitHub Sponsors approval is pending; payment/donation controls stay inactive pending verified approval and URL.
-- This is an **alpha implementation progress record**, not a completion declaration. See [README](../README.md), [CHANGELOG](../CHANGELOG.md).
+- **Source-generation coverage:** **319 / 462 (69.0%)**. Python covers all **33** financial/quant formulas. Each of 13 other languages supports **22 formulas**, leaving **11 Python-only formulas / 143 non-Python combinations**.
+- **New allocation models:** ALLOC-001 unrestricted global-minimum-variance Markowitz; ALLOC-002 unrestricted minimum variance subject to fully invested and requested expected return. Both use validated symmetric positive-definite covariance matrices. Non-Python languages use Cholesky/triangular system solves, except R/MATLAB/Julia using native validated linear-system solvers. No long-only, leverage, costs or asset bounds are added.
+- **Generated results:** all 13 non-Python emitters return **[n asset weights, portfolio variance]** for GMV and **[n asset weights, realized expected return]** for target return. Python continues existing named dictionary returns. **C** takes flat row-major covariance and a caller-provided output buffer sized **n+1**.
+- **Verification:** **114 local Python unit/regression/generation tests** passed, covering all 319 enabled source-generation pairs and both new model IDs; Python reference parity includes 2- and 3-asset cases plus invalid covariance. Representative 2-asset generated programs compiled/executed and matched Python references on **C, C++, JavaScript, TypeScript, Java, Swift, Kotlin and Go**. Other generated languages (**R, C#, Rust, MATLAB, Julia**) have **not** been executed in this environment.
+- **Limits:** new allocation emitters are function-only with automatic iteration, fixed canonical inputs and standard math imports. Unsupported structure/algorithm/parameter rename requests remain rejected. This is neither a full 462-way runtime verification nor financial production certification.
+- **Next priorities:** ALLOC-003 Black–Litterman, DERIV-003 Monte Carlo, portfolio risk/strategy performance, stochastic simulations, then entire 462-way toolchain/numeric CI verification and advanced options / premium dark UI.
+- **HyunStudio Sponsors:** profile approval is **pending**; donation/payment buttons stay disabled and unverified PayPal URLs are not published.
+- Current alpha is partially implemented, not a release-complete v1.2.0. See [README](../README.md) and [CHANGELOG](../CHANGELOG.md).
 
 ## 1. 목적과 핵심 원칙
 
@@ -299,4 +299,4 @@ HyunCalculator_CodeExport/
 
 ---
 
-**현황 요약 (2026-11-06):** 33개 금융 계산 함수는 유지된다. v1.2.0-alpha.5는 Python 전체 33개 및 다른 13개 언어 각각 20개, 총 **293/462개 소스코드 생성 조합**을 부분 구현했다. 나머지 **169개 비Python 생성 조합**, 전체 언어별 컴파일·수치 검증, 고급 옵션 및 프리미엄 UI/UX는 후속 개발 대상으로 남아 있다.
+**현황 요약 (2026-11-06):** v1.2.0-alpha.6에서 Python 전체 33개 및 다른 13개 언어 각각 22개 수식에 대한 코드 생성, 총 **319/462개 조합**이 구현되었다. **143개 비Python 생성 조합**과 전 언어 완전 컴파일·수치 검증, 고급 코드 옵션 및 UI/UX 전면 적용은 계속 개발 예정이다. HyunStudio Sponsors 승인은 대기 중이다.
