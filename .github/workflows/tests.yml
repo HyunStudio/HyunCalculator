@@ -93,7 +93,9 @@ jobs:
       - name: Compile and numerically verify six generated Rust samples
         env:
           MPLBACKEND: Agg
-        run: python tests/toolchain_rust_smoke.py
+        run: |
+          python tests/toolchain_rust_smoke.py
+          python tests/toolchain_catalog_numeric.py Rust
 
   r-smoke:
     runs-on: ubuntu-latest
@@ -115,7 +117,9 @@ jobs:
       - name: Execute six R numeric generator checks
         env:
           MPLBACKEND: Agg
-        run: python tests/toolchain_r_csharp_smoke.py --language R
+        run: |
+          python tests/toolchain_r_csharp_smoke.py --language R
+          python tests/toolchain_catalog_numeric.py "R"
 
   csharp-smoke:
     runs-on: ubuntu-latest
@@ -138,7 +142,10 @@ jobs:
           MPLBACKEND: Agg
           DOTNET_NOLOGO: '1'
           DOTNET_CLI_TELEMETRY_OPTOUT: '1'
-        run: python tests/toolchain_r_csharp_smoke.py --language 'C#'
+        run: |
+          python tests/toolchain_r_csharp_smoke.py --language 'C#'
+          python tests/toolchain_catalog_numeric.py "C#"
+          python tests/toolchain_class_numeric.py "C#"
 
   julia-smoke:
     runs-on: ubuntu-latest
@@ -159,7 +166,9 @@ jobs:
       - name: Execute six Julia numeric generator checks
         env:
           MPLBACKEND: Agg
-        run: python tests/toolchain_julia_smoke.py
+        run: |
+          python tests/toolchain_julia_smoke.py
+          python tests/toolchain_catalog_numeric.py Julia
 
   octave-smoke:
     runs-on: ubuntu-latest
@@ -181,7 +190,9 @@ jobs:
       - name: Execute 17 MATLAB-compatible numeric and validation cases in Octave
         env:
           MPLBACKEND: Agg
-        run: python tests/toolchain_octave_smoke.py
+        run: |
+          python tests/toolchain_octave_smoke.py
+          python tests/toolchain_catalog_numeric.py Octave
 
   compile-matrix:
     runs-on: ubuntu-latest
