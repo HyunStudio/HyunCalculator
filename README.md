@@ -4,6 +4,10 @@
 
 An integrated scientific, graphing, financial, quantitative finance, programmer and ML/DL/RL calculator, based on the original bilingual 19-function Tkinter calculator.
 
+## Planned v1.2.0 — Formula to Code Generator (design only)
+
+The [Formula to Code Generator design document](docs/FORMULA_TO_CODE_V1_2_DESIGN.md) specifies the future conversion of **33 registered Financial/Quant calculations into 14 programming languages**, with configurable class/function structure, algorithms, loops, imports, numerical validation, bilingual UI and source export (**33 × 14 = 462 target combinations**). **This is a planning specification, not an implemented feature in v1.1.0.**
+
 ## Features / 주요 기능
 
 | Tab | Available functions / 주요 기능 |
